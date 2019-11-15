@@ -1,0 +1,103 @@
+<resources>
+    <string name="app_name">My Mind</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="replace">Replace</string>
+    <string name="remove">Delete</string>
+    <string name="translate">Translate</string>
+    <string name="reverse_translate">Reverse translate</string>
+    <string name="create_group">Create group</string>
+    <string name="group">Group:</string>
+    <string name="detail">Words:</string>
+    <string name="save">Save</string>
+    <string name="list_is_empty">List is empty</string>
+    <string name="touch_to_create">Touch to create</string>
+
+    <string name="color_picker">Color picker</string>
+    <string name="make_choice">Make your choice</string>
+    <string name="start_color">Start color</string>
+    <string name="end_color">End color</string>
+    <string name="red">R</string>
+    <string name="green">G</string>
+    <string name="blue">B</string>
+
+
+    <string name="words">Words</string>
+    <string name="play">Play</string>
+    <string name="show_subtitle">Show Count</string>
+    <string name="hide_subtitle">Hide Count</string>
+    <string name="finish">Finish</string>
+    <string name="enter_word">Enter word</string>
+    <string name="quiz">Quiz</string>
+    <string name="answer">Answer</string>
+    <string name="saved_succes_toast">Saved Successfully</string>
+    <string name="transcription">Transcript</string>
+    <string name="view">VIew</string>
+    <string name="edit">Edit</string>
+    <string name="create">Create</string>
+    <string name="search">Search</string>
+    <string name="sort">Sort</string>
+    <string name="sort_by_original">Sort by original</string>
+    <string name="sort_by_translate">Sort by translate</string>
+    <string name="start">Start</string>
+    <string name="type_of_test">Type of test:</string>
+    <string name="true_false">True/False</string>
+    <string name="answer_question">Answer/Question</string>
+    <string name="original">Original</string>
+    <string name="stopwatch">Stopwatch</string>
+    <string name="object_test">Object test:</string>
+    <string name="true_button">True</string>
+    <string name="false_button">False</string>
+    <string name="question">Question</string>
+    <string name="unify">Unify</string>
+    <string name="select_all">Select all</string>
+    <string name="add_word">Add word</string>
+    <string name="word_count">Count: %1$s</string>
+    <string name="add_new_case">Add new case</string>
+    <string name="_0">000</string>
+    <string name="difficult">Difficult:</string>
+    <string name="use">Used objects:</string>
+    <string name="information">Information</string>
+    <string name="multitranslate">MultiTranslate</string>
+    <string name="comment">Comment:</string>
+    <plurals name="word_items">
+        <item quantity="one">%1$d Word</item>
+        <item quantity="other">%1$d Words</item>
+    </plurals>
+    <plurals name="correct_items">
+        <item quantity="one">%1$d correct answer</item>
+        <item quantity="other">%1$d correct answers</item>
+    </plurals>
+    <plurals name="wrong_items">
+        <item quantity="one">%1$d wrong answer</item>
+        <item quantity="other">%1$d wrong answer</item>
+    </plurals>
+
+    <string-array name="count_words">
+        <item>1</item>
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
+
+    <string-array name="start_type">
+        <item>All</item>
+        <item>Selected</item>
+        <item>First:</item>
+        <item>Last:</item>
+    </string-array>
+
+    <string-array name="words_type">
+        <item>n:</item>
+        <item>prn:</item>
+        <item>v:</item>
+        <item>adj:</item>
+        <item>adv:</item>
+        <item>prep:</item>
+        <item>conj:</item>
+        <item>inter:</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+
+</resources>

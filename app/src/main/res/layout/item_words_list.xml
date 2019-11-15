@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:divider="?android:attr/dividerHorizontal"
+    android:gravity="center"
+    android:showDividers="middle">
+
+    <LinearLayout
+        android:id="@+id/linearLayout6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="?android:attr/dividerHorizontal"
+        android:gravity="center"
+        android:showDividers="middle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:visibility="gone" />
+
+        <EditText
+            android:id="@+id/text_question"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:imeOptions="actionDone"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:minHeight="32dp"
+            android:text="Original"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
+
+        <!--    <View-->
+        <!--        android:layout_width="1dp"-->
+        <!--        android:layout_height="match_parent"-->
+        <!--        android:background="@drawable/separator" />-->
+
+        <EditText
+            android:id="@+id/text_transcription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:imeOptions="actionNone"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:minHeight="32dp"
+            android:text="Transcription"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
+
+        <!--    <View-->
+        <!--        android:layout_width="1dp"-->
+        <!--        android:layout_height="match_parent"-->
+        <!--        android:background="@drawable/separator" />-->
+
+        <EditText
+            android:id="@+id/text_answer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+
+            android:layout_marginEnd="2dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:imeOptions="actionDone"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:minHeight="32dp"
+            android:text="Translate"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
+
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toTopOf="@+id/edit_comment"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="@string/comment"
+        app:layout_constraintBottom_toBottomOf="@+id/edit_comment"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/edit_comment" />
+
+    <EditText
+        android:id="@+id/edit_comment"
+        style="@style/MyEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:imeOptions="actionDone"
+        android:inputType="textMultiLine|textNoSuggestions"
+        android:minHeight="32dp"
+        android:text="Translate"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@id/divider" />
+</android.support.constraint.ConstraintLayout>
+

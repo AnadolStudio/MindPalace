@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:divider="?android:attr/dividerVertical"
+    android:gravity="fill"
+    android:orientation="horizontal"
+    android:showDividers="middle">
+
+    <Spinner
+        android:id="@+id/type_word"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:background="@android:color/transparent"
+        android:entries="@array/words_type"
+        android:gravity="center" />
+
+    <EditText
+        android:id="@+id/words_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:inputType="textMultiLine|textNoSuggestions" />
+</LinearLayout>

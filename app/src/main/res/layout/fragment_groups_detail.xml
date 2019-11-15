@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFA">
+
+
+    <TextView
+        android:id="@+id/text_group"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/group"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/group_color"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/name_group"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center|top"
+        android:hint="Enter a text for the group"
+        android:imeOptions="actionDone"
+        android:lines="2"
+        android:singleLine="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/group_color"
+        app:layout_constraintTop_toBottomOf="@+id/text_group" />
+
+    <ImageView
+        android:id="@+id/group_color"
+        android:layout_width="150dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintBottom_toBottomOf="@+id/count_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <FrameLayout
+        android:id="@+id/recycler_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/count_text">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_detail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/rectangle_item_background"
+            android:padding="2dp"
+            tools:listitem="@layout/item_words_list_preview" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/count_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/word_count"
+        app:layout_constraintStart_toStartOf="@+id/name_group"
+        app:layout_constraintTop_toBottomOf="@+id/name_group" />
+
+</android.support.constraint.ConstraintLayout>

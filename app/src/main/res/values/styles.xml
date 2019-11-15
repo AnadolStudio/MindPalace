@@ -1,0 +1,51 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+<!--        <item name="android:fontFamily">serif</item>-->
+        <item name="editTextStyle">@style/MyEditText</item>
+    </style>
+
+    <style name="LightTheme" parent="Theme.AppCompat.Light">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+<!--        <item name="android:fontFamily">serif</item>-->
+    </style>
+
+    <style name="ProgressBar" parent="Widget.AppCompat.ProgressBar">
+        <item name="colorAccent">@color/colorDarkWhite</item>
+    </style>
+
+    <style name="MyEditText" parent="Widget.AppCompat.EditText">
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="DialogStyle" parent="Base.Theme.AppCompat.Light.Dialog">
+        <item name="android:windowMinWidthMajor">100%</item>
+        <item name="android:windowMinWidthMinor">100%</item>
+    </style>
+
+    <style name="AppTheme.Skid_1" parent="AppTheme">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap" tools:targetApi="lollipop">false</item>
+        <item name="android:windowAllowEnterTransitionOverlap" tools:targetApi="lollipop">false</item>
+
+    </style>
+    <style name="AppTheme.Skid_2" parent="AppTheme">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap" tools:targetApi="lollipop">false</item>
+        <item name="android:windowAllowEnterTransitionOverlap" tools:targetApi="lollipop">false</item>
+        <item name="android:windowSharedElementEnterTransition" tools:targetApi="lollipop">@transition/enter_share_element_transfrom_skid_2</item>
+    </style>
+
+</resources>

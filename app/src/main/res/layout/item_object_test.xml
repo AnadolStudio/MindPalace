@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="6dp">
+
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rectangle_card_type_test"
+        android:minHeight="75dp"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        app:cardBackgroundColor="@color/colorBackgroundCardTypeTest"
+        app:cardCornerRadius="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/name_test"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textColor="@color/colorDarkWhite"
+                android:textSize="18sp"
+                android:textStyle="bold|italic"
+                tools:text="Name Test" />
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
+</FrameLayout>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F3F3F</color>
+    <color name="colorPrimaryDark">#292929</color>
+    <color name="colorAccent">#707070</color>
+    <color name="colorDarkWhite">#DDDDDD</color>
+    <color name="colorDefaultBackground">#FAFAFA</color>
+    <color name="colorSelected">#068CDA</color>
+    <color name="colorProgressBarBackground">#667E7E7E</color>
+    <color name="colorLightBlack">#6B6B6B</color>
+    <color name="textColorPrimary">#2C2C2C</color>
+
+    <color name="keyboardBackground">#DDDEE2</color>
+    <color name="keyBackground">#fafafa</color>
+    <color name="keyPressBackground">#b8b9be</color>
+    <color name="keyText">#252525</color>
+    <color name="colorBoundsCardTypeTest">#1B5E20</color>
+    <color name="colorBackgroundCardTypeTest">#33691E</color>
+    <color name="colorBackgroundDisableCardTypeTest">#808180</color>
+    <color name="colorBackgroundSelectedCardTypeTest">#689F38</color>
+</resources>

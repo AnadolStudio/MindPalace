@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/container_keyboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/keyboardBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText">
+
+        <android.inputmethodservice.KeyboardView
+            android:id="@+id/keyboard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="6dp"
+            android:background="@color/keyboardBackground"
+
+            android:keyBackground="@drawable/key_background"
+            android:keyPreviewHeight="50dp"
+            android:keyPreviewLayout="@layout/preview_keyboard"
+
+            android:keyTextColor="@color/keyText"
+            android:paddingTop="3dp"
+            android:shadowRadius="0.0"></android.inputmethodservice.KeyboardView>
+    </FrameLayout>
+
+</android.support.constraint.ConstraintLayout>
