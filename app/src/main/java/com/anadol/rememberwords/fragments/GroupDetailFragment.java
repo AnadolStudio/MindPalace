@@ -464,7 +464,7 @@ public class GroupDetailFragment extends MyFragment {
                 mWords.set(p,(Word)data.getParcelableExtra(MULTI_TEXT));
 //                System.out.println(mWords.get(p).getTranslate());
                 adapter.notifyItemChanged(p);
-                Toast.makeText(getContext(), "It is work", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "It is work", Toast.LENGTH_SHORT).show();
                 break;
         }
 

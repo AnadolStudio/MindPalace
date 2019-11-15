@@ -128,6 +128,22 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
         commentText = view.findViewById(R.id.edit_comment);
         commentText.setText(mWord.getComment());
         commentText.setSelection(commentText.length());
+        commentText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mWord.setComment(s.toString());
+            }
+        });
         return new AlertDialog.Builder(getActivity(),R.style.DialogStyle)
                 .setView(view)
                 .create();
@@ -141,7 +157,7 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
             public void createHolderItems(final MyViewHolder holder) {
 
                 Spinner type = holder.itemView.findViewById(R.id.type_word);
-                type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() { //TODO: уже использованный item не должен выбираться
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         mList.get(holder.getAdapterPosition()).setTypeName(res[position]);
