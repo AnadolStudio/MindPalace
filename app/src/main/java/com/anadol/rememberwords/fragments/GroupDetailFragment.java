@@ -624,7 +624,12 @@ public class GroupDetailFragment extends MyFragment {
 
                 translate.setText(tranStr);
                 translate.setSelection(translate.length());
-                translate.setEnabled(!selectMode);
+                if (word.getIsMultiTrans() == Word.FALSE){
+                    translate.setEnabled(!selectMode);
+                }else {
+                    translate.setEnabled(false);
+                }
+
 
                 transcription.setText(transcriptStr);
                 transcription.setSelection(transcription.length());
@@ -722,7 +727,7 @@ public class GroupDetailFragment extends MyFragment {
         });
     }
 
-    public class WordBackground extends DoInBackground {// TODO: Возможная утечка памяти
+    public class WordBackground extends DoInBackground {
         String cmd;
         MyCursorWrapper cursor;
         SQLiteDatabase db;
