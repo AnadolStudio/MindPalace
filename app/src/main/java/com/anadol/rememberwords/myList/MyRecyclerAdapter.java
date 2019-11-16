@@ -4,6 +4,7 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 public class MyRecyclerAdapter extends RecyclerView.Adapter<MyViewHolder> implements ItemTouchHelperAdapter {
+    private static final String TAG = "my_recycler_adapter";
     private ArrayList mList;
     private @LayoutRes int mLayoutRes;
     private Listeners mListener;
@@ -67,8 +69,8 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyViewHolder> implem
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder viewHolder, int i) {
-        final int position = viewHolder.getAdapterPosition();
+    public void onBindViewHolder(@NonNull final MyViewHolder viewHolder, int i) {
+
 
         if (mCreator != null){
             mCreator.bindHolderItems(viewHolder);
@@ -77,9 +79,11 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyViewHolder> implem
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mListener != null && position!=RecyclerView.NO_POSITION){
-                    mListener.onClick(v,position);
-                }else System.out.println("Position "+ position); //TODO: заменит на Log
+                if (mListener != null && viewHolder.getAdapterPosition()!=RecyclerView.NO_POSITION){
+                    mListener.onClick(v,viewHolder.getAdapterPosition());
+                }else {
+                    Log.e(TAG, "Listener == null or position == RecyclerView.NO_POSITION");
+                }
             }
         });
 
@@ -87,7 +91,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyViewHolder> implem
             @Override
             public boolean onLongClick(View v) {
                 if (mListener != null){
-                    return mListener.onLongClick(v,position);
+                    return mListener.onLongClick(v,viewHolder.getAdapterPosition());
                 }
                 return false;
             }
