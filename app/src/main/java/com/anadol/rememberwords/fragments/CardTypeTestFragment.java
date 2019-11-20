@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,40 +50,45 @@ public class CardTypeTestFragment extends Fragment {
         star3 = view.findViewById(R.id.star3);
 
         int type = getArguments().getInt(TYPE_TEST);
+        int count = getArguments().getInt(COUNT_WORDS);
+
         switch (type){
             case EASY:
                 nameTest.setText(getResources().getString(R.string.quiz));
                 star1.setImageDrawable(getResources().getDrawable(R.drawable.ic_star));
                 star2.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_border));
                 star3.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_border));
+
+                if (count < 4) { // 4 - временная, возможно тут нужно другое значение
+                    CardView cardView = view.findViewById(R.id.card_view);
+                    cardView.setCardBackgroundColor(getResources().getColor(R.color.colorBackgroundDisableCardTypeTest));
+                    view.setEnabled(false);
+                }
                 break;
             case MIDDLE:
                 nameTest.setText(getResources().getString(R.string.true_false));
                 star1.setImageDrawable(getResources().getDrawable(R.drawable.ic_star));
                 star2.setImageDrawable(getResources().getDrawable(R.drawable.ic_star));
                 star3.setImageDrawable(getResources().getDrawable(R.drawable.ic_star_border));
+
+                if (count < 2) {
+                    CardView cardView = view.findViewById(R.id.card_view);
+                    cardView.setCardBackgroundColor(getResources().getColor(R.color.colorBackgroundDisableCardTypeTest));
+                    view.setEnabled(false);
+                }
                 break;
             case HARD:
                 nameTest.setText(getResources().getString(R.string.answer_question));
                 star1.setImageDrawable(getResources().getDrawable(R.drawable.ic_star));
                 star2.setImageDrawable(getResources().getDrawable(R.drawable.ic_star));
                 star3.setImageDrawable(getResources().getDrawable(R.drawable.ic_star));
+                if (count < 2) {
+                    CardView cardView = view.findViewById(R.id.card_view);
+                    cardView.setCardBackgroundColor(getResources().getColor(R.color.colorBackgroundDisableCardTypeTest));
+                    view.setEnabled(false);
+                }
                 break;
         }
-
-        int count = getArguments().getInt(COUNT_WORDS);
-        if (count < 4) { // 4 - временная, возможно тут нужно другое значение
-            view.setBackgroundColor(getResources().getColor(R.color.colorBackgroundDisableCardTypeTest));
-            view.setEnabled(false);
-        }
-
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(),"Type", Toast.LENGTH_SHORT).show();
-            }
-        });
-
 
         return view;
     }

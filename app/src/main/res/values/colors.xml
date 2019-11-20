@@ -14,8 +14,7 @@
     <color name="keyBackground">#fafafa</color>
     <color name="keyPressBackground">#b8b9be</color>
     <color name="keyText">#252525</color>
-    <color name="colorBoundsCardTypeTest">#1B5E20</color>
-    <color name="colorBackgroundCardTypeTest">#33691E</color>
-    <color name="colorBackgroundDisableCardTypeTest">#808180</color>
-    <color name="colorBackgroundSelectedCardTypeTest">#689F38</color>
+    <color name="colorBoundsCardTypeTest">#161616</color>
+    <color name="colorBackgroundCardTypeTest">#777777</color>
+    <color name="colorBackgroundDisableCardTypeTest">#CECECE</color>
 </resources>

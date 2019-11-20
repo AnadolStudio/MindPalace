@@ -159,7 +159,6 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
         mAdapter.setCreatorAdapter(new MyRecyclerAdapter.CreatorAdapter() {// ДЛЯ БОЛЬШЕЙ ГИБКОСТИ ТУТ Я РЕАЛИЗУЮ СЛУШАТЕЛЯ И МЕТОДЫ АДАПТЕРА
             @Override
             public void createHolderItems(final MyViewHolder holder) {
-                //TODO: уже использованный item не должен выбираться
                 Spinner type = holder.itemView.findViewById(R.id.type_word);
                 type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
@@ -260,6 +259,7 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
                     }
                 }
             }
+            stringBuilder.replace(stringBuilder.length()-1,stringBuilder.length(),"");// Удаляет последний символ абзаца
         }else {
             stringBuilder.append(mList.get(0).getWords()
                     .replaceAll("\n","")

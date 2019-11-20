@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">My Mind</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="replace">Replace</string>
     <string name="remove">Delete</string>
     <string name="translate">Translate</string>
@@ -60,6 +59,13 @@
     <string name="information">Information</string>
     <string name="multitranslate">MultiTranslate</string>
     <string name="comment">Comment:</string>
+    <string name="lack_of_words">Lack of words</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="enabled_type">Тут должен быть правильный английский текст</string>
+    <string name="enabled_object">Тут должен быть правильный английский текст</string>
+
+
     <plurals name="word_items">
         <item quantity="one">%1$d Word</item>
         <item quantity="other">%1$d Words</item>
@@ -97,7 +103,5 @@
         <item>conj:</item>
         <item>inter:</item>
     </string-array>
-
-    <!-- TODO: Remove or change this placeholder text -->
 
 </resources>

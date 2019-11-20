@@ -106,6 +106,12 @@ public class GroupDetailFragment extends MyFragment {
         // Required empty public constructor
     }
 
+    // TODO: Для UNIFY необходимо добавить Dialog с цветами объединенных групп,
+    //  возможно стоит создать новый фрагмент, либо добавить это возможность
+    //  для всех GroupDetailFragment
+    //  Идеи: добавить в ColorPicker подобие actionbar как в DialogMultiTranslate,
+    //  перенести туда кнопку AddNewCase и добавить новую для выбора из уже существующих вариантов
+
     public static GroupDetailFragment newInstance(Group group, String[] names) {
 
         Bundle args = new Bundle();
@@ -325,10 +331,10 @@ public class GroupDetailFragment extends MyFragment {
                 return true;
 
             case R.id.menu_start:
-                if (!(mWords.size()<=1)) {
+                if (!(mWords.size() < 2)) {
                     createLearnFragment();
                 }else {
-                    Toast.makeText(getContext(),"Words list is empty",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),getString(R.string.lack_of_words),Toast.LENGTH_SHORT).show();
                 }
                 return true;
 
@@ -383,7 +389,7 @@ public class GroupDetailFragment extends MyFragment {
         DialogFragment dialog = new DialogLearn();
         dialog.setTargetFragment(GroupDetailFragment.this, REQUEST_LEARN);
         dialog.show(fm, DIALOG_LEARN);*/
-        mWords = new ArrayList<>();
+//        mWords = new ArrayList<>();
         sortIsNeed = false;
         WordBackground wordBackground = new WordBackground();
         wordBackground.execute(GET_WORDS);//Доделывает в Post
@@ -586,7 +592,6 @@ public class GroupDetailFragment extends MyFragment {
 
             @Override
             public void bindHolderItems(final MyViewHolder holder) {
-                // TODO: если слово имеет множественныей перевод translate.setEnabled(false);
                 View[] views = holder.getViews();
                 int position = holder.getAdapterPosition();
                 Word word = ((ArrayList<Word>)adapter.getList()).get(position);
@@ -728,9 +733,11 @@ public class GroupDetailFragment extends MyFragment {
     }
 
     public class WordBackground extends DoInBackground {
-        String cmd;
-        MyCursorWrapper cursor;
-        SQLiteDatabase db;
+        private String cmd;
+        private MyCursorWrapper cursor;
+        private SQLiteDatabase db;
+
+        private ArrayList<Word> mWordsToLearn;
 
         @Override
         public Boolean doIn(String command) {
@@ -778,8 +785,11 @@ public class GroupDetailFragment extends MyFragment {
                             }
                             if (sortIsNeed) {
                                 Collections.sort(words);
+                                mWords.addAll(words);
+                            }else {
+                                mWordsToLearn = new ArrayList<>();
+                                mWordsToLearn.addAll(words);
                             }
-                            mWords.addAll(words);
                         }
                         return true;
 
@@ -904,7 +914,8 @@ public class GroupDetailFragment extends MyFragment {
                         updateUI();
                     }else {
                         sortIsNeed = true;
-                        Intent intent = LearnStartActivity.newIntent(getContext(),mGroup,mWords);
+                        Intent intent = LearnStartActivity.newIntent(getContext(),mGroup,mWordsToLearn);
+                        mWordsToLearn = null; // Чтобы очистить память
                         startActivity(intent);
                     }
                     break;

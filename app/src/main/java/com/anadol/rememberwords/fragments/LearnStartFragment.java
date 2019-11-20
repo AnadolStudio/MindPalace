@@ -221,6 +221,7 @@ public class LearnStartFragment extends MyFragment {
         switchTranscript = view.findViewById(R.id.switch_transcription);
         switchTranslate = view.findViewById(R.id.switch_translate);
 
+        // TODO: Добавить строку состояния как в WhatsApp для фрагментов
         mViewPagerType = view.findViewById(R.id.view_pager_type);
         mViewPagerType.setAdapter(new FragmentStatePagerAdapter(getActivity().getSupportFragmentManager()) {
             @Override
@@ -238,7 +239,7 @@ public class LearnStartFragment extends MyFragment {
         mViewPagerObject.setAdapter(new FragmentStatePagerAdapter(getActivity().getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int i) {
-                return CardObjectTestFragment.newInstance(i);
+                return CardObjectTestFragment.newInstance(i, mWords);
             }
 
             @Override
@@ -368,6 +369,18 @@ public class LearnStartFragment extends MyFragment {
             public void onClick(View v) {
                 boolean isAllReady = true;
                 ArrayList<Word> learnList = new ArrayList<>();
+
+                View currentType = mViewPagerType.getChildAt(mViewPagerObject.getCurrentItem());
+                if (!currentType.isEnabled()){
+                    Toast.makeText(getContext(), getString(R.string.enabled_type), Toast.LENGTH_SHORT).show();//temp
+                    return;
+                }
+
+                View currentObject = mViewPagerObject.getChildAt(mViewPagerObject.getCurrentItem());
+                if (!currentObject.isEnabled()){
+                    Toast.makeText(getContext(), getString(R.string.enabled_object), Toast.LENGTH_SHORT).show();//temp
+                    return;
+                }
                 Intent intent = LearnDetailActivity.newIntent( // Тут предаются выбратнные атрибуты для начала теста
                         getContext(),
                         learnList,
@@ -385,7 +398,6 @@ public class LearnStartFragment extends MyFragment {
                         mEditText.setSelection(mEditText.length());
                     }
                 }
-                Toast toast = null;
 
                 switch (mSpinner.getSelectedItemPosition()) {
                     case 0:
@@ -394,8 +406,7 @@ public class LearnStartFragment extends MyFragment {
                     case 1:
                         if (selectedList.isEmpty() || selectedList.size() == 1) {
                             try {
-                                toast = Toast.makeText(getContext(), "Please select some words else", Toast.LENGTH_LONG);
-                                toast.show();
+                                Toast.makeText(getContext(), "Please select some words else", Toast.LENGTH_LONG).show();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -430,8 +441,7 @@ public class LearnStartFragment extends MyFragment {
                         !switchTranscript.isChecked())
                 {
                     isAllReady = false;
-                    toast = Toast.makeText(getContext(), "No one used object is selected", Toast.LENGTH_LONG);
-                    toast.show();
+                    Toast.makeText(getContext(), "No one used object is selected", Toast.LENGTH_LONG).show();
                 }
                 if (isAllReady) { // Выполнять если все требования соблюдены
                     startActivity(intent);
