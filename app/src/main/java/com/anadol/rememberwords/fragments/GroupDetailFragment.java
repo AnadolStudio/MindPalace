@@ -278,10 +278,10 @@ public class GroupDetailFragment extends MyFragment {
             if (!nameIsTaken(name)) {
                 new WordBackground().execute(ADD_GROUP);
                 new WordBackground().execute(ADD_WORDS);
-            }else {nameGroup.setError("The name is already taken");}
+            }else {nameGroup.setError(getString(R.string.name_is_taken));}
 //                    sendResult(Activity.RESULT_OK,new Group[]{mGroup});
         } else {
-            nameGroup.setError("Is Empty");
+            nameGroup.setError(getString(R.string.is_empty));
         }
     }
     @Override
@@ -315,8 +315,6 @@ public class GroupDetailFragment extends MyFragment {
         }else {
             play.setVisible(true);
         }
-
-
 
        /* MenuItem sort = menuBottom.findItem(R.id.menu_sort);
         sort.setVisible(!selectMode);*/
@@ -356,7 +354,7 @@ public class GroupDetailFragment extends MyFragment {
                         "",
                         Word.FALSE));
                 adapter.sortList();
-                adapter.notifyDataSetChanged();//Вобавит ввод в начало ЛИСТА
+                adapter.notifyDataSetChanged();//Добавит ввод в начало ЛИСТА
                 sLabelEmptyList.update();
                 getActivity().invalidateOptionsMenu();
                 updateWordCount();
@@ -732,6 +730,19 @@ public class GroupDetailFragment extends MyFragment {
         });
     }
 
+    private void removeEmptyWords(ArrayList<Word> words){
+        ArrayList<Word> duplicate = new ArrayList<>(words);
+        for (Word w : duplicate){
+            int i = 0;
+            if (w.getOriginal().equals("")){i++;}
+            if (w.getTranscript().equals("")){i++;}
+            if (w.getTranslate().equals("")){i++;}
+            if (i>=2){
+                words.remove(w);
+            }
+        }
+    }
+
     public class WordBackground extends DoInBackground {
         private String cmd;
         private MyCursorWrapper cursor;
@@ -914,6 +925,7 @@ public class GroupDetailFragment extends MyFragment {
                         updateUI();
                     }else {
                         sortIsNeed = true;
+                        removeEmptyWords(mWordsToLearn);
                         Intent intent = LearnStartActivity.newIntent(getContext(),mGroup,mWordsToLearn);
                         mWordsToLearn = null; // Чтобы очистить память
                         startActivity(intent);

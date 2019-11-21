@@ -99,7 +99,7 @@ public class DialogResult extends DialogFragment {
 
         for (int i = 0; i<question.length;i++) {
             list.add(new RecyclerItem(question[i],answers[i],b[i]));
-            System.out.println(question[i]+" "+answers[i]+" "+b[i]);
+//            System.out.println(question[i]+" "+answers[i]+" "+b[i]);
         }
     }
 

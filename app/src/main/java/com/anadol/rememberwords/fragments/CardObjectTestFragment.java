@@ -87,7 +87,7 @@ public class CardObjectTestFragment extends Fragment {
             CardView cardView = view.findViewById(R.id.card_view);
             cardView.setCardBackgroundColor(getResources().getColor(R.color.colorBackgroundDisableCardTypeTest));
             view.setEnabled(false);
-            Toast.makeText(getContext(),"Lack of Objects", Toast.LENGTH_SHORT).show(); // TODO: temp
+//            Toast.makeText(getContext(),"Lack of Objects", Toast.LENGTH_SHORT).show();
         }
 
         return view;

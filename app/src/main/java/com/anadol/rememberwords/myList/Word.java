@@ -158,21 +158,14 @@ public class Word implements Parcelable,Comparable{
             //их разделительный знак - ":"
             //И создается массив массива String{часть речи, все слова одним String}
             allWords[i] = partOfSpeech[i].split(":",2);
-            System.out.println(allWords[i][0] +":"+ allWords[i][1]);
+//            System.out.println(allWords[i][0] +":"+ allWords[i][1]);
         }
         return allWords;
     }
-    //Возвращает нужное слово из списка всех слов
 
+    //Возвращает нужное слово из списка всех слов
     public String getOneTranslate(int word) {
-        String[][] allWords = getMultiTranslateFormat();
-        ArrayList<String> arrayList = new ArrayList<>();
-        for (String[] s : allWords){
-            String[] tmp = s[1].split(";");
-            for (String s1 :tmp){
-                arrayList.add(s1.replaceAll("\n",""));
-            }
-        }
+        ArrayList<String> arrayList = addAllTranslates();
 
         if (word >= arrayList.size()) {
             word = arrayList.size()-1;
@@ -182,19 +175,23 @@ public class Word implements Parcelable,Comparable{
     }
 
     public int getCountTranslates(){
-        String[][] allWords = getMultiTranslateFormat();
-        ArrayList<String> arrayList = new ArrayList<>();
-        for (String[] s : allWords){
-            String[] tmp = s[1].split(";");
-            for (String s1 :tmp){
-                arrayList.add(s1.replaceAll("\n",""));
-            }
-        }
+        ArrayList<String> arrayList = addAllTranslates();
         return arrayList.size();
     }
 
+    private ArrayList<String> addAllTranslates(){
+        String[][] allWords = getMultiTranslateFormat();
+        ArrayList<String> arrayList = new ArrayList<>();
+        for (String[] s : allWords) {
+            String[] tmp = s[1].replaceAll("\n", "").split(";");
+            Collections.addAll(arrayList, tmp);
+        }
+        return arrayList;
+    }
+
     public boolean isExistTranslate(String s){
-        return translate.contains(s.toLowerCase());
+        ArrayList<String> arrayList = addAllTranslates();
+        return arrayList.contains(s.toLowerCase());
     }
 
     public String getGroup() {

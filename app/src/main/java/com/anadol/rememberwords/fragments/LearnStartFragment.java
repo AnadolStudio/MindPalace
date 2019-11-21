@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.DividerItemDecoration;
@@ -223,7 +224,7 @@ public class LearnStartFragment extends MyFragment {
 
         // TODO: Добавить строку состояния как в WhatsApp для фрагментов
         mViewPagerType = view.findViewById(R.id.view_pager_type);
-        mViewPagerType.setAdapter(new FragmentStatePagerAdapter(getActivity().getSupportFragmentManager()) {
+        mViewPagerType.setAdapter(new FragmentPagerAdapter(getActivity().getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int i) {
                 return CardTypeTestFragment.newInstance(i,mWords.size());
@@ -234,9 +235,10 @@ public class LearnStartFragment extends MyFragment {
                 return 3;
             }
         });
+        mViewPagerType.setOffscreenPageLimit(5);
 
         mViewPagerObject = view.findViewById(R.id.view_pager_object);
-        mViewPagerObject.setAdapter(new FragmentStatePagerAdapter(getActivity().getSupportFragmentManager()) {
+        mViewPagerObject.setAdapter(new FragmentPagerAdapter(getActivity().getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int i) {
                 return CardObjectTestFragment.newInstance(i, mWords);
@@ -247,6 +249,7 @@ public class LearnStartFragment extends MyFragment {
                 return 3;
             }
         });
+        mViewPagerObject.setOffscreenPageLimit(5);
         switchEnabled(mViewPagerObject.getCurrentItem());
         mViewPagerObject.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -271,8 +274,6 @@ public class LearnStartFragment extends MyFragment {
 
         if (!isSelectMode()) {
             updateOptions(mWords);
-        }else {
-//            updateOptions();
         }
 
         FrameLayout frameLayout = view.findViewById(R.id.recycler_container);
@@ -332,7 +333,6 @@ public class LearnStartFragment extends MyFragment {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast toast = null;
                 int count = 0;
                 if (!mEditText.getText().toString().equals("")) {
                     count = Integer.valueOf(mEditText.getText().toString());
@@ -370,7 +370,14 @@ public class LearnStartFragment extends MyFragment {
                 boolean isAllReady = true;
                 ArrayList<Word> learnList = new ArrayList<>();
 
-                View currentType = mViewPagerType.getChildAt(mViewPagerObject.getCurrentItem());
+                /* На краях ViewPager getChildCount == 2
+                 * Пофиксил увеличением лимита загружаемых страниц setOffscreenPage(5)
+                 */
+
+                Log.d(TAG, "Current " + mViewPagerType.getCurrentItem()+
+                        " Count " + mViewPagerType.getChildCount());
+
+                View currentType = mViewPagerType.getChildAt(mViewPagerType.getCurrentItem());
                 if (!currentType.isEnabled()){
                     Toast.makeText(getContext(), getString(R.string.enabled_type), Toast.LENGTH_SHORT).show();//temp
                     return;
@@ -436,13 +443,40 @@ public class LearnStartFragment extends MyFragment {
                         }
                 }
 
+                //Если ни один не выбран
                 if (!switchOriginal.isChecked() &&
                         !switchTranslate.isChecked() &&
-                        !switchTranscript.isChecked())
-                {
+                        !switchTranscript.isChecked()) {
                     isAllReady = false;
-                    Toast.makeText(getContext(), "No one used object is selected", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), getString(R.string.no_used_object), Toast.LENGTH_LONG).show();
                 }
+                // Если выбран один, но имеет пустые ячейки
+                int i = 0;
+                boolean[] booleans = {switchOriginal.isChecked(), switchTranslate.isChecked(), switchTranscript.isChecked()};
+                for (boolean b : booleans){
+                    if (b){
+                        i++;
+                    }
+                }
+                if (i == 1){
+                    int j = 0;
+                    for (Word w : mWords){
+                        if (switchOriginal.isChecked()) {
+                            if (w.getOriginal().equals("")) j++;
+                        }
+                        if (switchTranslate.isChecked()) {
+                            if (w.getTranslate().equals("")) j++;
+                        }
+                        if (switchTranscript.isChecked()) {
+                            if (w.getTranscript().equals("")) j++;
+                        }
+                    }
+                    if (j != 0){
+                        isAllReady = false;
+                        Toast.makeText(getContext(),getString(R.string.your_used_object_have_empty_cells) , Toast.LENGTH_LONG).show();
+                    }
+                }
+
                 if (isAllReady) { // Выполнять если все требования соблюдены
                     startActivity(intent);
                 }

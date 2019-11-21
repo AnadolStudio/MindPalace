@@ -168,9 +168,9 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
                         if (hasDuplicate()) {
                             parent.setSelection(newSelectedItemFromResArray());
                         }
-                        for (MyItemTranslate item :mList){
+                        /*for (MyItemTranslate item :mList){
                             System.out.println(item.toString());
-                        }
+                        }*/
                     }
 
                     @Override
@@ -254,7 +254,7 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
                     stringBuilder.append(item.getTypeName());
                     String[] itemsWords = item.getWords().replaceAll("\n","").split(";");
                     for (String s : itemsWords){
-                        System.out.println(s);
+//                        System.out.println(s);
                         stringBuilder.append(s).append(";").append("\n");
                     }
                 }

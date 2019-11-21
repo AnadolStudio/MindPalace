@@ -195,7 +195,9 @@ public class LearnTrueFalseFragment extends Fragment implements View.OnClickList
         }else {
             int i = r.nextInt(mWords.size());
 
-            while (i == random.get(count)){//Это сделано для того чтобы случай не выдал слово, которое нужно проверять
+            //Это сделано для того чтобы случай не выдал слово,
+            // которое нужно проверять
+            while (i == random.get(count)){
                 i = r.nextInt(mWords.size());
             }
             word = mWords.get(i);
@@ -223,17 +225,32 @@ public class LearnTrueFalseFragment extends Fragment implements View.OnClickList
             }
         }
 
-        switch (usedObject){
-            case ORIGINAL:
-                builder.append(word.getOriginal());
-                break;
-            case TRANSCRIPT:
-                builder.append(word.getTranscript());
-                break;
-            case TRANSLATE:
-                builder.append(word.getOneTranslate(r.nextInt(word.getCountTranslates())));
-                break;
+        String s = "";
+        while (s.equals("")) {
+            switch (usedObject){
+                case ORIGINAL:
+                    s = (word.getOriginal());
+                    break;
+                case TRANSCRIPT:
+                    s = (word.getTranscript());
+                    break;
+                case TRANSLATE:
+                    if (word.getIsMultiTrans() == Word.TRUE) {
+                        s = (word.getOneTranslate(r.nextInt(word.getCountTranslates())));
+                    }else {
+                        s = (word.getTranslate());
+                    }
+                    break;
+            }
+            System.out.println();
+            b = !b;
+            if (b){
+                usedObject = allUsedObjects[0];
+            }else {
+                usedObject = allUsedObjects[1];
+            }
         }
+        builder.append(s);
 
         return builder.toString();
     }

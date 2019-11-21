@@ -131,17 +131,21 @@ public class LearnDetailActivity extends SimpleFragmentActivity {
 
     public static String addTextQuestion(ArrayList<Word> mWord,int object,int randomDigital){
         StringBuilder builder = new StringBuilder();
-
+        Word word = mWord.get(randomDigital);
         switch (object){
             case ORIGINAL:
-                builder.append(mWord.get(randomDigital).getOriginal());
+                builder.append(word.getOriginal());
                 break;
             case TRANSCRIPT:
-                builder.append(mWord.get(randomDigital).getTranscript());
+                builder.append(word.getTranscript());
                 break;
             case TRANSLATE:
-                int bound = mWord.get(randomDigital).getCountTranslates();
-                builder.append(mWord.get(randomDigital).getOneTranslate(new Random().nextInt(bound)));
+                if (word.getIsMultiTrans() == Word.TRUE) {
+                    int bound = word.getCountTranslates();
+                    builder.append(word.getOneTranslate(new Random().nextInt(bound)));
+                }else {
+                    builder.append(word.getTranslate());
+                }
                 break;
         }
 

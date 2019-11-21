@@ -60,10 +60,15 @@
     <string name="multitranslate">MultiTranslate</string>
     <string name="comment">Comment:</string>
     <string name="lack_of_words">Lack of words</string>
+    <string name="no_used_object">No one used object is selected</string>
+    <string name="your_used_object_have_empty_cells">Your used object have empty cells,
+        choose another object or used two objects</string>
+    <string name="name_is_taken">Name is already taken</string>
+    <string name="is_empty">Is empty</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="enabled_type">Тут должен быть правильный английский текст</string>
-    <string name="enabled_object">Тут должен быть правильный английский текст</string>
+    <string name="enabled_type">Тут должен быть правильный английский текст 1</string>
+    <string name="enabled_object">Тут должен быть правильный английский текст 2</string>
 
 
     <plurals name="word_items">
