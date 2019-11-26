@@ -36,16 +36,16 @@
             android:imeOptions="actionDone"
             android:inputType="textMultiLine|textNoSuggestions"
             android:minHeight="32dp"
-            android:text="Original"
             android:textColor="@android:color/black"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            tools:text="Original" />
 
         <!--    <View-->
         <!--        android:layout_width="1dp"-->
         <!--        android:layout_height="match_parent"-->
         <!--        android:background="@drawable/separator" />-->
 
-        <EditText
+        <TextView
             android:id="@+id/text_transcription"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -54,12 +54,10 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:gravity="center"
-            android:imeOptions="actionNone"
-            android:inputType="textMultiLine|textNoSuggestions"
             android:minHeight="32dp"
-            android:text="Transcription"
             android:textColor="@android:color/black"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            tools:text="Transcription" />
 
         <!--    <View-->
         <!--        android:layout_width="1dp"-->
@@ -78,9 +76,9 @@
             android:imeOptions="actionDone"
             android:inputType="textMultiLine|textNoSuggestions"
             android:minHeight="32dp"
-            android:text="Translate"
             android:textColor="@android:color/black"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            tools:text="Translate" />
 
 
     </LinearLayout>

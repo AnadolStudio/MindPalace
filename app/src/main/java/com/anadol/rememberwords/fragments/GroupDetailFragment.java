@@ -91,11 +91,9 @@ public class GroupDetailFragment extends MyFragment {
     private ArrayList<Group> mGroups;
 
     private EditText nameGroup;
-    private EditText tempEdit;
     //    private ImageButton addButton;
     private ImageView groupColor;
     private int[] colors;
-    private int focusTranscriptEdit;
     private String[] allNames;
     private boolean isCreated;
     private boolean typeSort;
@@ -143,7 +141,6 @@ public class GroupDetailFragment extends MyFragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(WORD_SAVE, mWords);
-        outState.putInt(FOCUS_EDIT_SAVE,focusTranscriptEdit);
         outState.putIntArray(GRADIENT, colors);// key GRADIENT in other places
         outState.putBoolean(IS_CREATED,isCreated);
         outState.putBoolean(TYPE_SORT,typeSort);
@@ -204,14 +201,12 @@ public class GroupDetailFragment extends MyFragment {
             selectMode = savedInstanceState.getBoolean(SELECT_MODE);
             selectedList = savedInstanceState.getIntegerArrayList(SELECT_LIST);
             allNames = savedInstanceState.getStringArray(NAMES_ALL_GROUPS);
-            focusTranscriptEdit = savedInstanceState.getInt(FOCUS_EDIT_SAVE);
 //            mySubtitleVisible = savedInstanceState.getBoolean(SUBTITLE);
         } else {
             mWords = new ArrayList<>();
             selectMode = false;
             selectedList = new ArrayList<>();
             allNames = getArguments().getStringArray(NAMES_ALL_GROUPS);
-            focusTranscriptEdit = -1;
         }
 
 
@@ -295,8 +290,6 @@ public class GroupDetailFragment extends MyFragment {
         super.onResume();
         if (!isCreated && mWords.isEmpty()) {
             new WordBackground().execute(GET_WORDS);
-        }else {
-            updateUI();
         }
 //        System.out.println("updateUI "+mGroup.getName());
     }
@@ -458,17 +451,9 @@ public class GroupDetailFragment extends MyFragment {
                 startActivity(intent);
                 break;*/
             case REQUEST_TRANSLATE_RESULT:
-                tempEdit.setText(data.getStringExtra(TRANSCRIPT));
-                tempEdit.setSelection(tempEdit.length());
-                tempEdit = null;
-                focusTranscriptEdit = -1;
-                break;
             case REQUEST_MULTI_TRANSLATE:
                 int p = data.getIntExtra(POSITION,0);
-                mWords.set(p,(Word)data.getParcelableExtra(MULTI_TEXT));
-//                System.out.println(mWords.get(p).getTranslate());
                 adapter.notifyItemChanged(p);
-//                Toast.makeText(getContext(), "It is work", Toast.LENGTH_SHORT).show();
                 break;
         }
 
@@ -482,105 +467,28 @@ public class GroupDetailFragment extends MyFragment {
             public void createHolderItems(final MyViewHolder holder) { // TODO: Появиться ли тут утечка памяти?
                 EditText original = holder.itemView.findViewById(R.id.text_question);
                 EditText translate = holder.itemView.findViewById(R.id.text_answer);
-                EditText transcription = holder.itemView.findViewById(R.id.text_transcription);
+                TextView transcription = holder.itemView.findViewById(R.id.text_transcription);
                 EditText comment = holder.itemView.findViewById(R.id.edit_comment);
 
-                original.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-
-                        mWords.get(holder.getAdapterPosition()).setOriginal(s.toString().trim());
-//                        System.out.println(POSITION +" "+ holder.getAdapterPosition() +" "+ s);
-                    }
-                });
-                translate.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        mWords.get(holder.getAdapterPosition()).setTranslate(s.toString().trim());
-//                        System.out.println(s);
-                    }
-                });
-                transcription.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        mWords.get(holder.getAdapterPosition()).setTranscript(s.toString().trim());
-//                        System.out.println( (s.toString().trim()));
-                    }
-                });
-                comment.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        mWords.get(holder.getAdapterPosition()).setComment(s.toString().trim());
-//                        System.out.println( (s.toString().trim()));
-                    }
-                });
+                original.addTextChangedListener(new MyTextWatch(holder,MyTextWatch.ORIGINAL));
+                translate.addTextChangedListener(new MyTextWatch(holder,MyTextWatch.TRANSLATE));
+//                transcription.addTextChangedListener(new MyTextWatch(holder,MyTextWatch.TRANSCRIPT));
+                comment.addTextChangedListener(new MyTextWatch(holder,MyTextWatch.COMMENT));
 
                 //При первом нажатии на EditText
-                transcription.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                /*transcription.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                     @Override
                     public void onFocusChange(View v, boolean hasFocus) {
                         if (hasFocus){
-                            focusTranscriptEdit = holder.getAdapterPosition();
-                            tempEdit = (EditText)v;
-//                            System.out.println("Focus +");
-                            DialogTranscript dialogResult = DialogTranscript.newInstance(((EditText) v).getText().toString());
-                            dialogResult.setTargetFragment(GroupDetailFragment.this,REQUEST_TRANSLATE_RESULT);
-                            FragmentManager fragmentManager = getFragmentManager();
-                            dialogResult.show(fragmentManager,RESULT);
+                            createDialogTranscript(holder);
                         }
                     }
-                });
+                });*/
                 //При втором нажатии на EditText
                 transcription.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        focusTranscriptEdit = holder.getAdapterPosition();
-                        tempEdit = (EditText)v;
-//                        System.out.println("Click +");
-                        DialogTranscript dialogResult = DialogTranscript.newInstance(((EditText) v).getText().toString());
-                        dialogResult.setTargetFragment(GroupDetailFragment.this,REQUEST_TRANSLATE_RESULT);
-                        FragmentManager fragmentManager = getFragmentManager();
-                        dialogResult.show(fragmentManager,RESULT);
+                        createDialogTranscript(holder);
                     }
                 });
                 CheckBox checkBox = holder.itemView.findViewById(R.id.checkBox);
@@ -605,21 +513,17 @@ public class GroupDetailFragment extends MyFragment {
 
                 EditText original = (EditText) views[0];
                 EditText translate = (EditText) views[1];
-                EditText transcription = (EditText) views[2];
+                TextView transcription = (TextView) views[2];
                 EditText comment = (EditText) views[3];
 
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     transcription.setShowSoftInputOnFocus(false);
                 } else {
                     transcription.setTextIsSelectable(true);
                     //N.B. Accepting the case when non editable text will be selectable
-                }
-                if (focusTranscriptEdit == position) {
-                    transcription.requestFocus();
-                    tempEdit = transcription;
-//                    System.out.println("Request focus +");
-                }
+                }*/
+
 
                 original.setText(origStr);
                 original.setSelection(original.length());
@@ -635,7 +539,6 @@ public class GroupDetailFragment extends MyFragment {
 
 
                 transcription.setText(transcriptStr);
-                transcription.setSelection(transcription.length());
                 transcription.setEnabled(!selectMode);
 
                 comment.setText(commentStr);
@@ -666,13 +569,14 @@ public class GroupDetailFragment extends MyFragment {
                         
                         selectedList.add(position);
                         setSelectMode(true);
+                        // TODO: при selectMode появляется ошибка: view is object reference
                         View view = recyclerView.getChildAt(position);
                         view.setBackgroundColor(getResources().getColor(R.color.colorSelected));
 
                         View[] views = ((MyViewHolder)recyclerView.getChildViewHolder(view)).getViews();
                         EditText original = (EditText) views[0];
                         EditText translate = (EditText) views[1];
-                        EditText transcription = (EditText) views[2];
+                        TextView transcription = (TextView) views[2];
                         EditText comment = (EditText) views[3];
 
                         original.setEnabled(!selectMode);
@@ -684,10 +588,7 @@ public class GroupDetailFragment extends MyFragment {
                         checkBox.setChecked(true);
                         break;
                     case ItemTouchHelper.END://DialogTranslate
-                        FragmentManager fm = getFragmentManager();
-                        DialogMultiTranslate dialogTranslate = DialogMultiTranslate.newInstance(mWords.get(position),position);
-                        dialogTranslate.setTargetFragment(GroupDetailFragment.this,REQUEST_MULTI_TRANSLATE);
-                        dialogTranslate.show(fm,RESULT);
+                        createDialogMultiTranslate(position);
                         break;
                 }
                 adapter.notifyDataSetChanged();//tmp
@@ -730,6 +631,22 @@ public class GroupDetailFragment extends MyFragment {
         });
     }
 
+    private void createDialogMultiTranslate(int position) {
+        FragmentManager fm = getFragmentManager();
+        DialogMultiTranslate dialogTranslate = DialogMultiTranslate.newInstance(mWords.get(position),position);
+        dialogTranslate.setTargetFragment(GroupDetailFragment.this,REQUEST_MULTI_TRANSLATE);
+        dialogTranslate.show(fm,RESULT);
+    }
+
+    private void createDialogTranscript(MyViewHolder holder) {
+        int position = holder.getAdapterPosition();
+//                            System.out.println("Focus +");
+        DialogTranscript dialogResult = DialogTranscript.newInstance(mWords.get(position),position);
+        dialogResult.setTargetFragment(GroupDetailFragment.this, REQUEST_TRANSLATE_RESULT);
+        FragmentManager fragmentManager = getFragmentManager();
+        dialogResult.show(fragmentManager, RESULT);
+    }
+
     private void removeEmptyWords(ArrayList<Word> words){
         ArrayList<Word> duplicate = new ArrayList<>(words);
         for (Word w : duplicate){
@@ -740,6 +657,48 @@ public class GroupDetailFragment extends MyFragment {
             if (i>=2){
                 words.remove(w);
             }
+        }
+    }
+
+    public class MyTextWatch implements TextWatcher{
+        static final int ORIGINAL = 0;
+        static final int TRANSLATE = 1;
+        static final int COMMENT = 2;
+
+        private MyViewHolder holder;
+        private int type;
+
+        public MyTextWatch(MyViewHolder holder, int type) {
+            this.holder = holder;
+            this.type = type;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            int position = holder.getAdapterPosition();
+
+            switch (type){
+                case ORIGINAL:
+                    mWords.get(position).setOriginal(s.toString().trim());
+                    break;
+                case TRANSLATE:
+                    mWords.get(position).setTranslate(s.toString().trim());
+                    break;
+                case COMMENT:
+                    mWords.get(position).setComment(s.toString().trim());
+                    break;
+            }
+
         }
     }
 

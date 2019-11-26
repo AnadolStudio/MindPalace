@@ -235,8 +235,8 @@ public class GroupListFragment extends MyFragment {
     }
 
     private void groupDetail(int i) {
-        mProgressBar.setVisibility(View.VISIBLE);
 
+        mProgressBar.setVisibility(View.VISIBLE);
         Intent intent = GroupDetailActivity.newIntent(getContext(),mGroups, mGroups.get(i).getId());
         startActivity(intent);
     }
@@ -426,23 +426,5 @@ public class GroupListFragment extends MyFragment {
             }
         }
     }
-
-/*
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode != Activity.RESULT_OK){
-            return;
-        }
-
-        switch (requestCode){
-            case DATA_IS_CHANGED:
-                dataIsChanged = data.getBooleanExtra("CHANGES",false);
-                changes = (Group[]) data.getParcelableArrayExtra(NEW_GROUP);
-                break;
-        }
-    }
-*/
 
 }

@@ -32,8 +32,10 @@ import android.widget.FrameLayout;
 
 
 import com.anadol.rememberwords.R;
+import com.anadol.rememberwords.myList.Word;
 
 import static com.anadol.rememberwords.fragments.GroupDetailFragment.IS_CREATED;
+import static com.anadol.rememberwords.fragments.GroupDetailFragment.POSITION;
 
 public class DialogTranscript extends DialogFragment  implements KeyboardView.OnKeyboardActionListener{
     public static final String EXTRA_WORDS = "words";
@@ -60,10 +62,11 @@ public class DialogTranscript extends DialogFragment  implements KeyboardView.On
     }
 
 
-    public static DialogTranscript newInstance(String text) {
+    public static DialogTranscript newInstance(Word word, int position) {
 
         Bundle args = new Bundle();
-        args.putString(TRANSCRIPT,text);
+        args.putParcelable(TRANSCRIPT, word);
+        args.putInt(POSITION, position);
         DialogTranscript fragment = new DialogTranscript();
         fragment.setArguments(args);
         return fragment;
@@ -131,29 +134,6 @@ public class DialogTranscript extends DialogFragment  implements KeyboardView.On
         super.onCancel(dialog);
         sendResult(Activity.RESULT_OK);
     }
-   /* @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        getActivity().getMenuInflater().inflate(R.menu.context_word_list, menu);
-        menu.setGroupVisible(0, false);
-        menu.findItem(R.id.action_context_replace).setVisible(false);
-        menu.findItem(R.id.action_context_remove).setVisible(true);
-//        System.out.println("onCreateContextMenu");
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        //        System.out.println("position "+ info);
-
-        switch (item.getItemId()) {
-
-            case R.id.action_context_remove:
-                removeWord(positionSelected);
-                return true;
-
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }*/
 
     private void sendResult(int resultCode){
         if (getTargetFragment() == null){
@@ -161,7 +141,10 @@ public class DialogTranscript extends DialogFragment  implements KeyboardView.On
         }
 
         Intent intent = new Intent();
-        intent.putExtra(TRANSCRIPT,mEditText.getText().toString());
+        Word word = getArguments().getParcelable(TRANSCRIPT);
+        word.setTranscript(mEditText.getText().toString().trim());
+        int position = getArguments().getInt(POSITION);
+        intent.putExtra(POSITION,position);
         getTargetFragment().onActivityResult(getTargetRequestCode(),resultCode,intent);
     }
 

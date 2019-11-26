@@ -37,11 +37,12 @@ import com.anadol.rememberwords.myList.Word;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import static com.anadol.rememberwords.fragments.GroupDetailFragment.POSITION;
+
 public class DialogMultiTranslate extends AppCompatDialogFragment implements InputFilter {
 
     public static final String  MULTI_TEXT = "multi_text";
     public static final String  USED = "used";
-    public static final String  POSITION = "position";
     private static final String TAG = "dialog_translate";
 
     private RecyclerView mRecyclerView;
@@ -255,15 +256,28 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
                     String[] itemsWords = item.getWords().replaceAll("\n","").split(";");
                     for (String s : itemsWords){
 //                        System.out.println(s);
-                        stringBuilder.append(s).append(";").append("\n");
+                        stringBuilder.append(s.trim()).append(";").append("\n");
                     }
                 }
             }
             stringBuilder.replace(stringBuilder.length()-1,stringBuilder.length(),"");// Удаляет последний символ абзаца
         }else {
-            stringBuilder.append(mList.get(0).getWords()
-                    .replaceAll("\n","")
-                    .replaceAll(";",""));
+            MyItemTranslate item = mList.get(0);
+            String[] itemsWords = item.getWords().replaceAll("\n","").split(";");
+            if (itemsWords.length <= 1) {
+                mWord.setIsMultiTrans(Word.FALSE);
+                stringBuilder.append(mList.get(0).getWords()
+                        .replaceAll("\n", "")
+                        .replaceAll(";", ""));
+            }else {
+                mWord.setIsMultiTrans(Word.TRUE);
+
+                stringBuilder.append(item.getTypeName());
+                for (String s : itemsWords){
+                    stringBuilder.append(s.trim()).append(";").append("\n");
+                }
+                stringBuilder.replace(stringBuilder.length()-1,stringBuilder.length(),"");// Удаляет последний символ абзаца
+            }
         }
         return stringBuilder.toString();
     }
@@ -272,17 +286,19 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
         mWord.setTranslate(getAllWords());
-        sendResult(Activity.RESULT_OK,mWord,getArguments().getInt(POSITION));
+        // Я передаю только позицию которую нужно обновить
+        // ссылка на тот Word менялась здесь
+        sendResult(Activity.RESULT_OK,getArguments().getInt(POSITION));
 
     }
 
-    private void sendResult(int resultCode, Word word, int position){
+    private void sendResult(int resultCode, int position){
         if (getTargetFragment() == null) {
             return;
         }
 
         Intent intent = new Intent();
-        intent.putExtra(MULTI_TEXT,word);
+//        intent.putExtra(MULTI_TEXT,word);
         intent.putExtra(POSITION,position);
         getTargetFragment().onActivityResult(getTargetRequestCode(),resultCode,intent);
     }
@@ -359,31 +375,14 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
         //source - это новые символы, а dest - все остальные
 
         if (end-start > 1){
-            StringBuilder rtn = new StringBuilder();
+            String string = source.toString();
 
-            for (int i = start; i < end; i++){
-                if (source.charAt(i) == '\n') {
-//                                            System.out.println("\n"); Пример для теста: text 123
-                    if ((i-1) < start ||
-                            source.charAt(i-1) != ';'){
-                        rtn.append(";");
-                    }
-                }
-                rtn.append(source.charAt(i));
-                /*if (source.charAt(i) == ';') {
-//                                            System.out.println(";"); Пример для теста: text;12/3
-                    if ((i+1) == end ||
-                            source.charAt(i+1) != '\n'){
-                        rtn.append("\n");
-                    }
-                } */
-                if (source.charAt(i) == '/') {
-                    Toast.makeText(getContext(), " \"/\" is the service symbol", Toast.LENGTH_SHORT).show();
-                }
+            if (string.contains("/")) {
+                Toast.makeText(getContext(), " \"/\" is the service symbol", Toast.LENGTH_SHORT).show();
+                return  string.replaceAll("/","");
             }
-            return rtn;
+            return null;
         }else if (end-start == 1){
-
             if (source.charAt(start) == '\n'
                     && dest.length() >= 1
                     && (dest.charAt(dend-1) != ';' )) {
