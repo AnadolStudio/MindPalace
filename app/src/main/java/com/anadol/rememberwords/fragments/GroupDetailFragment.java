@@ -346,7 +346,6 @@ public class GroupDetailFragment extends MyFragment {
                         nameGroup.getText().toString(),
                         "",
                         Word.FALSE));
-                adapter.sortList();
                 adapter.notifyDataSetChanged();//Добавит ввод в начало ЛИСТА
                 sLabelEmptyList.update();
                 getActivity().invalidateOptionsMenu();
