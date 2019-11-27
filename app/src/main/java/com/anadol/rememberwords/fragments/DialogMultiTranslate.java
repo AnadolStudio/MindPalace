@@ -17,12 +17,14 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anadol.rememberwords.R;
@@ -33,12 +35,15 @@ import com.anadol.rememberwords.myList.MyViewHolder;
 import com.anadol.rememberwords.myList.Word;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+
+import static com.anadol.rememberwords.fragments.GroupDetailFragment.POSITION;
 
 public class DialogMultiTranslate extends AppCompatDialogFragment implements InputFilter {
 
     public static final String  MULTI_TEXT = "multi_text";
     public static final String  USED = "used";
-    public static final String  POSITION = "position";
+    private static final String TAG = "dialog_translate";
 
     private RecyclerView mRecyclerView;
     private MyRecyclerAdapter mAdapter;
@@ -155,12 +160,18 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
         mAdapter.setCreatorAdapter(new MyRecyclerAdapter.CreatorAdapter() {// ДЛЯ БОЛЬШЕЙ ГИБКОСТИ ТУТ Я РЕАЛИЗУЮ СЛУШАТЕЛЯ И МЕТОДЫ АДАПТЕРА
             @Override
             public void createHolderItems(final MyViewHolder holder) {
-
                 Spinner type = holder.itemView.findViewById(R.id.type_word);
-                type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() { //TODO: уже использованный item не должен выбираться
+                type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                         mList.get(holder.getAdapterPosition()).setTypeName(res[position]);
+                        updateArrayIsUsed();
+                        if (hasDuplicate()) {
+                            parent.setSelection(newSelectedItemFromResArray());
+                        }
+                        /*for (MyItemTranslate item :mList){
+                            System.out.println(item.toString());
+                        }*/
                     }
 
                     @Override
@@ -182,7 +193,7 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
 
                     @Override
                     public void afterTextChanged(Editable s) {
-                        mList.get(holder.getAdapterPosition()).setWords(s.toString());
+                        mList.get(holder.getAdapterPosition()).setWords(s.toString().trim());
                     }
                 });
                 words.setFilters(new InputFilter[]{DialogMultiTranslate.this});
@@ -207,13 +218,17 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
             public void myOnItemDismiss(int position, int flag) {
                 if (flag == ItemTouchHelper.START){
                     mList.remove(position);
+                    updateArrayIsUsed();
                     mAdapter.notifyItemRemoved(position);
+
+                    if (mList.size() <= 1){
+                        mWord.setIsMultiTrans(Word.FALSE);
+                    }
                     mAddButton.setEnabled(true);
                 } else if (flag == ItemTouchHelper.END){
                     mAdapter.notifyItemChanged(position);
                     Toast.makeText(getContext(), "If you want to remove this word(s), swipe left", Toast.LENGTH_LONG).show();
                 }
-
             }
         });
     }
@@ -232,19 +247,37 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
     private String getAllWords(){
         StringBuilder stringBuilder = new StringBuilder();
         if (mList.size() > 1) {
-            for (MyItemTranslate item:mList){
-                if (stringBuilder.length() != 0){
-                    stringBuilder.append("/");
-                }
-                stringBuilder.append(item.getTypeName());
-                String[] itemsWords = item.getWords().replaceAll("\n","").split(";");
-                for (String s : itemsWords){
-                    System.out.println(s);
-                    stringBuilder.append(s).append(";").append("\n");
+            for (MyItemTranslate item : mList){
+                if (!item.getWords().replaceAll("\n","").replaceAll(";","").equals("")) {// Если EditText не пуст
+                    if (stringBuilder.length() != 0){
+                        stringBuilder.append("/");
+                    }
+                    stringBuilder.append(item.getTypeName());
+                    String[] itemsWords = item.getWords().replaceAll("\n","").split(";");
+                    for (String s : itemsWords){
+//                        System.out.println(s);
+                        stringBuilder.append(s.trim()).append(";").append("\n");
+                    }
                 }
             }
+            stringBuilder.replace(stringBuilder.length()-1,stringBuilder.length(),"");// Удаляет последний символ абзаца
         }else {
-            stringBuilder.append(mList.get(0).getWords());
+            MyItemTranslate item = mList.get(0);
+            String[] itemsWords = item.getWords().replaceAll("\n","").split(";");
+            if (itemsWords.length <= 1) {
+                mWord.setIsMultiTrans(Word.FALSE);
+                stringBuilder.append(mList.get(0).getWords()
+                        .replaceAll("\n", "")
+                        .replaceAll(";", ""));
+            }else {
+                mWord.setIsMultiTrans(Word.TRUE);
+
+                stringBuilder.append(item.getTypeName());
+                for (String s : itemsWords){
+                    stringBuilder.append(s.trim()).append(";").append("\n");
+                }
+                stringBuilder.replace(stringBuilder.length()-1,stringBuilder.length(),"");// Удаляет последний символ абзаца
+            }
         }
         return stringBuilder.toString();
     }
@@ -253,17 +286,19 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
         mWord.setTranslate(getAllWords());
-        sendResult(Activity.RESULT_OK,mWord,getArguments().getInt(POSITION));
+        // Я передаю только позицию которую нужно обновить
+        // ссылка на тот Word менялась здесь
+        sendResult(Activity.RESULT_OK,getArguments().getInt(POSITION));
 
     }
 
-    private void sendResult(int resultCode, Word word, int position){
+    private void sendResult(int resultCode, int position){
         if (getTargetFragment() == null) {
             return;
         }
 
         Intent intent = new Intent();
-        intent.putExtra(MULTI_TEXT,word);
+//        intent.putExtra(MULTI_TEXT,word);
         intent.putExtra(POSITION,position);
         getTargetFragment().onActivityResult(getTargetRequestCode(),resultCode,intent);
     }
@@ -278,16 +313,55 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
         return rtn;
     }
 
+    private void updateArrayIsUsed(){
+        isUsed = new boolean[res.length];
+        /*for (boolean b :isUsed){
+            b = false;
+        }*/
+        String[] cloneRes = res.clone();
+        for (int i = 0; i < mList.size(); i++){
+            //foreach не меняет свои дочерние обьекты, скорее всего там используется object.clone
+            for (int j = 0; j < cloneRes.length; j++) {
+                if (mList.get(i).getTypeName().equals(cloneRes[j])) {
+                    Log.d(TAG,"equals " +mList.get(i).getTypeName()+ " == "+ cloneRes[j]);
+                    isUsed[i] = true;
+                    cloneRes[j] = "";
+                }
+            }
+
+        }
+        int i = 0;
+        for (boolean b :isUsed){
+            Log.d(TAG,"updateArrayIsUSed " +i+ " "+ b);
+            i++;
+        }
+    }
+
+    private boolean hasDuplicate(){
+        HashSet<String> hashSet = new HashSet<>();
+        for (MyItemTranslate itemTranslate : mList){
+            hashSet.add(itemTranslate.getTypeName());
+        }
+        System.out.println(
+                "Size hashSet " + hashSet.size() + "\n" +
+                "Size mList " + mList.size());
+        return hashSet.size() != mList.size();
+    }
+
     private int newSelectedItemFromResArray(){
         int rtn = 0;
         boolean b = false;
         while (!b){
             if (isUsed[rtn]){//если уже существует то попробовать следующий
                 rtn++;
-                System.out.println("isUsed " + rtn);
             }else {
                 b = true;
                 isUsed[rtn] = true;
+//                System.out.println("is not used " + rtn);
+            }
+            if (rtn >= isUsed.length){
+                Log.e(TAG, "infinite loop");
+                break;
             }
         }
 
@@ -301,31 +375,14 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
         //source - это новые символы, а dest - все остальные
 
         if (end-start > 1){
-            StringBuilder rtn = new StringBuilder();
+            String string = source.toString();
 
-            for (int i = start; i < end; i++){
-                if (source.charAt(i) == '\n') {
-//                                            System.out.println("\n"); Пример для теста: text 123
-                    if ((i-1) < start ||
-                            source.charAt(i-1) != ';'){
-                        rtn.append(";");
-                    }
-                }
-                rtn.append(source.charAt(i));
-                /*if (source.charAt(i) == ';') {
-//                                            System.out.println(";"); Пример для теста: text;12/3
-                    if ((i+1) == end ||
-                            source.charAt(i+1) != '\n'){
-                        rtn.append("\n");
-                    }
-                } */
-                if (source.charAt(i) == '/') {
-                    Toast.makeText(getContext(), " \"/\" is the service symbol", Toast.LENGTH_SHORT).show();
-                }
+            if (string.contains("/")) {
+                Toast.makeText(getContext(), " \"/\" is the service symbol", Toast.LENGTH_SHORT).show();
+                return  string.replaceAll("/","");
             }
-            return rtn;
+            return null;
         }else if (end-start == 1){
-
             if (source.charAt(start) == '\n'
                     && dest.length() >= 1
                     && (dest.charAt(dend-1) != ';' )) {

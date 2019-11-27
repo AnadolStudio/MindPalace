@@ -39,6 +39,7 @@ import com.anadol.rememberwords.activities.GroupDetailActivity;
 import com.anadol.rememberwords.myList.LabelEmptyList;
 import com.anadol.rememberwords.myList.MyRecyclerAdapter;
 import com.anadol.rememberwords.myList.MyViewHolder;
+import com.dingmouren.layoutmanagergroup.echelon.EchelonLayoutManager;
 import com.dingmouren.layoutmanagergroup.skidright.SkidRightLayoutManager;
 
 import java.util.ArrayList;
@@ -234,8 +235,8 @@ public class GroupListFragment extends MyFragment {
     }
 
     private void groupDetail(int i) {
-        mProgressBar.setVisibility(View.VISIBLE);
 
+        mProgressBar.setVisibility(View.VISIBLE);
         Intent intent = GroupDetailActivity.newIntent(getContext(),mGroups, mGroups.get(i).getId());
         startActivity(intent);
     }
@@ -342,19 +343,16 @@ public class GroupListFragment extends MyFragment {
     }
 
     private void createRecyclerLayoutManager(){
-/*
+        RecyclerView.LayoutManager manager = null;
+
         switch (getResources().getConfiguration().orientation){
             case Configuration.ORIENTATION_PORTRAIT:
-                LinearLayoutManager linear = new LinearLayoutManager(getContext());
-                recyclerView.setLayoutManager(linear);
+                manager = new EchelonLayoutManager(getContext());
                 break;
             case Configuration.ORIENTATION_LANDSCAPE:
-                GridLayoutManager grid = new GridLayoutManager(getContext(),2);
-                recyclerView.setLayoutManager(grid);
+                manager = new SkidRightLayoutManager(1.5f,0.85f);
                 break;
         }
-*/
-        SkidRightLayoutManager manager = new SkidRightLayoutManager(1.5f,0.9f);
         recyclerView.setLayoutManager(manager);
     }
 
@@ -428,23 +426,5 @@ public class GroupListFragment extends MyFragment {
             }
         }
     }
-
-/*
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode != Activity.RESULT_OK){
-            return;
-        }
-
-        switch (requestCode){
-            case DATA_IS_CHANGED:
-                dataIsChanged = data.getBooleanExtra("CHANGES",false);
-                changes = (Group[]) data.getParcelableArrayExtra(NEW_GROUP);
-                break;
-        }
-    }
-*/
 
 }

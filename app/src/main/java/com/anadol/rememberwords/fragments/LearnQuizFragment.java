@@ -35,6 +35,7 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
     private ArrayList<Integer> random;
     private ArrayList<Word> mWords;
     private int object;
+    private boolean[] use;
     private int count;
     private boolean[] correctWrong;
     private String[] myAnswersList;
@@ -75,7 +76,7 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mWords = getArguments().getParcelableArrayList(WORDS);
         object = getArguments().getInt(OBJECT);
-
+        use = getArguments().getBooleanArray(USE);
 
         View v = inflater.inflate(R.layout.fragment_learn_quiz,container,false);
         first = v.findViewById(R.id.first_button);
@@ -206,7 +207,6 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
         StringBuilder builder = new StringBuilder();
 
         Random r = new Random();
-        boolean b = r.nextBoolean();
         Word word;
 
         if (trueFalse){
@@ -214,35 +214,64 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
         }else {
             int i = r.nextInt(mWords.size());
 
+            //Это сделано для того чтобы случай не выдал слово,
+            // которое нужно проверять
             while (i == random.get(count)){
                 i = r.nextInt(mWords.size());
             }
             word = mWords.get(i);
         }
 
-        switch (object){
-            case ORIGINAL:
-                if((b && (word.getTranscript()!= null && !word.getTranscript().equals("") && !word.getTranscript().equals(" ") ))){
-                    builder.append(word.getTranscript());
-                }else if (( word.getTranslate()!= null && !word.getTranslate().equals("") && !word.getTranslate().equals(" "))) {
-                    builder.append(word.getTranslate());
-                }
-                break;
-            case TRANSLATE:
-                if((b && (word.getTranscript()!= null && !word.getTranscript().equals("") && !word.getTranscript().equals(" ") ))){
-                    builder.append(word.getTranscript());
-                }else if ((word.getOriginal()!= null && !word.getOriginal().equals("") && !word.getOriginal().equals(" "))) {
-                    builder.append(word.getOriginal());
-                }
-                break;
-            case TRANSCRIPT:
-                if (b && ( word.getTranslate()!= null && !word.getTranslate().equals("") && !word.getTranslate().equals(" ") )) {
-                    builder.append(word.getTranslate());
-                }else if(((word.getOriginal()!= null && !word.getOriginal().equals("") && !word.getOriginal().equals(" ")))){
-                    builder.append(word.getOriginal());
-                }
-                break;
+
+
+        int usedObject;
+        int[] allUsedObjects = new int[2];
+        int tmp = 0;
+        for (int i = 0; i < use.length; i++) {
+            if (use[i]){
+                allUsedObjects[tmp] = i;
+                tmp++;
+            }
         }
+
+        boolean b = r.nextBoolean();
+
+        if (tmp == 1){
+            usedObject = allUsedObjects[0];
+        }else { // tmp == 2
+            if (b){
+                usedObject = allUsedObjects[0];
+            }else {
+                usedObject = allUsedObjects[1];
+            }
+        }
+
+        String s = "";
+        while (s.equals("")) {
+            switch (usedObject){
+                case ORIGINAL:
+                    s = (word.getOriginal());
+                    break;
+                case TRANSCRIPT:
+                    s = (word.getTranscript());
+                    break;
+                case TRANSLATE:
+                    if (word.getIsMultiTrans() == Word.TRUE) {
+                        s = (word.getOneTranslate(r.nextInt(word.getCountTranslates())));
+                    }else {
+                        s = (word.getTranslate());
+                    }
+                    break;
+            }
+            System.out.println();
+            b = !b;
+            if (b){
+                usedObject = allUsedObjects[0];
+            }else {
+                usedObject = allUsedObjects[1];
+            }
+        }
+        builder.append(s);
 
 
         if (trueFalse){

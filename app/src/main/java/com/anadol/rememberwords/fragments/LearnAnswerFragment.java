@@ -46,8 +46,9 @@ public class LearnAnswerFragment extends Fragment implements TextView.OnEditorAc
     private int count;
     private boolean[] correctWrong;
 
-    private int object;
     private ArrayList<Word> mWords;
+    private int object;
+    boolean[] use;
 
     private EditText mEditText;
     private TextView mTextView;
@@ -88,6 +89,8 @@ public class LearnAnswerFragment extends Fragment implements TextView.OnEditorAc
 
         mWords = getArguments().getParcelableArrayList(WORDS);
         object = getArguments().getInt(OBJECT);
+        use = getArguments().getBooleanArray(USE);
+
         String q;
         String a="";
 
@@ -118,8 +121,6 @@ public class LearnAnswerFragment extends Fragment implements TextView.OnEditorAc
         mEditText.setText(a);
         mEditText.setOnEditorActionListener(this);
 
-
-
         return v;
     }
 
@@ -132,32 +133,78 @@ public class LearnAnswerFragment extends Fragment implements TextView.OnEditorAc
             myAnswersList[count] = myAnswer;
             Word word = mWords.get(random.get(count));
 
-            switch (object){
-                case ORIGINAL:
-                    if ((word.getTranslate()!= null && !word.getTranslate().equals("") && myAnswer.equals(word.getTranslate()) ||
-                            ((word.getTranscript()!= null && !word.getTranscript().equals("") && myAnswer.equals(word.getTranscript()))))){
-                        correctWrong[count] = true;
-                    }else {
-                        correctWrong[count] = false;
+            //TODO: update method verify Strings
+            if (myAnswer.equals("")){
+                correctWrong[count] = false;
+            }else {
+
+                int[] allUsedObjects = new int[2];
+                int tmp = 0;
+                for (int i = 0; i < use.length; i++) {
+                    if (use[i]){
+                        allUsedObjects[tmp] = i;
+                        tmp++;
                     }
-                    break;
-                case TRANSLATE:
-                    if ((word.getOriginal()!= null && !word.getOriginal().equals("") && myAnswer.equals(word.getOriginal()) ||
-                            ((word.getTranscript()!= null && !word.getTranscript().equals("") && myAnswer.equals(word.getTranscript()))))){
-                        correctWrong[count] = true;
-                    }else {
-                        correctWrong[count] = false;
+                }
+                correctWrong[count] = false; // Default
+                for (int i = 0; i < tmp; i++) {
+
+                    if (allUsedObjects[i] == ORIGINAL){
+                        if (myAnswer.equals(word.getOriginal())) {
+                            correctWrong[count] = true;
+                            break;
+                        }
                     }
-                    break;
-                case TRANSCRIPT:
-                    if ((word.getOriginal()!= null && !word.getOriginal().equals("") && myAnswer.equals(word.getOriginal()) ||
-                            ((word.getTranslate()!= null && !word.getTranslate().equals("") && myAnswer.equals(word.getTranslate()))))){
-                        correctWrong[count] = true;
-                    }else {
-                        correctWrong[count] = false;
+                    if (allUsedObjects[i] == TRANSLATE){
+                        if (word.getIsMultiTrans() == Word.TRUE){
+                            if (word.isExistTranslate(myAnswer)) {
+                                correctWrong[count] = true;
+                                break;
+                            }
+                        }else {
+                            if (myAnswer.equals(word.getTranslate())) {
+                                correctWrong[count] = true;
+                                break;
+                            }
+                        }
                     }
-                    break;
+                    if (allUsedObjects[i] == TRANSCRIPT){
+                        if (myAnswer.equals(word.getTranscript())) {
+                            correctWrong[count] = true;
+                            break;
+                        }
+                    }
+/*
+                    switch (allUsedObjects[i]){
+                        case ORIGINAL:
+                            if ((!word.getTranslate().equals("") && myAnswer.equals(word.getTranslate()) ||
+                                    ((!word.getTranscript().equals("") && myAnswer.equals(word.getTranscript()))))){
+                                correctWrong[count] = true;
+                            }else {
+                                correctWrong[count] = false;
+                            }
+                            break;
+                        case TRANSLATE:
+                            if ((word.getOriginal()!= null && !word.getOriginal().equals("") && myAnswer.equals(word.getOriginal()) ||
+                                    ((word.getTranscript()!= null && !word.getTranscript().equals("") && myAnswer.equals(word.getTranscript()))))){
+                                correctWrong[count] = true;
+                            }else {
+                                correctWrong[count] = false;
+                            }
+                            break;
+                        case TRANSCRIPT:
+                            if ((word.getOriginal()!= null && !word.getOriginal().equals("") && myAnswer.equals(word.getOriginal()) ||
+                                    ((word.getTranslate()!= null && !word.getTranslate().equals("") && myAnswer.equals(word.getTranslate()))))){
+                                correctWrong[count] = true;
+                            }else {
+                                correctWrong[count] = false;
+                            }
+                            break;
+                    }
+*/
+                }
             }
+
 
             count++;
 
