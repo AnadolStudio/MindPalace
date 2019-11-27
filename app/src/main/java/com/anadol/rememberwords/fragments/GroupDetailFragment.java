@@ -338,7 +338,7 @@ public class GroupDetailFragment extends MyFragment {
                 return true;
 
             case R.id.add_button:
-                mWords.add(new Word(
+                mWords.add(0,new Word(
                         UUID.randomUUID(),
                         "",
                         "",
