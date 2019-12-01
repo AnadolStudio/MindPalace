@@ -6,6 +6,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorDefaultBackground</item>
 <!--        <item name="android:fontFamily">serif</item>-->
         <item name="editTextStyle">@style/MyEditText</item>
     </style>

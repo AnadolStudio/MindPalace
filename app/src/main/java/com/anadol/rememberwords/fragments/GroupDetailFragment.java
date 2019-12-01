@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -52,9 +51,7 @@ import java.util.UUID;
 
 import static com.anadol.rememberwords.database.DbSchema.Tables.GROUPS;
 import static com.anadol.rememberwords.database.DbSchema.Tables.WORDS;
-import static com.anadol.rememberwords.fragments.DialogMultiTranslate.MULTI_TEXT;
 import static com.anadol.rememberwords.fragments.DialogResult.RESULT;
-import static com.anadol.rememberwords.fragments.DialogTranscript.TRANSCRIPT;
 import static com.anadol.rememberwords.fragments.GroupListFragment.*;
 import static com.anadol.rememberwords.myList.Group.NON_COLOR;
 
@@ -297,7 +294,7 @@ public class GroupDetailFragment extends MyFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_group_detail,menu);
+        inflater.inflate(R.menu.fragment_group_detail,menu);
 
         menu.setGroupVisible(R.id.group_one,!selectMode);
         menu.setGroupVisible(R.id.group_two,selectMode);

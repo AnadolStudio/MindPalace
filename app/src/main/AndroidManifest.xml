@@ -39,6 +39,10 @@
         <activity
             android:name=".activities.LearnDetailActivity"
             android:windowSoftInputMode="stateHidden"></activity>
+        <activity
+            android:name=".activities.SettingActivity"
+            android:parentActivityName=".activities.GroupListActivity"
+            android:windowSoftInputMode="stateHidden"></activity>
 
     </application>
 

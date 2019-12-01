@@ -22,6 +22,7 @@ import java.util.Comparator;
 public class MyRecyclerAdapter extends RecyclerView.Adapter<MyViewHolder> implements ItemTouchHelperAdapter {
     private static final String TAG = "my_recycler_adapter";
     private ArrayList mList;
+    private ArrayList mFilterList;
     private @LayoutRes int mLayoutRes;
     private Listeners mListener;
     private CreatorAdapter mCreator;
@@ -113,6 +114,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyViewHolder> implem
 
     public interface SortItems {
         void sortList();
+
     }
 
     public void setSortItems(SortItems sortItems){
@@ -126,11 +128,12 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyViewHolder> implem
 
 
     public ArrayList getList() {
-        return mList;
+        return mFilterList;
     }
 
     public void setList(ArrayList list) {
         mList = list;
+        mFilterList = list;
         if (!mList.isEmpty()&& mSortItems!=null) sortList();
     }
 

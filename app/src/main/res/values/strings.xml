@@ -69,6 +69,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="enabled_type">Тут должен быть правильный английский текст 1</string>
     <string name="enabled_object">Тут должен быть правильный английский текст 2</string>
+    <string name="settings">Settings</string>
+    <string name="linear_layout">Linear Layout</string>
+    <string name="grid_layout">Grid Layout</string>
+    <string name="echelon_layout">Echelon Layout</string>
+    <string name="skid_layout">Skid Layout</string>
 
 
     <plurals name="word_items">

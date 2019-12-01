@@ -23,15 +23,10 @@
 
         <item
             android:id="@+id/menu_sort"
-            android:icon="@drawable/ic_menu_sort"
+            android:icon="@android:drawable/ic_menu_sort_alphabetically"
             android:title="@string/sort"
             app:showAsAction="never|withText" />
 
-        <item
-            android:id="@+id/menu_info"
-            android:icon="@drawable/ic_menu_info"
-            android:title="@string/information"
-            app:showAsAction="never|withText" />
     </group>
 
     <group

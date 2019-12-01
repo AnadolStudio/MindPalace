@@ -7,13 +7,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,7 +24,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -171,7 +167,7 @@ public class LearnStartFragment extends MyFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_group_detail,menu);
+        inflater.inflate(R.menu.fragment_group_detail,menu);
 
         menu.setGroupVisible(R.id.group_one,false);
         menu.setGroupVisible(R.id.group_two,selectMode);
@@ -222,7 +218,6 @@ public class LearnStartFragment extends MyFragment {
         switchTranscript = view.findViewById(R.id.switch_transcription);
         switchTranslate = view.findViewById(R.id.switch_translate);
 
-        // TODO: Добавить строку состояния как в WhatsApp для фрагментов
         mViewPagerType = view.findViewById(R.id.view_pager_type);
         mViewPagerType.setAdapter(new FragmentPagerAdapter(getActivity().getSupportFragmentManager()) {
             @Override

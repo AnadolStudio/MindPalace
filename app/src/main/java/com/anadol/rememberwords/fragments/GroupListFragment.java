@@ -2,18 +2,25 @@ package com.anadol.rememberwords.fragments;
 
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,15 +28,20 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
+import com.anadol.rememberwords.activities.SettingActivity;
 import com.anadol.rememberwords.database.DatabaseHelper;
 import com.anadol.rememberwords.database.DbSchema;
+import com.anadol.rememberwords.database.LayoutPreference;
 import com.anadol.rememberwords.database.MyCursorWrapper;
 import com.anadol.rememberwords.myList.DoInBackground;
 import com.anadol.rememberwords.myList.Group;
@@ -45,10 +57,12 @@ import com.dingmouren.layoutmanagergroup.skidright.SkidRightLayoutManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import static com.anadol.rememberwords.database.DbSchema.Tables.GROUPS;
 import static com.anadol.rememberwords.database.DbSchema.Tables.WORDS;
+
 
 
 /**
@@ -57,12 +71,12 @@ import static com.anadol.rememberwords.database.DbSchema.Tables.WORDS;
 public class GroupListFragment extends MyFragment {
     public static final String SELECT_MODE = "select_mode";
     public static final String SELECT_LIST = "select_list";
+    private static final int REQUEST_SETTINGS = 0;
     private RecyclerView recyclerView;
     private /*static*/ LabelEmptyList sLabelEmptyList;
-    private UUID idSelected;
-    private int positionSelected;
 
     private ArrayList<Group> mGroups;
+    private GroupAdapter mAdapter;
 
     public static final String GROUP_SAVE = "group_save";
     public static final String NEW_GROUP = "new_group";
@@ -138,7 +152,6 @@ public class GroupListFragment extends MyFragment {
         mProgressBar = view.findViewById(R.id.progressBar);
 
         FloatingActionButton fab = view.findViewById(R.id.fab);
-        fab.setBackgroundDrawable(getResources().getDrawable(R.drawable.gradient));
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,17 +159,16 @@ public class GroupListFragment extends MyFragment {
             }
         });
         recyclerView = frameLayout.findViewById(R.id.recycler);
-        registerForContextMenu(recyclerView);
 
-        createAdapter();
+        mAdapter = new GroupAdapter(mGroups);
 
-        createRecyclerLayoutManager();
-        recyclerView.setAdapter(adapter);
+        createRecyclerLayoutManager(LayoutPreference.getLayoutPreference(getActivity()));
+        recyclerView.setAdapter(mAdapter);
 
         sLabelEmptyList = new LabelEmptyList(
                 getContext(),
                 frameLayout,
-                adapter);
+                mAdapter);
 
         return view;
     }
@@ -171,17 +183,28 @@ public class GroupListFragment extends MyFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        if (!selectMode) {
-            inflater.inflate(R.menu.menu_word_list, menu);
-        } else {
-            inflater.inflate(R.menu.menu_group_selected_list, menu);
-        }
+        inflater.inflate(R.menu.fragment_group_list,menu);
+        MenuItem item = menu.findItem(R.id.menu_search);
+        final SearchView searchView = (SearchView) item.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                mAdapter.getFilter().filter(s);
+                return true;
+            }
+        });
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_search:
+            case R.id.menu_settings:
+                createActivitySettings();
                 return true;
             case R.id.menu_remove:
                 new GroupBackground().execute(REMOVE_GROUP);
@@ -203,13 +226,30 @@ public class GroupListFragment extends MyFragment {
                     }
                 }
                 updateActionBarTitle();
-                adapter.notifyDataSetChanged();
+                mAdapter.notifyDataSetChanged();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
+    private void createActivitySettings() {
+        Intent intent = SettingActivity.newIntent(getActivity());
+        startActivityForResult(intent, REQUEST_SETTINGS);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        System.out.println(requestCode+" ! "+ requestCode);
+        if (resultCode != Activity.RESULT_OK){
+            return;
+        }
+        switch (requestCode){
+            case REQUEST_SETTINGS:
+                createRecyclerLayoutManager(LayoutPreference.getLayoutPreference(getActivity()));
+                break;
+        }
+    }
 
     private void createGroup() {
         Intent intent = CreateGroupActivity.newIntent(getContext(), getNames());
@@ -241,119 +281,129 @@ public class GroupListFragment extends MyFragment {
         startActivity(intent);
     }
 
-    private void createAdapter() {
-
-        adapter = new MyRecyclerAdapter(mGroups, R.layout.item_group_list);
-        adapter.setCreatorAdapter(new MyRecyclerAdapter.CreatorAdapter() {// ДЛЯ БОЛЬШЕЙ ГИБКОСТИ ТУТ Я РЕАЛИЗУЮ СЛУШАТЕЛЯ И МЕТОДЫ АДАПТЕРА
-            @Override
-            public void createHolderItems(MyViewHolder holder) {
-                TextView textView = holder.itemView.findViewById(R.id.text_group);
-                ImageView imageView = holder.itemView.findViewById(R.id.image_group);
-                CheckBox checkBox = holder.itemView.findViewById(R.id.checkBox);
-                checkBox.setEnabled(false);
-                holder.setViews(new View[]{textView, imageView, checkBox});
-            }
-
-            @Override
-            public void bindHolderItems(MyViewHolder holder) {
-                View[] views = holder.getViews();
-                int position = holder.getAdapterPosition();
-                Group group = (Group) adapter.getList().get(position);
-
-                TextView textView = (TextView) views[0];
-                textView.setText(group.getName().toUpperCase());
-                ImageView imageView = (ImageView) views[1];
-                imageView.setImageDrawable(group.getGroupDrawable());
-                CheckBox checkBox = (CheckBox) views[2];
-                if (selectMode){
-                    checkBox.setVisibility(View.VISIBLE);
-                    if (selectedList.indexOf(position) != -1){
-                        System.out.println("position " + position);
-                        checkBox.setChecked(true);
-                        holder.itemView.setBackgroundColor(getResources().getColor(R.color.colorSelected));
-                    }else {
-                        checkBox.setChecked(false);
-                        holder.itemView.setBackgroundColor(getResources().getColor(R.color.colorDefaultBackground));
-                    }
-                }else {
-                    checkBox.setChecked(false);
-                    checkBox.setVisibility(View.GONE);
-                    holder.itemView.setBackgroundColor(getResources().getColor(R.color.colorDefaultBackground));
-                }
-
-            }
-
-            @Override
-            public void myOnItemDismiss(int position, int flag) {
-
-            }
-        });
-        adapter.setListener(new MyRecyclerAdapter.Listeners() {
-            @Override
-            public void onClick(View view, int position) {
-                if (!selectMode) {
-                    groupDetail(position);
-                    positionSelected = position;
-
-                } else {
-                    View[] views = ((MyViewHolder)recyclerView.getChildViewHolder(view)).getViews();
-                    CheckBox checkBox = (CheckBox) views[2];
-                    Integer i = Integer.valueOf(position);
-                    if (checkBox.isChecked()){
-                        selectedList.remove(i);
-                        view.setBackgroundColor(getResources().getColor(R.color.colorDefaultBackground));
-                    }else {
-                        selectedList.add(i);
-                        view.setBackgroundColor(getResources().getColor(R.color.colorSelected));
-                    }
-                    checkBox.setChecked(!checkBox.isChecked());
-                    updateActionBarTitle();
-                }
-            }
-
-            @Override
-            public boolean onLongClick(View view, int position) {
-                /*idSelected = mGroups.get(position).getId();
-                positionSelected = position;*/
-                selectedList.add(position);
-                setSelectMode(true);
-                view.setBackgroundColor(getResources().getColor(R.color.colorSelected));
-
-                View[] views = ((MyViewHolder)recyclerView.getChildViewHolder(view)).getViews();
-                CheckBox checkBox = (CheckBox) views[2];
-                checkBox.setChecked(true);
-                return true;
-            }
-        });
-        adapter.setSortItems(new MyRecyclerAdapter.SortItems() {
-            @Override
-            public void sortList() {
-                Collections.sort(adapter.getList());
-            }
-        });
-
-    }
-
-
-
-
     public void updateUI(){
-        adapter.setList(mGroups);
-        adapter.notifyDataSetChanged();
+        mAdapter.setList(mGroups);
+        mAdapter.notifyDataSetChanged();
     }
 
-    private void createRecyclerLayoutManager(){
+    private void createRecyclerLayoutManager(int i){
         RecyclerView.LayoutManager manager = null;
 
-        switch (getResources().getConfiguration().orientation){
-            case Configuration.ORIENTATION_PORTRAIT:
-                manager = new EchelonLayoutManager(getContext());
+        if (recyclerView.getLayoutManager() != null && i == LayoutPreference.getLayoutPreference(getActivity())){
+            return;
+        }
+
+        LayoutPreference.setLayoutPreference(getActivity(),i);
+
+
+        switch (i){
+            case 1:
+                manager = new LinearLayoutManager(getActivity());
                 break;
-            case Configuration.ORIENTATION_LANDSCAPE:
+            case 2:
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_PORTRAIT){
+                    manager = new GridLayoutManager(getActivity(),2);
+                }else {
+                    manager = new GridLayoutManager(getActivity(),3);
+                }
+                break;
+            case 3:
+                manager = new EchelonLayoutManager(getActivity());
+                break;
+            case 4:
                 manager = new SkidRightLayoutManager(1.5f,0.85f);
                 break;
         }
         recyclerView.setLayoutManager(manager);
+
+    }
+
+    public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private TextView mTextView;
+        private ImageView mImageView;
+
+        public GroupHolder(@NonNull View itemView) {
+            super(itemView);
+            mTextView = itemView.findViewById(R.id.text_group);
+            mImageView = itemView.findViewById(R.id.image_group);
+            itemView.setOnClickListener(this);
+        }
+
+        public void onBind(String name, Drawable drawable){
+            mTextView.setText(name);
+            mImageView.setImageDrawable(drawable);
+        }
+
+        @Override
+        public void onClick(View v) {
+            groupDetail(getAdapterPosition());
+            System.out.println("onClick");
+        }
+    }
+
+    public class GroupAdapter extends RecyclerView.Adapter<GroupHolder> implements Filterable {
+        List<Group> mList;
+        List<Group> mFilterList;
+
+        public GroupAdapter(List<Group> list) {
+            setList(list);
+        }
+
+        public void setList(List<Group> list) {
+            Collections.sort(list);
+            mList = list;
+            mFilterList = list;
+        }
+
+        @NonNull
+        @Override
+        public GroupHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_group_list,viewGroup, false);
+            return new GroupHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull GroupHolder groupHolder, int i) {
+            Group group = mFilterList.get(i);
+            groupHolder.onBind(group.getName(),group.getGroupDrawable());
+        }
+
+        @Override
+        public int getItemCount() {
+            return mFilterList.size();
+        }
+
+        @Override
+        public Filter getFilter() {
+            return new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    String query = constraint.toString().toLowerCase();
+                    if (query.isEmpty()){
+                        mFilterList = mList;
+                    }else {
+                        ArrayList<Group> filteredList = new ArrayList<>();
+                        String name;
+                        for (Group group : mList) {
+                            name = group.getName().toLowerCase();
+                            if (name.contains(query)){
+                                filteredList.add(group);
+                            }
+                        }
+                        mFilterList = filteredList;
+                    }
+                    FilterResults filterResults = new FilterResults();
+                    filterResults.values = mFilterList;
+                    return filterResults;
+                }
+
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    notifyDataSetChanged();
+                }
+            };
+        }
     }
 
     public  class GroupBackground extends DoInBackground{

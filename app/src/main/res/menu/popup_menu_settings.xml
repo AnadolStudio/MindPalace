@@ -3,22 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_context_trans"
-        android:title="@string/translate"
-        app:showAsAction="never" />
+        android:id="@+id/popup_menu_list"
+        android:title="@string/linear_layout"
+        />
 
     <item
         android:id="@+id/action_context_reverse_trans"
-        android:title="@string/reverse_translate"
-        app:showAsAction="never" />
+        android:title= "@string/grid_layout" />
 
     <item
         android:id="@+id/action_context_replace"
-        android:title="@string/replace"
-        app:showAsAction="never" />
+        android:title="@string/echelon_layout" />
 
     <item
         android:id="@+id/action_context_remove"
-        android:title="@string/remove"
-        app:showAsAction="never" />
+        android:title="@string/skid_layout" />
 </menu>
