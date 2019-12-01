@@ -19,6 +19,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -60,6 +61,8 @@ import static com.anadol.rememberwords.myList.Group.NON_COLOR;
  * A simple {@link Fragment} subclass.
  */
 public class GroupDetailFragment extends MyFragment {
+    private static final String TAG = "GroupDetailFragment";
+
     public static final String GROUP = "group";
     public static final String WORD_SAVE = "word_save";
     public static final String NAMES_ALL_GROUPS = "names_all_groups";
@@ -166,7 +169,7 @@ public class GroupDetailFragment extends MyFragment {
 
         mGroup = getArguments().getParcelable(GROUP);
         nameGroup.setText(mGroup.getName());
-        nameGroup.setSelection(mGroup.getName().length());
+        nameGroup.setSelection(nameGroup.length());
         /*nameGroup.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

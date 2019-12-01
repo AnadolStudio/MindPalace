@@ -57,18 +57,15 @@ public class SettingFragment extends Fragment {
     }
 
     public void sendResult(int resultCode){
-        LayoutPreference.setLayoutPreference(getActivity(),getChangedItem());
-
         Intent intent = new Intent();
         intent.putExtra(CHANGED_ITEM,getChangedItem());
         Log.i(TAG,"Changed item: " + getChangedItem());
         Log.i(TAG,"Request code: " + getTargetRequestCode());
         onActivityResult(getTargetRequestCode(),resultCode,intent);
-
     }
 
 
-    private int getChangedItem() {
+    public int getChangedItem() {
         int i;
 
         switch (group.getCheckedRadioButtonId()){
@@ -93,6 +90,6 @@ public class SettingFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        LayoutPreference.setLayoutPreference(getActivity(),getChangedItem());
+        sendResult(Activity.RESULT_OK);
     }
 }

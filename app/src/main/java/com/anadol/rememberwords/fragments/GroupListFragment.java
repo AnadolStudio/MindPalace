@@ -62,7 +62,7 @@ import java.util.UUID;
 
 import static com.anadol.rememberwords.database.DbSchema.Tables.GROUPS;
 import static com.anadol.rememberwords.database.DbSchema.Tables.WORDS;
-
+import static com.anadol.rememberwords.fragments.SettingFragment.CHANGED_ITEM;
 
 
 /**
@@ -246,7 +246,9 @@ public class GroupListFragment extends MyFragment {
         }
         switch (requestCode){
             case REQUEST_SETTINGS:
-                createRecyclerLayoutManager(LayoutPreference.getLayoutPreference(getActivity()));
+                int i = data.getIntExtra(CHANGED_ITEM,1);
+                LayoutPreference.setLayoutPreference(getActivity(),i);
+                createRecyclerLayoutManager(i);
                 break;
         }
     }
@@ -277,7 +279,7 @@ public class GroupListFragment extends MyFragment {
     private void groupDetail(int i) {
 
         mProgressBar.setVisibility(View.VISIBLE);
-        Intent intent = GroupDetailActivity.newIntent(getContext(),mGroups, mGroups.get(i).getId());
+        Intent intent = GroupDetailActivity.newIntent(getContext(),mGroups, mAdapter.getList().get(i).getId());
         startActivity(intent);
     }
 
@@ -312,7 +314,7 @@ public class GroupListFragment extends MyFragment {
                 manager = new EchelonLayoutManager(getActivity());
                 break;
             case 4:
-                manager = new SkidRightLayoutManager(1.5f,0.85f);
+                manager = new SkidRightLayoutManager(1.65f,0.85f);
                 break;
         }
         recyclerView.setLayoutManager(manager);
@@ -354,6 +356,10 @@ public class GroupListFragment extends MyFragment {
             Collections.sort(list);
             mList = list;
             mFilterList = list;
+        }
+
+        public List<Group> getList() {
+            return mFilterList;
         }
 
         @NonNull

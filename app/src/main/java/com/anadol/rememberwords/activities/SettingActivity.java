@@ -24,10 +24,6 @@ public class SettingActivity extends SimpleFragmentActivity {
     }
 
 
-    @Override
-    public void onBackPressed() {
-        onNavigateUp();
-    }
 
     @Override
     public boolean onNavigateUp() {
