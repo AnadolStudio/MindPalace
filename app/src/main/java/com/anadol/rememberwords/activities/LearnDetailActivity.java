@@ -140,7 +140,7 @@ public class LearnDetailActivity extends SimpleFragmentActivity {
                 builder.append(word.getTranscript());
                 break;
             case TRANSLATE:
-                if (word.getIsMultiTrans() == Word.TRUE) {
+                if (word.hasMultiTrans() == Word.TRUE) {
                     int bound = word.getCountTranslates();
                     builder.append(word.getOneTranslate(new Random().nextInt(bound)));
                 }else {

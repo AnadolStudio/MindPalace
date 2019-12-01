@@ -99,11 +99,11 @@ public class Word implements Parcelable,Comparable{
     }
 
 
-    public int getIsMultiTrans() {
+    public int hasMultiTrans() {
         return isMultiTrans;
     }
 
-    public void setIsMultiTrans(int isMultiTrans) {
+    public void setHasMultiTrans(int isMultiTrans) {
         this.isMultiTrans = isMultiTrans;
     }
 

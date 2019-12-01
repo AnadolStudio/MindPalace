@@ -156,7 +156,7 @@ public class LearnAnswerFragment extends Fragment implements TextView.OnEditorAc
                         }
                     }
                     if (allUsedObjects[i] == TRANSLATE){
-                        if (word.getIsMultiTrans() == Word.TRUE){
+                        if (word.hasMultiTrans() == Word.TRUE){
                             if (word.isExistTranslate(myAnswer)) {
                                 correctWrong[count] = true;
                                 break;

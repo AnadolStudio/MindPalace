@@ -88,7 +88,7 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
         }
 
         mList = new ArrayList<>();
-        if (mWord.getIsMultiTrans() == Word.TRUE) {
+        if (mWord.hasMultiTrans() == Word.TRUE) {
             String[][] allTranslates = mWord.getMultiTranslateFormat();
             for (String[] s: allTranslates) {
                 mList.add(new MyItemTranslate(s[0]+":",s[1]));
@@ -113,9 +113,9 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
                     v.setEnabled(true);
                 }
                 if (mList.size() <= 1){
-                    mWord.setIsMultiTrans(Word.FALSE);
+                    mWord.setHasMultiTrans(Word.FALSE);
                 }else {
-                    mWord.setIsMultiTrans(Word.TRUE);
+                    mWord.setHasMultiTrans(Word.TRUE);
                 }
             }
         });
@@ -222,7 +222,7 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
                     mAdapter.notifyItemRemoved(position);
 
                     if (mList.size() <= 1){
-                        mWord.setIsMultiTrans(Word.FALSE);
+                        mWord.setHasMultiTrans(Word.FALSE);
                     }
                     mAddButton.setEnabled(true);
                 } else if (flag == ItemTouchHelper.END){
@@ -265,12 +265,12 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
             MyItemTranslate item = mList.get(0);
             String[] itemsWords = item.getWords().replaceAll("\n","").split(";");
             if (itemsWords.length <= 1) {
-                mWord.setIsMultiTrans(Word.FALSE);
+                mWord.setHasMultiTrans(Word.FALSE);
                 stringBuilder.append(mList.get(0).getWords()
                         .replaceAll("\n", "")
                         .replaceAll(";", ""));
             }else {
-                mWord.setIsMultiTrans(Word.TRUE);
+                mWord.setHasMultiTrans(Word.TRUE);
 
                 stringBuilder.append(item.getTypeName());
                 for (String s : itemsWords){

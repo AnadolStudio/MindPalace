@@ -503,7 +503,7 @@ public class GroupDetailFragment extends MyFragment {
                 String origStr = word.getOriginal();
                 String transcriptStr = word.getTranscript();
                 String tranStr;
-                if (word.getIsMultiTrans() == Word.FALSE) {
+                if (word.hasMultiTrans() == Word.FALSE) {
                     tranStr = word.getTranslate();
                 }else {
                     tranStr = word.getMultiTranslate();
@@ -530,7 +530,7 @@ public class GroupDetailFragment extends MyFragment {
 
                 translate.setText(tranStr);
                 translate.setSelection(translate.length());
-                if (word.getIsMultiTrans() == Word.FALSE){
+                if (word.hasMultiTrans() == Word.FALSE){
                     translate.setEnabled(!selectMode);
                 }else {
                     translate.setEnabled(false);
@@ -803,7 +803,7 @@ public class GroupDetailFragment extends MyFragment {
                             trans = mWords.get(i).getTranslate().toLowerCase().trim();
 //                            System.out.println(trans);
                             comment = mWords.get(i).getComment().toLowerCase().trim();
-                            isMultiTrans = mWords.get(i).getIsMultiTrans();
+                            isMultiTrans = mWords.get(i).hasMultiTrans();
 
                             System.out.println(trans);
                             cursor = queryTable(db,

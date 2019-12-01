@@ -256,7 +256,7 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
                     s = (word.getTranscript());
                     break;
                 case TRANSLATE:
-                    if (word.getIsMultiTrans() == Word.TRUE) {
+                    if (word.hasMultiTrans() == Word.TRUE) {
                         s = (word.getOneTranslate(r.nextInt(word.getCountTranslates())));
                     }else {
                         s = (word.getTranslate());
