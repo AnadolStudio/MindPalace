@@ -16,7 +16,7 @@ public class LayoutPreference {
     }
     public static int getLayoutPreference(Context context){
         int i = PreferenceManager.getDefaultSharedPreferences(context)
-                .getInt(LAYOUT, 1);
+                .getInt(LAYOUT, -1);
         return i;
     }
 }

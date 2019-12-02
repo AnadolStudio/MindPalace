@@ -74,6 +74,7 @@
     <string name="grid_layout">Grid Layout</string>
     <string name="echelon_layout">Echelon Layout</string>
     <string name="skid_layout">Skid Layout</string>
+    <string name="apply">Apply</string>
 
 
     <plurals name="word_items">

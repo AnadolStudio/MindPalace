@@ -10,21 +10,25 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RadioGroup;
 
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.database.LayoutPreference;
 
-public class SettingFragment extends Fragment {
-    public static final String TAG = "SettingFragment";
+public class SettingListFragment extends Fragment {
+    public static final String TAG = "SettingListFragment";
     public static final String SETTINGS = "settings";
     public static final String CHANGED_ITEM = "changedItem";
     private RadioGroup group;
-    public static SettingFragment newInstance() {
+    private Button applyButton;
+
+    public static SettingListFragment newInstance(int layout) {
 
         Bundle args = new Bundle();
-
-        SettingFragment fragment = new SettingFragment();
+        args.putInt(CHANGED_ITEM,layout);
+        Log.i(TAG,"Changed item: " +layout);
+        SettingListFragment fragment = new SettingListFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -32,8 +36,15 @@ public class SettingFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_settings,container,false);
+        View view = inflater.inflate(R.layout.fragment_settings_list,container,false);
         group = view.findViewById(R.id.group);
+        applyButton = view.findViewById(R.id.apply_button);
+        applyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendResult(Activity.RESULT_OK);
+            }
+        });
 
         int i = getArguments().getInt(CHANGED_ITEM);
         System.out.println(i);
@@ -59,9 +70,12 @@ public class SettingFragment extends Fragment {
     public void sendResult(int resultCode){
         Intent intent = new Intent();
         intent.putExtra(CHANGED_ITEM,getChangedItem());
-        Log.i(TAG,"Changed item: " + getChangedItem());
-        Log.i(TAG,"Request code: " + getTargetRequestCode());
-        onActivityResult(getTargetRequestCode(),resultCode,intent);
+        Log.i(TAG,"Changed item: " + getChangedItem()+
+                " Request code: " + getTargetRequestCode());
+        LayoutPreference.setLayoutPreference(getActivity(),getChangedItem());
+
+        /*AppCompatActivity activity = (AppCompatActivity)getActivity();
+        activity.setResult(resultCode,intent);*/
     }
 
 
@@ -90,6 +104,5 @@ public class SettingFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        sendResult(Activity.RESULT_OK);
     }
 }

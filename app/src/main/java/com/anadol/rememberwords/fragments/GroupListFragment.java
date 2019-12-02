@@ -1,8 +1,6 @@
 package com.anadol.rememberwords.fragments;
 
 
-import android.app.Activity;
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,25 +9,18 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.FrameLayout;
@@ -49,29 +40,26 @@ import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.activities.CreateGroupActivity;
 import com.anadol.rememberwords.activities.GroupDetailActivity;
 import com.anadol.rememberwords.myList.LabelEmptyList;
-import com.anadol.rememberwords.myList.MyRecyclerAdapter;
-import com.anadol.rememberwords.myList.MyViewHolder;
 import com.dingmouren.layoutmanagergroup.echelon.EchelonLayoutManager;
 import com.dingmouren.layoutmanagergroup.skidright.SkidRightLayoutManager;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import static com.anadol.rememberwords.database.DbSchema.Tables.GROUPS;
 import static com.anadol.rememberwords.database.DbSchema.Tables.WORDS;
-import static com.anadol.rememberwords.fragments.SettingFragment.CHANGED_ITEM;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class GroupListFragment extends MyFragment {
+    private static final String TAG = "GroupListFragment";
+
     public static final String SELECT_MODE = "select_mode";
     public static final String SELECT_LIST = "select_list";
-    private static final int REQUEST_SETTINGS = 0;
+    private static final int REQUEST_SETTINGS = 11;
     private RecyclerView recyclerView;
     private /*static*/ LabelEmptyList sLabelEmptyList;
 
@@ -235,22 +223,24 @@ public class GroupListFragment extends MyFragment {
 
     private void createActivitySettings() {
         Intent intent = SettingActivity.newIntent(getActivity());
+        // Задумка не удалась, можно заменить на обычный startActivity(Intent intent)
         startActivityForResult(intent, REQUEST_SETTINGS);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        System.out.println(requestCode+" ! "+ requestCode);
+        /*Log.i(TAG, "Result code: "+ resultCode+
+                " RequestCode: "+ requestCode);
         if (resultCode != Activity.RESULT_OK){
             return;
         }
         switch (requestCode){
             case REQUEST_SETTINGS:
                 int i = data.getIntExtra(CHANGED_ITEM,1);
-                LayoutPreference.setLayoutPreference(getActivity(),i);
+                Log.i(TAG, "Changed item: " + i);
                 createRecyclerLayoutManager(i);
                 break;
-        }
+        }*/
     }
 
     private void createGroup() {
@@ -291,10 +281,8 @@ public class GroupListFragment extends MyFragment {
     private void createRecyclerLayoutManager(int i){
         RecyclerView.LayoutManager manager = null;
 
-        if (recyclerView.getLayoutManager() != null && i == LayoutPreference.getLayoutPreference(getActivity())){
-            return;
-        }
 
+        Log.i(TAG, "RecyclerLayoutManager item: " + i);
         LayoutPreference.setLayoutPreference(getActivity(),i);
 
 
