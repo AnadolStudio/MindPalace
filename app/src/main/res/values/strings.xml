@@ -75,6 +75,8 @@
     <string name="echelon_layout">Echelon Layout</string>
     <string name="skid_layout">Skid Layout</string>
     <string name="apply">Apply</string>
+    <string name="detail_fragment_edit_text_hint">Enter a text for the group</string>
+    <string name="color_image_translation">color_image_translation</string>
 
 
     <plurals name="word_items">

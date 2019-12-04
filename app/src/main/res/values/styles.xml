@@ -9,6 +9,7 @@
         <item name="android:windowBackground">@color/colorDefaultBackground</item>
 <!--        <item name="android:fontFamily">serif</item>-->
         <item name="editTextStyle">@style/MyEditText</item>
+
     </style>
 
     <style name="LightTheme" parent="Theme.AppCompat.Light">
@@ -27,10 +28,30 @@
         <item name="android:minHeight">48dp</item>
     </style>
 
+    <style name="MyEditText.GroupDetailEditText">
+        <item name="android:maxLines">1</item>
+        <item name="android:gravity">center|top</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:imeOptions">actionDone</item>
+        <item name="android:hint">@string/detail_fragment_edit_text_hint</item>
+    </style>
+
     <style name="DialogStyle" parent="Base.Theme.AppCompat.Light.Dialog">
         <item name="android:windowMinWidthMajor">100%</item>
         <item name="android:windowMinWidthMinor">100%</item>
     </style>
+
+    <style name="MyCardView" parent="CardView">
+        <item name="android:minHeight">150dp</item>
+        <item name="android:radius">5dp</item>
+    </style>
+
+
+
+
+
+
+
 
     <style name="AppTheme.Skid_1" parent="AppTheme">
         <item name="android:windowTranslucentStatus">true</item>

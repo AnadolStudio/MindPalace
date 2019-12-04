@@ -1,6 +1,7 @@
 package com.anadol.rememberwords.fragments;
 
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,11 +10,15 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -266,13 +271,6 @@ public class GroupListFragment extends MyFragment {
         startActivity(intent);
     }
 
-    private void groupDetail(int i) {
-
-        mProgressBar.setVisibility(View.VISIBLE);
-        Intent intent = GroupDetailActivity.newIntent(getContext(),mGroups, mAdapter.getList().get(i).getId());
-        startActivity(intent);
-    }
-
     public void updateUI(){
         mAdapter.setList(mGroups);
         mAdapter.notifyDataSetChanged();
@@ -283,16 +281,18 @@ public class GroupListFragment extends MyFragment {
 
 
         Log.i(TAG, "RecyclerLayoutManager item: " + i);
-        LayoutPreference.setLayoutPreference(getActivity(),i);
+//        LayoutPreference.setLayoutPreference(getActivity(),i);
 
 
         switch (i){
+            default:
             case 1:
                 manager = new LinearLayoutManager(getActivity());
                 break;
             case 2:
-                int orientation = getResources().getConfiguration().orientation;
-                if (orientation == Configuration.ORIENTATION_PORTRAIT){
+                Configuration configuration = getResources().getConfiguration();
+                Log.i(TAG,"Configuration.screenWidthDp: "+ configuration.screenWidthDp);
+                if (configuration.screenWidthDp < 500){
                     manager = new GridLayoutManager(getActivity(),2);
                 }else {
                     manager = new GridLayoutManager(getActivity(),3);
@@ -327,8 +327,15 @@ public class GroupListFragment extends MyFragment {
 
         @Override
         public void onClick(View v) {
-            groupDetail(getAdapterPosition());
-            System.out.println("onClick");
+            int i = getAdapterPosition();
+            Intent intent = GroupDetailActivity.newIntent(getContext(),mGroups, mAdapter.getList().get(i).getId());
+
+            String nameTranslation = getString(R.string.color_image_translation);
+            ActivityOptionsCompat activityOptions =
+                    ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+                            new Pair<View, String>(mImageView,nameTranslation));
+
+            ActivityCompat.startActivity(getActivity(),intent,activityOptions.toBundle());
         }
     }
 

@@ -7,9 +7,7 @@
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="200dp"
-    android:minHeight="150dp"
-    card_view:cardCornerRadius="5dp"
-    card_view:cardElevation="3dp"
+    style="@style/MyCardView"
     android:layout_margin="10dp"
     card_view:layout_constraintBottom_toBottomOf="parent"
     card_view:layout_constraintEnd_toEndOf="parent"
@@ -39,7 +37,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/ic_launcher_background"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:transitionName="@string/color_image_translation"/>
 
 
     </LinearLayout>

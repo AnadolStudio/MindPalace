@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -68,6 +69,7 @@ public class GroupDetailFragment extends MyFragment {
     public static final String NAMES_ALL_GROUPS = "names_all_groups";
     public static final String POSITION = "position";
     public static final String IS_CREATED = "is_created";
+
     private static final String DIALOG_COLOR = "color";
     private static final String GRADIENT = "gradient";
     private static final int REQUEST_DRAWABLE = 1;
@@ -282,16 +284,15 @@ public class GroupDetailFragment extends MyFragment {
     @Override
     public void onPause() {
         super.onPause();
-//        System.out.println("onPause "+mGroup.getName());
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        updateWordCount();
         if (!isCreated && mWords.isEmpty()) {
             new WordBackground().execute(GET_WORDS);
         }
-//        System.out.println("updateUI "+mGroup.getName());
     }
 
     @Override

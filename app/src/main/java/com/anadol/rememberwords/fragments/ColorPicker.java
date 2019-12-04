@@ -36,7 +36,8 @@ import com.anadol.rememberwords.myList.MyViewHolder;
 import java.util.ArrayList;
 
 import static com.anadol.rememberwords.myList.Group.NON_COLOR;
-
+//TODO: потенциальный апгрейд - возможность выбирать в качестве фона
+// не только цвет, но и картинку
 public class ColorPicker extends AppCompatDialogFragment implements SeekBar.OnSeekBarChangeListener {
     private static final String CURRENT = "current";
     private ImageView gradient;

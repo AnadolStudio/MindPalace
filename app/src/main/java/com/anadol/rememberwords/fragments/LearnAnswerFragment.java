@@ -174,34 +174,6 @@ public class LearnAnswerFragment extends Fragment implements TextView.OnEditorAc
                             break;
                         }
                     }
-/*
-                    switch (allUsedObjects[i]){
-                        case ORIGINAL:
-                            if ((!word.getTranslate().equals("") && myAnswer.equals(word.getTranslate()) ||
-                                    ((!word.getTranscript().equals("") && myAnswer.equals(word.getTranscript()))))){
-                                correctWrong[count] = true;
-                            }else {
-                                correctWrong[count] = false;
-                            }
-                            break;
-                        case TRANSLATE:
-                            if ((word.getOriginal()!= null && !word.getOriginal().equals("") && myAnswer.equals(word.getOriginal()) ||
-                                    ((word.getTranscript()!= null && !word.getTranscript().equals("") && myAnswer.equals(word.getTranscript()))))){
-                                correctWrong[count] = true;
-                            }else {
-                                correctWrong[count] = false;
-                            }
-                            break;
-                        case TRANSCRIPT:
-                            if ((word.getOriginal()!= null && !word.getOriginal().equals("") && myAnswer.equals(word.getOriginal()) ||
-                                    ((word.getTranslate()!= null && !word.getTranslate().equals("") && myAnswer.equals(word.getTranslate()))))){
-                                correctWrong[count] = true;
-                            }else {
-                                correctWrong[count] = false;
-                            }
-                            break;
-                    }
-*/
                 }
             }
 
@@ -214,7 +186,8 @@ public class LearnAnswerFragment extends Fragment implements TextView.OnEditorAc
                 mTextView.setText(q);
                 myQuestionList[count] = q;
                 mEditText.setText("");
-
+                //TODO: было бы неплохо обновлять hint в клавиатуре при landscape,
+                // но пока не знаю как. Инфу не нашел
             } else{
 
                 DialogResult dialogResult = DialogResult.newInstance(myQuestionList,myAnswersList,correctWrong);
