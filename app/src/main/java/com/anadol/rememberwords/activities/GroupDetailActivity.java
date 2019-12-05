@@ -20,46 +20,31 @@ import java.util.UUID;
 
 import static com.anadol.rememberwords.fragments.GroupListFragment.namesEqual;
 
+
 public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pager
+    //TODO: Используется для Unify, проверить на надобность
     public static final String GROUPS = "groups";
+
+    public static final String CURRENT_GROUP = "current_group";
+
     public static final String MY_UUID = "uuid";
-    private ArrayList<Group> mGroups;
+    private Group mGroup;
     private UUID id;
     private ViewPager viewPager;
     private Toolbar bottomBar;
 
 
-    public static Intent newIntent(Context context, ArrayList<Group> mGroups, UUID id){
+    public static Intent newIntent(Context context,Group mGroup){
         Intent intent = new Intent(context, GroupDetailActivity.class);
-        intent.putExtra(GROUPS, mGroups);
-        intent.putExtra(MY_UUID,id);
+        intent.putExtra(CURRENT_GROUP, mGroup);
         return intent;
-    }
-
-    public String[] getNames(String[] s) {
-        ArrayList<String> arrayList = new ArrayList<>();
-
-        for (int i = 0;i<mGroups.size();i++){
-            if (!namesEqual(mGroups.get(i).getName(),s)) {
-                arrayList.add(mGroups.get(i).getName());
-            }
-        }
-        String[] names = new String[arrayList.size()];
-        names = arrayList.toArray(names);
-        return names;
     }
 
     @Override
     protected Fragment createFragment() {
-        Group group = null;
-        mGroups = getIntent().getParcelableArrayListExtra(GROUPS);
-        id = (UUID) getIntent().getSerializableExtra(MY_UUID);
-        for (int i = 0; i < mGroups.size(); i++) {
-            if (mGroups.get(i).getId().equals(id)) {
-                group = mGroups.get(i);
-            }
-        }
-        return GroupDetailFragment.newInstance(group,getNames(new String[]{group.getName()}));
+        mGroup = getIntent().getParcelableExtra(CURRENT_GROUP);
+
+        return GroupDetailFragment.newInstance(mGroup);
     }
 
 
@@ -68,7 +53,7 @@ public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pa
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(GROUPS,mGroups);
+        outState.putParcelable(CURRENT_GROUP,mGroup);
     }
 
 }

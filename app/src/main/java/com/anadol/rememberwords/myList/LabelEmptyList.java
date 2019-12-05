@@ -12,13 +12,14 @@ import android.widget.TextView;
 
 import com.anadol.rememberwords.R;
 
+import java.util.ArrayList;
+
 public class LabelEmptyList {
     private TextView textTouch;
-    private Adapter mAdapter;
-    private RecyclerView.Adapter mRecyclerAdapter;
+    private ArrayList mArrayList;
 
-    public LabelEmptyList(Context context, ViewGroup parent, Adapter adapter, @NonNull View.OnClickListener clickListener) {
-        mAdapter = adapter;
+    public LabelEmptyList(Context context, ViewGroup parent, ArrayList list, @NonNull View.OnClickListener clickListener) {
+        mArrayList = list;
 
         View view = LayoutInflater.from(context).inflate(R.layout.list_is_empty,parent,false);
 
@@ -27,8 +28,8 @@ public class LabelEmptyList {
         parent.addView(view);
     }
 
-    public LabelEmptyList(Context context, ViewGroup parent, RecyclerView.Adapter adapter/*, @NonNull View.OnClickListener clickListener*/) {
-        mRecyclerAdapter = adapter;
+    public LabelEmptyList(Context context, ViewGroup parent, ArrayList list/*, @NonNull View.OnClickListener clickListener*/) {
+        mArrayList = list;
 
         View view = LayoutInflater.from(context).inflate(R.layout.list_is_empty,parent,false);
 
@@ -39,36 +40,14 @@ public class LabelEmptyList {
     }
 
     public void update(){
-        if (mAdapter != null && !mAdapter.isEmpty()){
+        if (mArrayList != null && !mArrayList.isEmpty()){
             textTouch.setVisibility(View.INVISIBLE);
 
         }
-        if (mAdapter != null && mAdapter.isEmpty()) {
+        if (mArrayList != null && mArrayList.isEmpty()) {
             textTouch.setVisibility(View.VISIBLE);
         }
 
-        if (mRecyclerAdapter != null && mRecyclerAdapter.getItemCount() != 0){
-            textTouch.setVisibility(View.INVISIBLE);
-        }
-        if (mRecyclerAdapter != null && mRecyclerAdapter.getItemCount() == 0){
-            textTouch.setVisibility(View.VISIBLE);
-        }
     }
 
-    public void setAdapter(Adapter adapter) {
-        mAdapter = adapter;
-    }
-
-    public void setRecyclerAdapter(RecyclerView.Adapter recyclerAdapter) {
-        mRecyclerAdapter = recyclerAdapter;
-    }
-
-    /* private View CreateView(Context context, @LayoutRes int layout, ViewGroup parent, Adapter adapter,@NonNull View.OnClickListener clickListener) {
-
-        View view = LayoutInflater.from(context).inflate(layout,parent,false);
-
-        textTouch = view.findViewById(R.id.text_empty);
-        buttonTouch = view.findViewById(R.id.button_empty);
-        buttonTouch.setOnClickListener(clickListener);
-    }*/
 }

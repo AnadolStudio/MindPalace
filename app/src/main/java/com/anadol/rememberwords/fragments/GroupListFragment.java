@@ -66,7 +66,7 @@ public class GroupListFragment extends MyFragment {
     public static final String SELECT_LIST = "select_list";
     private static final int REQUEST_SETTINGS = 11;
     private RecyclerView recyclerView;
-    private /*static*/ LabelEmptyList sLabelEmptyList;
+    private /*static*/ LabelEmptyList mLabelEmptyList;
 
     private ArrayList<Group> mGroups;
     private GroupAdapter mAdapter;
@@ -87,8 +87,6 @@ public class GroupListFragment extends MyFragment {
         }
         return names;
     }
-
-
 
     public String[] getNames(String[] s) {
         ArrayList<String> arrayList = new ArrayList<>();
@@ -158,10 +156,10 @@ public class GroupListFragment extends MyFragment {
         createRecyclerLayoutManager(LayoutPreference.getLayoutPreference(getActivity()));
         recyclerView.setAdapter(mAdapter);
 
-        sLabelEmptyList = new LabelEmptyList(
+        mLabelEmptyList = new LabelEmptyList(
                 getContext(),
                 frameLayout,
-                mAdapter);
+                mGroups);
 
         return view;
     }
@@ -328,7 +326,10 @@ public class GroupListFragment extends MyFragment {
         @Override
         public void onClick(View v) {
             int i = getAdapterPosition();
-            Intent intent = GroupDetailActivity.newIntent(getContext(),mGroups, mAdapter.getList().get(i).getId());
+
+            if (i == RecyclerView.NO_POSITION) return;
+
+            Intent intent = GroupDetailActivity.newIntent(getContext(),mGroups.get(i));
 
             String nameTranslation = getString(R.string.color_image_translation);
             ActivityOptionsCompat activityOptions =
@@ -430,7 +431,9 @@ public class GroupListFragment extends MyFragment {
                             return null;
                         }
                         cursor.moveToFirst();
-                        mGroups = new ArrayList<>();
+
+                        if (!mGroups.isEmpty())mGroups.clear();
+
                         while (!cursor.isAfterLast()) {
                             mGroups.add(cursor.getGroup());
                             cursor.moveToNext();
@@ -469,7 +472,7 @@ public class GroupListFragment extends MyFragment {
         @Override
         public void onPost() {
             updateUI();
-            sLabelEmptyList.update();
+            mLabelEmptyList.update();
             switch (c){
                 case REMOVE_GROUP:
                     setSelectMode(false);

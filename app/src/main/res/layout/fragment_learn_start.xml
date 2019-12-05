@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/count_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/word_count"
+                app:layout_constraintEnd_toEndOf="@+id/imageView2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/group_object" />
+
+            <TextView
+                android:id="@+id/type_test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/type_of_test"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/view_pager_type"
+                android:layout_width="0dp"
+                android:layout_height="75dp"
+                android:layout_marginTop="8dp"
+                android:minHeight="50dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/type_test" />
+
+            <View
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="2dp"
+                android:background="?android:attr/dividerVertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/view_pager_type" />
+
+            <TextView
+                android:id="@+id/object"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/object_test"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/view_pager_object"
+                android:layout_width="0dp"
+                android:layout_height="75dp"
+                android:layout_marginTop="8dp"
+                android:minHeight="50dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/object"
+                tools:visibility="visible" />
+
+            <View
+                android:id="@+id/imageView3"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="2dp"
+                android:background="?android:attr/dividerVertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view_pager_object" />
+
+            <TextView
+                android:id="@+id/use"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/use"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imageView3" />
+
+            <RadioGroup
+                android:id="@+id/group_object"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/use">
+
+
+                <Switch
+                    android:id="@+id/switch_original"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:minHeight="48dp"
+                    android:text="@string/original" />
+
+                <Switch
+                    android:id="@+id/switch_transcription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:minHeight="48dp"
+                    android:text="@string/transcription" />
+
+                <Switch
+                    android:id="@+id/switch_translate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="4dp"
+                    android:layout_weight="1"
+                    android:checked="true"
+                    android:minHeight="48dp"
+                    android:text="@string/translate" />
+
+
+            </RadioGroup>
+
+
+            <View
+                android:id="@+id/imageView2"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?android:attr/dividerVertical"
+                app:layout_constraintTop_toBottomOf="@+id/group_object" />
+
+            <FrameLayout
+                android:id="@+id/recycler_container"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:maxHeight="250dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_max="250dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/count_text">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:background="@drawable/rectangle_item_background"
+                    android:focusable="false"
+
+                    android:padding="2dp"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/item_words_list_preview" />
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/start_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:drawableStart="@android:drawable/ic_media_play"
+                android:text="@string/start"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/count_word_edit_text"
+                app:layout_constraintTop_toBottomOf="@+id/recycler_container" />
+
+            <EditText
+                android:id="@+id/count_word_edit_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:gravity="center"
+                android:hint="@string/_0"
+                android:inputType="number"
+                android:textAlignment="gravity"
+                app:layout_constraintBottom_toBottomOf="@+id/start_button"
+                app:layout_constraintStart_toEndOf="@+id/spinner"
+                app:layout_constraintTop_toTopOf="@+id/start_button"
+                tools:text="15" />
+
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:entries="@array/start_type"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="@+id/start_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/start_button" />
+
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>

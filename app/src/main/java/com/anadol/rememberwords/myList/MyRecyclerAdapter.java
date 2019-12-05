@@ -138,7 +138,9 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyViewHolder> implem
     }
 
     @Override
-    public void onItemDismiss(int position, int flag) {
+    public void onItemDismiss(RecyclerView.ViewHolder viewHolder, int flag) {
+        int position = viewHolder.getAdapterPosition();
+
         if (mCreator != null){
             mCreator.myOnItemDismiss(position, flag);
         }

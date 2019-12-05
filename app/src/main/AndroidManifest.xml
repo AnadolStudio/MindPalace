@@ -24,7 +24,6 @@
 
         <activity
             android:name=".activities.GroupDetailActivity"
-            android:parentActivityName=".activities.GroupListActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"
             android:launchMode="singleTop">
         </activity>

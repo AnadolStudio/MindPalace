@@ -28,9 +28,9 @@ public class CreateGroupActivity extends SimpleFragmentActivity {
         String[] names = getIntent().getStringArrayExtra(NAMES_ALL_GROUPS);
         if (groups == null) {
             Group group = null;
-             fragment = GroupDetailFragment.newInstance(group,names);// null значит то, что это создание новой группы
+             fragment = GroupDetailFragment.newInstance(group);// null значит то, что это создание новой группы
         }else {
-            fragment = GroupDetailFragment.newInstance(groups,names);
+            fragment = GroupDetailFragment.newInstance(groups);// UNIFY
         }
         return fragment;
     }

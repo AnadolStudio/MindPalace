@@ -26,7 +26,7 @@
             tools:visibility="gone" />
 
         <EditText
-            android:id="@+id/text_question"
+            android:id="@+id/text_original"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
@@ -65,7 +65,7 @@
         <!--        android:background="@drawable/separator" />-->
 
         <EditText
-            android:id="@+id/text_answer"
+            android:id="@+id/text_translate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
