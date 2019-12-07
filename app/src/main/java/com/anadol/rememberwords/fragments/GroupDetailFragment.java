@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,13 +19,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.transition.Transition;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,6 +36,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.LayoutAnimationController;
+import android.view.animation.TranslateAnimation;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -57,6 +68,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
 
+import static android.app.Activity.RESULT_OK;
 import static com.anadol.rememberwords.database.DbSchema.Tables.GROUPS;
 import static com.anadol.rememberwords.database.DbSchema.Tables.WORDS;
 import static com.anadol.rememberwords.fragments.DialogResult.RESULT;
@@ -89,6 +101,7 @@ public class GroupDetailFragment extends Fragment {
     private static final String TYPE_SORT = "type_sort";
     private static final String UNIFY_GROUPS = "unify_groups";
     private static final String GET_GROUPS_NAME = "get_groups_name";
+    private static final String DATA_IS_CHANGED = "data_is_changed";
 
 
     private LabelEmptyList mLabelEmptyList;
@@ -108,6 +121,7 @@ public class GroupDetailFragment extends Fragment {
     private boolean typeSort;
     private boolean sortIsNeed = true;
     protected boolean selectMode = false;
+    protected boolean isChanged;
     private TextView countWords;
 
 
@@ -154,6 +168,7 @@ public class GroupDetailFragment extends Fragment {
         outState.putBoolean(IS_CREATED,isCreated);
         outState.putBoolean(TYPE_SORT,typeSort);
         outState.putBoolean(SELECT_MODE, selectMode);
+        outState.putBoolean(DATA_IS_CHANGED, isChanged);
         outState.putIntegerArrayList(SELECT_LIST, selectedList);
         outState.putStringArrayList(NAMES_ALL_GROUPS, allGroupsNames);
 
@@ -194,13 +209,14 @@ public class GroupDetailFragment extends Fragment {
             selectMode = savedInstanceState.getBoolean(SELECT_MODE);
             selectedList = savedInstanceState.getIntegerArrayList(SELECT_LIST);
             allGroupsNames = savedInstanceState.getStringArrayList(NAMES_ALL_GROUPS);
+            isChanged = savedInstanceState.getBoolean(DATA_IS_CHANGED);
 //            mySubtitleVisible = savedInstanceState.getBoolean(SUBTITLE);
         } else {
             mWords = new ArrayList<>();
             selectMode = false;
             selectedList = new ArrayList<>();
             allGroupsNames = new ArrayList<>();
-//
+            isChanged = false;
         }
 
         //For UNIFY, selected groups;
@@ -365,18 +381,9 @@ public class GroupDetailFragment extends Fragment {
                 return true;
 
             case R.id.add_button:
-                mWords.add(0,new Word(
-                        UUID.randomUUID(),
-                        "",
-                        "",
-                        "",
-                        nameGroup.getText().toString(),
-                        "",
-                        Word.FALSE));
-                mAdapter.notifyDataSetChanged();//Добавит ввод в начало ЛИСТА
-                mLabelEmptyList.update();
-                getActivity().invalidateOptionsMenu();
-                updateWordCount();
+                //TODO: добавление нескольких Words при помощи
+                // Settings и SettingsPreference
+                addNewWord();
                 return true;
 
             case R.id.menu_select_all:
@@ -393,34 +400,15 @@ public class GroupDetailFragment extends Fragment {
                 return true;
 
             case R.id.menu_save:
-                mGroup.setName(nameGroup.getText().toString());
                 saveGroup();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void saveGroup() {
-        String name = nameGroup.getText().toString();// тут вставить проверку на существование группы с таким именем
-        if (!name.equals("") && !name.equals(" ") ) {
-            if (!nameIsTaken(name)) {
-                new WordBackground().execute(ADD_GROUP);
-                new WordBackground().execute(ADD_WORDS);
-            }else {nameGroup.setError(getString(R.string.name_is_taken));}
-//                    sendResult(Activity.RESULT_OK,new Group[]{mGroup});
-        } else {
-            nameGroup.setError(getString(R.string.is_empty));
-        }
-    }
-
-    private boolean nameIsTaken(String s){
-        // TODO: может не успеть догрузить
-        return allGroupsNames.contains(s);
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK) {
+        if (resultCode != RESULT_OK) {
             return;
         }
 
@@ -454,17 +442,59 @@ public class GroupDetailFragment extends Fragment {
 
     }
 
-    private void createLearnFragment() {
-        sortIsNeed = false;
-
-        new WordBackground().execute(GET_WORDS);//Доделывает в Post
-    }
-
     public void updateUI() {
         mLabelEmptyList.update();
         updateWordCount();
         AppCompatActivity activity = (AppCompatActivity)getActivity();
         activity.invalidateOptionsMenu();
+    }
+
+    public boolean dataIsChanged(){
+        return isChanged;
+    }
+
+    private void addNewWord() {
+        mWords.add(0,new Word(
+                UUID.randomUUID(),
+                "",
+                "",
+                "",
+                nameGroup.getText().toString(),
+                "",
+                Word.FALSE));
+        mAdapter.notifyItemInserted(0);//Добавит ввод в начало ЛИСТА
+        mRecyclerView.getLayoutManager().scrollToPosition(0);
+        mLabelEmptyList.update();
+        getActivity().invalidateOptionsMenu();
+        updateWordCount();
+    }
+
+    private void saveGroup() {
+        String name = nameGroup.getText().toString();
+        if (!name.equals(mGroup.getName())){
+            if (name.equals("") || name.equals(" ")) {
+                nameGroup.setError(getString(R.string.is_empty));
+                return;
+            }
+            if (nameIsTaken(name)){
+                nameGroup.setError(getString(R.string.name_is_taken));
+                return;
+            }
+        }
+        mGroup.setName(name);
+        new WordBackground().execute(ADD_GROUP);
+        new WordBackground().execute(ADD_WORDS);
+
+    }
+
+    private boolean nameIsTaken(String s){
+        return allGroupsNames.contains(s);
+    }
+
+    private void createLearnFragment() {
+        sortIsNeed = false;
+
+        new WordBackground().execute(GET_WORDS);//Доделывает в Post
     }
 
     private void updateWordCount() {
@@ -502,8 +532,8 @@ public class GroupDetailFragment extends Fragment {
     }
 
     private void removeWord(){
-        AppCompatActivity activity = (AppCompatActivity)getActivity();
-        activity.invalidateOptionsMenu();
+        /*AppCompatActivity activity = (AppCompatActivity)getActivity();
+        activity.invalidateOptionsMenu();*/
         if (!isCreated) {
             new WordBackground().execute(REMOVE_WORD);
         }else {
@@ -522,6 +552,7 @@ public class GroupDetailFragment extends Fragment {
             mWords.remove(w);
         }
         selectedList.clear();
+//        setSelectMode(false);
         updateWordCount();
     }
 
@@ -554,9 +585,36 @@ public class GroupDetailFragment extends Fragment {
         }
     }
 
+    private void addAnimation() {
+        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+
+                    @Override
+                    public boolean onPreDraw() {
+
+                        int parent = mRecyclerView.getRight();
+
+                        for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+                            View v = mRecyclerView.getChildAt(i);
+//                                v.setAlpha(0.0f);
+                            v.setX(-parent);
+                            v.animate().translationX(1.0f)
+                                    .setDuration(200)
+                                    .setStartDelay(i * 50)
+                                    .start();
+                            v.animate().setStartDelay(0);//возвращаю дефолтное значение
+                        }
+
+                        mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        Log.i(TAG, "Remove OnPreDrawListener");
+                        return true;
+                    }
+                });
+    }
 
     public class WordAdapter extends RecyclerView.Adapter<WordHolder>
-    implements ItemTouchHelperAdapter{
+            implements ItemTouchHelperAdapter{
+
         private ArrayList<Word> mList;
 
         public WordAdapter(ArrayList<Word> list) {
@@ -571,26 +629,9 @@ public class GroupDetailFragment extends Fragment {
         public void setList(ArrayList<Word> list) {
             sortList();
             mList = list;
-            mRecyclerView.getViewTreeObserver().addOnPreDrawListener(
-                    new ViewTreeObserver.OnPreDrawListener() {
-
-                        @Override
-                        public boolean onPreDraw() {
-                            mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
-
-                            for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
-                                View v = mRecyclerView.getChildAt(i);
-                                v.setAlpha(0.0f);
-                                v.animate().alpha(1.0f)
-                                        .setDuration(120)
-                                        .setStartDelay(i * 50)
-                                        .start();
-                            }
-
-                            return true;
-                        }
-                    });
-
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                addAnimation();
+            }
             notifyDataSetChanged();
             mLabelEmptyList.update();
         }
@@ -649,11 +690,116 @@ public class GroupDetailFragment extends Fragment {
                 Collections.sort(mWords,new Word.TranslateCompare());
             }
         }
+
+    }
+
+    public class WordHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener, View.OnLongClickListener {
+        EditText original;
+        TextView transcription;
+        EditText translate;
+        EditText comment;
+        CheckBox mCheckBox;
+
+        public WordHolder(@NonNull View itemView) {
+            super(itemView);
+
+            original = itemView.findViewById(R.id.text_original);
+            transcription = itemView.findViewById(R.id.text_transcription);
+            translate = itemView.findViewById(R.id.text_translate);
+            comment = itemView.findViewById(R.id.edit_comment);
+            mCheckBox = itemView.findViewById(R.id.checkBox);
+
+            original.addTextChangedListener(new MyTextWatch(this,MyTextWatch.ORIGINAL));
+            translate.addTextChangedListener(new MyTextWatch(this,MyTextWatch.TRANSLATE));
+            comment.addTextChangedListener(new MyTextWatch(this,MyTextWatch.COMMENT));
+            transcription.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    createDialogTranscript(WordHolder.this);
+                }
+            });
+
+            itemView.setOnClickListener(this);
+//            itemView.setOnLongClickListener(this);
+        }
+
+
+        public void bind(Word word){
+            int position = getAdapterPosition();
+
+            String origStr = word.getOriginal();
+            String transcriptStr = word.getTranscript();
+            String tranStr;
+            if (word.hasMultiTrans() == Word.FALSE) {
+                tranStr = word.getTranslate();
+            }else {
+                tranStr = word.getMultiTranslate();
+            }
+            String commentStr = word.getComment();
+
+
+            original.setText(origStr);
+            transcription.setText(transcriptStr);
+            translate.setText(tranStr);
+            comment.setText(commentStr);
+
+            original.setSelection(original.length());
+            translate.setSelection(translate.length());
+            comment.setSelection(comment.length());
+
+            original.setEnabled(!selectMode);
+            transcription.setEnabled(!selectMode);
+            translate.setEnabled(word.hasMultiTrans() == Word.FALSE && !selectMode);
+            comment.setEnabled(!selectMode);
+
+
+
+
+            if (selectMode){
+                mCheckBox.setVisibility(View.VISIBLE);
+                if (selectedList.indexOf(position) != -1){
+//                        System.out.println("position " + position);
+                    mCheckBox.setChecked(true);
+                    itemView.setBackgroundColor(getResources().getColor(R.color.colorSelected));
+                }else {
+                    mCheckBox.setChecked(false);
+                    itemView.setBackgroundColor(getResources().getColor(R.color.colorDefaultBackground));
+                }
+            }else {
+                mCheckBox.setChecked(false);
+                mCheckBox.setVisibility(View.GONE);
+                itemView.setBackgroundColor(getResources().getColor(R.color.colorDefaultBackground));
+            }
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAdapterPosition();
+            if (selectMode) {
+                Integer i = Integer.valueOf(position);
+                if (mCheckBox.isChecked()){
+                    selectedList.remove(i);
+                    view.setBackgroundColor(getResources().getColor(R.color.colorDefaultBackground));
+                }else {
+                    selectedList.add(i);
+                    view.setBackgroundColor(getResources().getColor(R.color.colorSelected));
+                }
+                mCheckBox.setChecked(!mCheckBox.isChecked());
+                updateActionBarTitle();
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            return false;
+        }
     }
 
     public class WordBackground extends DoInBackground {
         private String cmd;
         private MyCursorWrapper cursor;
+
         private SQLiteDatabase db;
 
         private ArrayList<Word> mWordsToLearn;
@@ -794,6 +940,7 @@ public class GroupDetailFragment extends Fragment {
 
                         if (cursor.getCount() != 0) {
                             cursor.moveToFirst();
+                            //TODO: реализовать порционную прогрузку
                             words = new ArrayList<>();
                             while (!cursor.isAfterLast()) {
                                 words.add(cursor.getWord());
@@ -836,19 +983,23 @@ public class GroupDetailFragment extends Fragment {
 
             return null;
         }
-
         @Override
-        public void onPost() {
+        public void onPost(boolean b) {
+            AppCompatActivity activity = (AppCompatActivity) getActivity();
+            Intent intent = null;
+
             switch (cmd){
                 case ADD_WORDS:
+
                     try {
                         Toast toast = Toast.makeText(getActivity(), getString(R.string.saved_succes_toast), Toast.LENGTH_SHORT);// Ругается на эмуляторе (возможно из-за main шрифта)
                         toast.show();
                     }catch (Exception ex){
                         ex.printStackTrace();
                     }
+                    isChanged = true;
                     if (isCreated){
-                        getActivity().finish();
+                        activity.finish();
                     }
                     break;
 
@@ -863,7 +1014,7 @@ public class GroupDetailFragment extends Fragment {
                     }else {
                         sortIsNeed = true;
                         removeEmptyWords(mWordsToLearn);
-                        Intent intent = LearnStartActivity.newIntent(getContext(),mGroup,mWordsToLearn);
+                        intent = LearnStartActivity.newIntent(getContext(),mGroup,mWordsToLearn);
                         mWordsToLearn = null; // Чтобы очистить память
                         startActivity(intent);
                     }
@@ -874,6 +1025,7 @@ public class GroupDetailFragment extends Fragment {
     }
 
     public class WordItemHelperCallBack extends ItemTouchHelper.Callback{
+
         private ItemTouchHelperAdapter mHelperAdapter;
 
         public WordItemHelperCallBack(ItemTouchHelperAdapter helperAdapter) {
@@ -890,114 +1042,11 @@ public class GroupDetailFragment extends Fragment {
         public boolean onMove(@NonNull RecyclerView mRecyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder viewHolder1) {
             return false;
         }
-
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
             mHelperAdapter.onItemDismiss(viewHolder,i);
         }
-    }
 
-    public class WordHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener, View.OnLongClickListener {
-        EditText original;
-        TextView transcription;
-        EditText translate;
-        EditText comment;
-        CheckBox mCheckBox;
-
-        public WordHolder(@NonNull View itemView) {
-            super(itemView);
-
-            original = itemView.findViewById(R.id.text_original);
-            transcription = itemView.findViewById(R.id.text_transcription);
-            translate = itemView.findViewById(R.id.text_translate);
-            comment = itemView.findViewById(R.id.edit_comment);
-            mCheckBox = itemView.findViewById(R.id.checkBox);
-
-            original.addTextChangedListener(new MyTextWatch(this,MyTextWatch.ORIGINAL));
-            translate.addTextChangedListener(new MyTextWatch(this,MyTextWatch.TRANSLATE));
-            comment.addTextChangedListener(new MyTextWatch(this,MyTextWatch.COMMENT));
-            transcription.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    createDialogTranscript(WordHolder.this);
-                }
-            });
-
-            itemView.setOnClickListener(this);
-//            itemView.setOnLongClickListener(this);
-        }
-
-
-        public void bind(Word word){
-            int position = getAdapterPosition();
-
-            String origStr = word.getOriginal();
-            String transcriptStr = word.getTranscript();
-            String tranStr;
-            if (word.hasMultiTrans() == Word.FALSE) {
-                tranStr = word.getTranslate();
-            }else {
-                tranStr = word.getMultiTranslate();
-            }
-            String commentStr = word.getComment();
-
-
-            original.setText(origStr);
-            transcription.setText(transcriptStr);
-            translate.setText(tranStr);
-            comment.setText(commentStr);
-
-            original.setSelection(original.length());
-            translate.setSelection(translate.length());
-            comment.setSelection(comment.length());
-
-            original.setEnabled(!selectMode);
-            transcription.setEnabled(!selectMode);
-            translate.setEnabled(word.hasMultiTrans() == Word.FALSE && !selectMode);
-            comment.setEnabled(!selectMode);
-
-
-
-
-            if (selectMode){
-                mCheckBox.setVisibility(View.VISIBLE);
-                if (selectedList.indexOf(position) != -1){
-//                        System.out.println("position " + position);
-                    mCheckBox.setChecked(true);
-                    itemView.setBackgroundColor(getResources().getColor(R.color.colorSelected));
-                }else {
-                    mCheckBox.setChecked(false);
-                    itemView.setBackgroundColor(getResources().getColor(R.color.colorDefaultBackground));
-                }
-            }else {
-                mCheckBox.setChecked(false);
-                mCheckBox.setVisibility(View.GONE);
-                itemView.setBackgroundColor(getResources().getColor(R.color.colorDefaultBackground));
-            }
-        }
-
-        @Override
-        public void onClick(View view) {
-            int position = getAdapterPosition();
-            if (selectMode) {
-                Integer i = Integer.valueOf(position);
-                if (mCheckBox.isChecked()){
-                    selectedList.remove(i);
-                    view.setBackgroundColor(getResources().getColor(R.color.colorDefaultBackground));
-                }else {
-                    selectedList.add(i);
-                    view.setBackgroundColor(getResources().getColor(R.color.colorSelected));
-                }
-                mCheckBox.setChecked(!mCheckBox.isChecked());
-                updateActionBarTitle();
-            }
-        }
-
-        @Override
-        public boolean onLongClick(View v) {
-            return false;
-        }
     }
 
     public class MyTextWatch implements TextWatcher{
@@ -1026,16 +1075,32 @@ public class GroupDetailFragment extends Fragment {
         @Override
         public void afterTextChanged(Editable s) {
             int position = holder.getAdapterPosition();
+            Word word = mWords.get(position);
 
             switch (type){
                 case ORIGINAL:
-                    mWords.get(position).setOriginal(s.toString().trim());
+                    if (!word.getOriginal().equals(s.toString())) {
+                        word.setOriginal(s.toString().trim());
+                    }
                     break;
                 case TRANSLATE:
-                    mWords.get(position).setTranslate(s.toString().trim());
+                    switch (word.hasMultiTrans()){
+                        case Word.TRUE:
+                            if (!word.getMultiTranslate().equals(s.toString())) {
+                                word.setTranslate(s.toString().trim());
+                            }
+                            break;
+                        case Word.FALSE:
+                            if (!word.getTranslate().equals(s.toString())) {
+                                word.setTranslate(s.toString().trim());
+                            }
+                            break;
+                    }
                     break;
                 case COMMENT:
-                    mWords.get(position).setComment(s.toString().trim());
+                    if (!word.getComment().equals(s.toString())) {
+                        word.setComment(s.toString().trim());
+                    }
                     break;
             }
 

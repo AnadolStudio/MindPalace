@@ -20,6 +20,7 @@ public class Word implements Parcelable,Comparable{
 
     private String original;
     private String translate;
+    private String multiTranslate;
     private String transcript;
     private String group;
     private String comment;
@@ -133,19 +134,27 @@ public class Word implements Parcelable,Comparable{
 
     public void setTranslate(String translate) {
         this.translate = translate;
+        multiTranslate = null;
+        System.out.println("setTranslate");
     }
 
     public String getMultiTranslate() {
-        String[][] allWords = getMultiTranslateFormat();
 
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String[] s: allWords){
-            if (stringBuilder.length() != 0){
-                stringBuilder.append("/");
+        if (multiTranslate == null) {
+            String[][] allWords = getMultiTranslateFormat();
+
+            StringBuilder stringBuilder = new StringBuilder();
+            for (String[] s: allWords){
+                if (stringBuilder.length() != 0){
+                    stringBuilder.append("/");
+                }
+                stringBuilder.append(s[0]).append(":").append(s[1]);
+
             }
-            stringBuilder.append(s[0]).append(":").append(s[1]);
+            multiTranslate = stringBuilder.toString();
         }
-        return stringBuilder.toString();
+
+        return multiTranslate;
     }
 
 

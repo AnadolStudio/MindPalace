@@ -4,8 +4,8 @@ import android.content.Context;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-public class LayoutPreference {
-    public static final String TAG = "LayoutPreference";
+public class SettingsPreference {
+    public static final String TAG = "SettingsPreference";
     public static final String LAYOUT = "layout";
 
     public static void setLayoutPreference(Context context, int layout){

@@ -66,7 +66,6 @@
     <string name="name_is_taken">Name is already taken</string>
     <string name="is_empty">Is empty</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="enabled_type">Тут должен быть правильный английский текст 1</string>
     <string name="enabled_object">Тут должен быть правильный английский текст 2</string>
     <string name="settings">Settings</string>

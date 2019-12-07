@@ -1,7 +1,6 @@
 package com.anadol.rememberwords.fragments;
 
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,7 +17,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,7 +35,7 @@ import android.widget.TextView;
 import com.anadol.rememberwords.activities.SettingActivity;
 import com.anadol.rememberwords.database.DatabaseHelper;
 import com.anadol.rememberwords.database.DbSchema;
-import com.anadol.rememberwords.database.LayoutPreference;
+import com.anadol.rememberwords.database.SettingsPreference;
 import com.anadol.rememberwords.database.MyCursorWrapper;
 import com.anadol.rememberwords.myList.DoInBackground;
 import com.anadol.rememberwords.myList.Group;
@@ -52,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static android.app.Activity.RESULT_OK;
 import static com.anadol.rememberwords.database.DbSchema.Tables.GROUPS;
 import static com.anadol.rememberwords.database.DbSchema.Tables.WORDS;
 
@@ -64,49 +63,25 @@ public class GroupListFragment extends MyFragment {
 
     public static final String SELECT_MODE = "select_mode";
     public static final String SELECT_LIST = "select_list";
-    private static final int REQUEST_SETTINGS = 11;
+    public static final String CHANGED_ITEM = "changed_item";
+    private static final int REQUEST_SETTINGS = 2;
+    public static final int REQUIRED_CHANGE = 1;
+
+
+    public static final String GROUP_SAVE = "group_save";
+    public static final String NEW_GROUP = "new_group";
+
+    private static final String GET_GROUPS = "groups";
+    private static final String INVALIDATE_GROUPS = "invalidate_groups";
+    private static final String REMOVE_GROUP = "remove_group";
+
     private RecyclerView recyclerView;
     private /*static*/ LabelEmptyList mLabelEmptyList;
 
     private ArrayList<Group> mGroups;
     private GroupAdapter mAdapter;
-
-    public static final String GROUP_SAVE = "group_save";
-    public static final String NEW_GROUP = "new_group";
-    public static final int DATA_IS_CHANGED = 1;
-
-    private static final String GET_GROUPS = "groups";
-    private static final String REMOVE_GROUP = "remove_group";
     private Group[] changes;
     private ProgressBar mProgressBar;
-
-    public String[] getNames() {
-        String[] names = new String[mGroups.size()];
-        for (int i = 0;i<mGroups.size();i++){
-            names[i] = mGroups.get(i).getName();
-        }
-        return names;
-    }
-
-    public String[] getNames(String[] s) {
-        ArrayList<String> arrayList = new ArrayList<>();
-
-        for (int i = 0;i<mGroups.size();i++){
-            if (!namesEqual(mGroups.get(i).getName(),s)) {
-                arrayList.add(mGroups.get(i).getName());
-            }
-        }
-        String[] names = new String[arrayList.size()];
-        names = arrayList.toArray(names);
-        return names;
-    }
-
-    public static boolean namesEqual(String s, String[]strings){
-        for (int i = 0; i<strings.length;i++){
-            if (s.equals(strings[i])) return true;
-        }
-        return false;
-    }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -135,6 +110,7 @@ public class GroupListFragment extends MyFragment {
             selectedList = savedInstanceState.getIntegerArrayList(SELECT_LIST);
         }else {
             mGroups = new ArrayList<>();
+            new GroupBackground().execute(GET_GROUPS);
             selectMode = false;
             selectedList = new ArrayList<>();
         }
@@ -153,7 +129,7 @@ public class GroupListFragment extends MyFragment {
 
         mAdapter = new GroupAdapter(mGroups);
 
-        createRecyclerLayoutManager(LayoutPreference.getLayoutPreference(getActivity()));
+        createRecyclerLayoutManager(SettingsPreference.getLayoutPreference(getActivity()));
         recyclerView.setAdapter(mAdapter);
 
         mLabelEmptyList = new LabelEmptyList(
@@ -168,7 +144,6 @@ public class GroupListFragment extends MyFragment {
     public void onResume() {
         super.onResume();
         mProgressBar.setVisibility(View.INVISIBLE);
-        new GroupBackground().execute(GET_GROUPS);
     }
 
     @Override
@@ -224,6 +199,34 @@ public class GroupListFragment extends MyFragment {
         }
     }
 
+    public String[] getNames() {
+        String[] names = new String[mGroups.size()];
+        for (int i = 0;i<mGroups.size();i++){
+            names[i] = mGroups.get(i).getName();
+        }
+        return names;
+    }
+
+    public String[] getNames(String[] s) {
+        ArrayList<String> arrayList = new ArrayList<>();
+
+        for (int i = 0;i<mGroups.size();i++){
+            if (!namesEqual(mGroups.get(i).getName(),s)) {
+                arrayList.add(mGroups.get(i).getName());
+            }
+        }
+        String[] names = new String[arrayList.size()];
+        names = arrayList.toArray(names);
+        return names;
+    }
+
+    public static boolean namesEqual(String s, String[]strings){
+        for (int i = 0; i<strings.length;i++){
+            if (s.equals(strings[i])) return true;
+        }
+        return false;
+    }
+
     private void createActivitySettings() {
         Intent intent = SettingActivity.newIntent(getActivity());
         // Задумка не удалась, можно заменить на обычный startActivity(Intent intent)
@@ -232,23 +235,26 @@ public class GroupListFragment extends MyFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        /*Log.i(TAG, "Result code: "+ resultCode+
+
+        Log.i(TAG, "Result code: "+ resultCode+
                 " RequestCode: "+ requestCode);
-        if (resultCode != Activity.RESULT_OK){
+        if (resultCode != RESULT_OK){
             return;
         }
         switch (requestCode){
-            case REQUEST_SETTINGS:
-                int i = data.getIntExtra(CHANGED_ITEM,1);
-                Log.i(TAG, "Changed item: " + i);
-                createRecyclerLayoutManager(i);
+            case REQUIRED_CHANGE:
+                boolean b = data.getBooleanExtra(CHANGED_ITEM,false);
+                Log.i(TAG, "Changed item: " + b);
+                if (b){
+                    new GroupBackground().execute(INVALIDATE_GROUPS);
+                }
                 break;
-        }*/
+        }
     }
 
     private void createGroup() {
         Intent intent = CreateGroupActivity.newIntent(getContext(), getNames());
-        startActivity(intent);
+        startActivityForResult(intent,REQUIRED_CHANGE);
     }
 
     private void unifyGroup() {
@@ -266,7 +272,7 @@ public class GroupListFragment extends MyFragment {
         selectedList.clear();
         intent.putExtra(GROUPS,groupsUnify);
         setSelectMode(false);
-        startActivity(intent);
+        startActivityForResult(intent,REQUIRED_CHANGE);
     }
 
     public void updateUI(){
@@ -279,7 +285,7 @@ public class GroupListFragment extends MyFragment {
 
 
         Log.i(TAG, "RecyclerLayoutManager item: " + i);
-//        LayoutPreference.setLayoutPreference(getActivity(),i);
+//        SettingsPreference.setLayoutPreference(getActivity(),i);
 
 
         switch (i){
@@ -336,7 +342,8 @@ public class GroupListFragment extends MyFragment {
                     ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
                             new Pair<View, String>(mImageView,nameTranslation));
 
-            ActivityCompat.startActivity(getActivity(),intent,activityOptions.toBundle());
+//            ActivityCompat.startActivityForResult(getActivity(),intent,REQUIRED_CHANGE,activityOptions.toBundle());
+            startActivityForResult(intent,REQUIRED_CHANGE,activityOptions.toBundle());
         }
     }
 
@@ -440,9 +447,33 @@ public class GroupListFragment extends MyFragment {
                         }
                         return true;
 
+                    case INVALIDATE_GROUPS:
+                        cursor = queryTable(
+                                db,
+                                GROUPS,
+                                null,
+                                null
+                        );
+
+                        ArrayList<Group> invalidate = new ArrayList<>();
+
+                        if (cursor.getCount() == 0) {
+                            return null;
+                        }
+                        cursor.moveToFirst();
+
+
+                        while (!cursor.isAfterLast()) {
+                            invalidate.add(cursor.getGroup());
+                            cursor.moveToNext();
+                        }
+                        mGroups = invalidate;
+
+                        return true;
+
                     case REMOVE_GROUP:
                         ArrayList<Group> groupsRemove = new ArrayList<>();
-                            for(Integer j :selectedList) {
+                        for(Integer j :selectedList) {
                             int i = j;
                             groupsRemove.add(mGroups.get(i));
                             db.delete(GROUPS,
@@ -470,14 +501,17 @@ public class GroupListFragment extends MyFragment {
         }
 
         @Override
-        public void onPost() {
-            updateUI();
-            mLabelEmptyList.update();
+        public void onPost(boolean b) {
             switch (c){
                 case REMOVE_GROUP:
                     setSelectMode(false);
                     break;
+                case GET_GROUPS:
+                case INVALIDATE_GROUPS:
+                    updateUI();
+                    mLabelEmptyList.update();
             }
+
         }
     }
 

@@ -26,12 +26,12 @@ public abstract class DoInBackground extends AsyncTask<String, Void, Boolean> {
     @Override
     protected void onPostExecute(Boolean aBoolean) {
         super.onPostExecute(aBoolean);
-        onPost();
+        onPost(aBoolean);
     }
 
     public abstract Boolean doIn(String s);
 
-    public abstract void onPost();
+    public abstract void onPost(boolean b);
 
     protected MyCursorWrapper queryTable(@NonNull SQLiteDatabase db, String table, String whereClause, String[] whereArgs){ // do in background
         Cursor cursor = db.query(

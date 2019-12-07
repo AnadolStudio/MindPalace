@@ -12,6 +12,10 @@
 
     </style>
 
+    <style name="SplashActivity" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/gradient</item>
+    </style>
+
     <style name="LightTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>

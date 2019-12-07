@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.RadioGroup;
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.database.LayoutPreference;
+import com.anadol.rememberwords.database.SettingsPreference;
 
 public class SettingListFragment extends Fragment {
     public static final String TAG = "SettingListFragment";
@@ -72,7 +72,7 @@ public class SettingListFragment extends Fragment {
         intent.putExtra(CHANGED_ITEM,getChangedItem());
         Log.i(TAG,"Changed item: " + getChangedItem()+
                 " Request code: " + getTargetRequestCode());
-        LayoutPreference.setLayoutPreference(getActivity(),getChangedItem());
+        SettingsPreference.setLayoutPreference(getActivity(),getChangedItem());
 
         /*AppCompatActivity activity = (AppCompatActivity)getActivity();
         activity.setResult(resultCode,intent);*/
