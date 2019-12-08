@@ -7,14 +7,8 @@
         <item name="android:stateListAnimator">@animator/item_group_list</item>
     </style>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="AppThemeDefault">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/colorDefaultBackground</item>
-        <!--        <item name="android:fontFamily">serif</item>-->
-        <item name="editTextStyle">@style/MyEditText</item>
 
         <item name="android:windowActivityTransitions">true</item>
 <!--        <item name="android:windowEnterTransition">@android:transition/explode</item>-->

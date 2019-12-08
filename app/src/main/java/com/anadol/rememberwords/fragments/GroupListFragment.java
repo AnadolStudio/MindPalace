@@ -1,11 +1,14 @@
 package com.anadol.rememberwords.fragments;
 
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +20,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.transition.Transition;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,6 +28,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.FrameLayout;
@@ -53,6 +58,8 @@ import java.util.List;
 import static android.app.Activity.RESULT_OK;
 import static com.anadol.rememberwords.database.DbSchema.Tables.GROUPS;
 import static com.anadol.rememberwords.database.DbSchema.Tables.WORDS;
+import static com.anadol.rememberwords.fragments.GroupDetailFragment.IS_CHANGED;
+import static com.anadol.rememberwords.fragments.GroupDetailFragment.POSITION;
 
 
 /**
@@ -64,21 +71,24 @@ public class GroupListFragment extends MyFragment {
     public static final String SELECT_MODE = "select_mode";
     public static final String SELECT_LIST = "select_list";
     public static final String CHANGED_ITEM = "changed_item";
-    private static final int REQUEST_SETTINGS = 2;
     public static final int REQUIRED_CHANGE = 1;
+    private static final int REQUEST_SETTINGS = 2;
+    private static final int REQUIRED_UNIFY = 3;
+    private static final int REQUIRED_CREATE = 4;
 
 
     public static final String GROUP_SAVE = "group_save";
     public static final String NEW_GROUP = "new_group";
 
     private static final String GET_GROUPS = "groups";
-    private static final String INVALIDATE_GROUPS = "invalidate_groups";
+    private static final String INVALIDATE_GROUP = "invalidate_groups";
     private static final String REMOVE_GROUP = "remove_group";
 
-    private RecyclerView recyclerView;
+    private RecyclerView mRecyclerView;
     private /*static*/ LabelEmptyList mLabelEmptyList;
 
     private ArrayList<Group> mGroups;
+
     private GroupAdapter mAdapter;
     private Group[] changes;
     private ProgressBar mProgressBar;
@@ -125,12 +135,12 @@ public class GroupListFragment extends MyFragment {
                 createGroup();
             }
         });
-        recyclerView = frameLayout.findViewById(R.id.recycler);
+        mRecyclerView = frameLayout.findViewById(R.id.recycler);
 
         mAdapter = new GroupAdapter(mGroups);
 
         createRecyclerLayoutManager(SettingsPreference.getLayoutPreference(getActivity()));
-        recyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mAdapter);
 
         mLabelEmptyList = new LabelEmptyList(
                 getContext(),
@@ -141,9 +151,16 @@ public class GroupListFragment extends MyFragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        Log.i(TAG, "onStart");
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         mProgressBar.setVisibility(View.INVISIBLE);
+        Log.i(TAG, "onResume ");
     }
 
     @Override
@@ -199,6 +216,7 @@ public class GroupListFragment extends MyFragment {
         }
     }
 
+
     public String[] getNames() {
         String[] names = new String[mGroups.size()];
         for (int i = 0;i<mGroups.size();i++){
@@ -243,18 +261,25 @@ public class GroupListFragment extends MyFragment {
         }
         switch (requestCode){
             case REQUIRED_CHANGE:
-                boolean b = data.getBooleanExtra(CHANGED_ITEM,false);
-                Log.i(TAG, "Changed item: " + b);
-                if (b){
-                    new GroupBackground().execute(INVALIDATE_GROUPS);
+                boolean b = data.getBooleanExtra(IS_CHANGED,false);
+                int position = data.getIntExtra(POSITION, 0);//для FilterList
+                if (b) {
+
+                    Group group = data.getParcelableExtra(CHANGED_ITEM);
+                    mAdapter.getList().set(position, group);
+
+                    Log.i(TAG, "Changed item: " + position);
+                    new GroupBackground().execute(INVALIDATE_GROUP);
+                    mAdapter.notifyItemChanged(position);
                 }
+
                 break;
         }
     }
 
     private void createGroup() {
         Intent intent = CreateGroupActivity.newIntent(getContext(), getNames());
-        startActivityForResult(intent,REQUIRED_CHANGE);
+        startActivityForResult(intent,REQUIRED_CREATE);
     }
 
     private void unifyGroup() {
@@ -272,12 +297,13 @@ public class GroupListFragment extends MyFragment {
         selectedList.clear();
         intent.putExtra(GROUPS,groupsUnify);
         setSelectMode(false);
-        startActivityForResult(intent,REQUIRED_CHANGE);
+        startActivityForResult(intent,REQUIRED_UNIFY);
     }
 
     public void updateUI(){
         mAdapter.setList(mGroups);
         mAdapter.notifyDataSetChanged();
+        mLabelEmptyList.update();
     }
 
     private void createRecyclerLayoutManager(int i){
@@ -309,7 +335,7 @@ public class GroupListFragment extends MyFragment {
                 manager = new SkidRightLayoutManager(1.65f,0.85f);
                 break;
         }
-        recyclerView.setLayoutManager(manager);
+        mRecyclerView.setLayoutManager(manager);
 
     }
 
@@ -327,6 +353,13 @@ public class GroupListFragment extends MyFragment {
         public void onBind(String name, Drawable drawable){
             mTextView.setText(name);
             mImageView.setImageDrawable(drawable);
+            if (itemView.getAlpha() != 1.0f) {
+                itemView.animate()
+                        .alpha(1.0f)
+                        .setDuration(100)
+                        .start();
+                itemView.animate().setDuration(0);
+            }
         }
 
         @Override
@@ -335,7 +368,7 @@ public class GroupListFragment extends MyFragment {
 
             if (i == RecyclerView.NO_POSITION) return;
 
-            Intent intent = GroupDetailActivity.newIntent(getContext(),mGroups.get(i));
+            Intent intent = GroupDetailActivity.newIntent(getContext(),mAdapter.getList().get(i),i);
 
             String nameTranslation = getString(R.string.color_image_translation);
             ActivityOptionsCompat activityOptions =
@@ -353,12 +386,18 @@ public class GroupListFragment extends MyFragment {
 
         public GroupAdapter(List<Group> list) {
             setList(list);
+            addAnimation();
         }
 
         public void setList(List<Group> list) {
             Collections.sort(list);
             mList = list;
             mFilterList = list;
+        }
+
+        public void smoothUpdate(List<Group> list){
+            Collections.sort(list);
+            mList = list;
         }
 
         public List<Group> getList() {
@@ -414,8 +453,36 @@ public class GroupListFragment extends MyFragment {
             };
         }
     }
+    private void addAnimation() {
+        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+
+                    @Override
+                    public boolean onPreDraw() {
+
+                        int parent = mRecyclerView.getBottom();
+
+                        for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+                            View v = mRecyclerView.getChildAt(i);
+//                                v.setAlpha(0.0f);
+                            v.setY(parent);
+                            v.animate().translationY(1.0f)
+                                    .setDuration(200)
+                                    .setStartDelay(i * 50)
+                                    .start();
+                            v.animate().setStartDelay(0);//возвращаю дефолтное значение
+                        }
+
+                        mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        Log.i(TAG, "Remove OnPreDrawListener");
+                        return true;
+                    }
+                });
+    }
+
 
     public  class GroupBackground extends DoInBackground{
+        private ArrayList<Group> invalidate;
         MyCursorWrapper cursor;
         SQLiteDatabase db;
         String c;
@@ -447,7 +514,7 @@ public class GroupListFragment extends MyFragment {
                         }
                         return true;
 
-                    case INVALIDATE_GROUPS:
+                    case INVALIDATE_GROUP:
                         cursor = queryTable(
                                 db,
                                 GROUPS,
@@ -455,7 +522,7 @@ public class GroupListFragment extends MyFragment {
                                 null
                         );
 
-                        ArrayList<Group> invalidate = new ArrayList<>();
+                        invalidate = new ArrayList<>();
 
                         if (cursor.getCount() == 0) {
                             return null;
@@ -467,7 +534,6 @@ public class GroupListFragment extends MyFragment {
                             invalidate.add(cursor.getGroup());
                             cursor.moveToNext();
                         }
-                        mGroups = invalidate;
 
                         return true;
 
@@ -506,10 +572,14 @@ public class GroupListFragment extends MyFragment {
                 case REMOVE_GROUP:
                     setSelectMode(false);
                     break;
+                case INVALIDATE_GROUP:
+                    mGroups.clear();
+                    mGroups.addAll(invalidate);
+                    mAdapter.smoothUpdate(mGroups);
+                    break;
                 case GET_GROUPS:
-                case INVALIDATE_GROUPS:
                     updateUI();
-                    mLabelEmptyList.update();
+                    break;
             }
 
         }

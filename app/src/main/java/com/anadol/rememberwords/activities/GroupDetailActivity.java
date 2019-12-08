@@ -33,15 +33,17 @@ public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pa
 
     public static final String MY_UUID = "uuid";
     private static final String TAG = "GroupDetailActivity";
+    private static final String POSITION = "position";
     private Group mGroup;
     private UUID id;
     private ViewPager viewPager;
     private Toolbar bottomBar;
 
 
-    public static Intent newIntent(Context context,Group mGroup){
+    public static Intent newIntent(Context context,Group mGroup, int position){
         Intent intent = new Intent(context, GroupDetailActivity.class);
         intent.putExtra(CURRENT_GROUP, mGroup);
+        intent.putExtra(POSITION, position);
         return intent;
     }
 
@@ -55,9 +57,10 @@ public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pa
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent();
         GroupDetailFragment fragment = (GroupDetailFragment) getFragment();
-        intent.putExtra(CHANGED_ITEM,fragment.dataIsChanged());
+        Intent intent = fragment.dataIsChanged();
+        int i = getIntent().getIntExtra(POSITION,0);
+        intent.putExtra(POSITION,i);
         setResult(RESULT_OK,intent);
         super.onBackPressed();
     }

@@ -2,26 +2,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:divider="?android:attr/dividerHorizontal"
+    android:layout_height="50dp"
     android:gravity="fill"
     android:orientation="horizontal"
     android:showDividers="middle">
 
-    <TextView
-        android:id="@+id/number_text"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:gravity="start|center_vertical"
-        android:minHeight="36dp"
-        android:padding="4dp"
-        tools:text="1." />
 
     <ImageView
         android:id="@+id/image_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="fill"
-        android:minHeight="36dp" />
+        android:gravity="fill" />
 
 </LinearLayout>

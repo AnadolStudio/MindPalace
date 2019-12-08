@@ -87,6 +87,7 @@ public class GroupDetailFragment extends Fragment {
     public static final String NAMES_ALL_GROUPS = "names_all_groups";
     public static final String POSITION = "position";
     public static final String IS_CREATED = "is_created";
+    public static final String IS_CHANGED = "is_changed";
 
     private static final String DIALOG_COLOR = "color";
     private static final String GRADIENT = "gradient";
@@ -270,7 +271,7 @@ public class GroupDetailFragment extends Fragment {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1){
             addTransitionListener();
         }else {
-            mAdapter.setList(mWords);
+            mAdapter.addList(mWords);
         }
     }
 
@@ -286,7 +287,7 @@ public class GroupDetailFragment extends Fragment {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            mAdapter.setList(mWords);
+                            mAdapter.addList(mWords);
                         }
                     },10);//Чтобы избежать небольшого тормоза в конце анимации
 
@@ -449,8 +450,11 @@ public class GroupDetailFragment extends Fragment {
         activity.invalidateOptionsMenu();
     }
 
-    public boolean dataIsChanged(){
-        return isChanged;
+    public Intent dataIsChanged(){
+        Intent intent = new Intent();
+        intent.putExtra(IS_CHANGED,isChanged);
+        intent.putExtra(CHANGED_ITEM,mGroup);
+        return intent;
     }
 
     private void addNewWord() {
@@ -626,12 +630,19 @@ public class GroupDetailFragment extends Fragment {
             mList = new ArrayList<>();
         }
 
+        public void addList(ArrayList<Word> list) {
+            sortList();
+            if (mList.isEmpty() && Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
+                addAnimation();
+            }
+            mList = list;
+            notifyDataSetChanged();
+            mLabelEmptyList.update();
+        }
+
         public void setList(ArrayList<Word> list) {
             sortList();
             mList = list;
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-                addAnimation();
-            }
             notifyDataSetChanged();
             mLabelEmptyList.update();
         }

@@ -152,7 +152,7 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
                 mWord.setComment(s.toString());
             }
         });
-        return new AlertDialog.Builder(getActivity(),R.style.DialogStyle)
+        return new AlertDialog.Builder(getActivity(),R.style.DialogKeyboard)
                 .setView(view)
                 .create();
     }

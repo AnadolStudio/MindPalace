@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppThemeDefault" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -11,6 +11,7 @@
         <item name="editTextStyle">@style/MyEditText</item>
 
     </style>
+    <style name="AppTheme" parent="AppThemeDefault"/>
 
     <style name="SplashActivity" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/gradient</item>
@@ -40,7 +41,7 @@
         <item name="android:hint">@string/detail_fragment_edit_text_hint</item>
     </style>
 
-    <style name="DialogStyle" parent="Base.Theme.AppCompat.Light.Dialog">
+    <style name="DialogKeyboard" parent="Base.Theme.AppCompat.Light.Dialog">
         <item name="android:windowMinWidthMajor">100%</item>
         <item name="android:windowMinWidthMinor">100%</item>
     </style>

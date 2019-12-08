@@ -120,7 +120,7 @@ public class DialogTranscript extends DialogFragment  implements KeyboardView.On
         mEditText.setText(text);
         mEditText.setSelection(mEditText.length());
 
-        AlertDialog.Builder adb = new AlertDialog.Builder(getContext(),R.style.DialogStyle)
+        AlertDialog.Builder adb = new AlertDialog.Builder(getContext(),R.style.DialogKeyboard)
                 .setView(v);
         Dialog dialog = adb.create();
         Window window = dialog.getWindow();
