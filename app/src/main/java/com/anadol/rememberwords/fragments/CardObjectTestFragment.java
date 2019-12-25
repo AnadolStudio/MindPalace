@@ -81,7 +81,7 @@ public class CardObjectTestFragment extends Fragment {
                 nameTest.setText(getResources().getString(R.string.translate));
                 break;
         }
-        if (count == 0){
+        if (count < 2){
             CardView cardView = view.findViewById(R.id.card_view);
             cardView.setCardBackgroundColor(getResources().getColor(R.color.colorBackgroundDisableCardTypeTest));
             view.setEnabled(false);

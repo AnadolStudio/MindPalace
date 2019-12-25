@@ -40,7 +40,9 @@
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan"></activity>
         <activity
             android:name=".activities.LearnDetailActivity"
-            android:windowSoftInputMode="stateHidden"></activity>
+            android:windowSoftInputMode="stateHidden|adjustResize">
+
+        </activity>
         <activity
             android:name=".activities.SettingActivity"
             android:parentActivityName=".activities.GroupListActivity"

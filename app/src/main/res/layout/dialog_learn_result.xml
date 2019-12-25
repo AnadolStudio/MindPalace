@@ -8,9 +8,8 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/recycler_container"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:elevation="3dp"
         app:layout_constraintBottom_toTopOf="@+id/text_correct"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,18 +25,15 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:elevation="3dp"
-        android:showDividers="middle"
-        android:divider="?android:dividerVertical">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
@@ -45,7 +41,7 @@
             android:textSize="24sp" />
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"

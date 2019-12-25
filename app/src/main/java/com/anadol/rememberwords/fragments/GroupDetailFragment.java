@@ -319,7 +319,6 @@ public class GroupDetailFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        new WordBackground().cancel(false);
         super.onDestroy();
     }
 
@@ -460,7 +459,8 @@ public class GroupDetailFragment extends Fragment {
 
     private void saveGroup() {
         String name = nameGroup.getText().toString();
-        if (!name.equals(mGroup.getName())){
+        // Подразумевается, что групп с именим "" или " " быть не должно
+        if (isCreated || !name.equals(mGroup.getName())){
             if (name.equals("") || name.equals(" ")) {
                 nameGroup.setError(getString(R.string.is_empty));
                 return;
@@ -562,8 +562,8 @@ public class GroupDetailFragment extends Fragment {
     }
 
     private void removeEmptyWords(ArrayList<Word> words){
-        ArrayList<Word> duplicate = new ArrayList<>(words);
-        for (Word w : duplicate){
+        ArrayList<Word> tempList = new ArrayList<>(words);
+        for (Word w : tempList){
             int i = 0;
             if (w.getOriginal().equals("")){i++;}
             if (w.getTranscript().equals("")){i++;}
@@ -990,7 +990,7 @@ public class GroupDetailFragment extends Fragment {
                     try {
                         if (!b){
                             Log.i(TAG,"ERROR in onPOST");
-                            Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();// Ругается на эмуляторе (возможно из-за main шрифта)
+                            Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
                         }else {
                             Toast.makeText(getActivity(), getString(R.string.saved_succes_toast), Toast.LENGTH_SHORT).show();
                         }
@@ -1014,6 +1014,11 @@ public class GroupDetailFragment extends Fragment {
                     }else {
                         sortIsNeed = true;
                         removeEmptyWords(mWordsToLearn);
+                        if (mWordsToLearn.size() < 2){
+                            String s = getString(R.string.min_word_list_size);
+                            Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         intent = LearnStartActivity.newIntent(getContext(),mGroup,mWordsToLearn);
                         mWordsToLearn = null; // Чтобы очистить память
                         startActivity(intent);

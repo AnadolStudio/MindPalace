@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -37,6 +38,7 @@ import com.anadol.rememberwords.myList.Group;
 import com.anadol.rememberwords.myList.MyRecyclerAdapter;
 import com.anadol.rememberwords.myList.MyViewHolder;
 import com.anadol.rememberwords.myList.Word;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
@@ -47,7 +49,7 @@ import static com.anadol.rememberwords.fragments.GroupListFragment.SELECT_MODE;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LearnStartFragment extends MyFragment {
+public class LearnStartFragment extends MyFragment implements View.OnClickListener{
     private static final String TAG = "learn_start";
     public static final String GROUP = "group";
     public static final String WORDS = "words";
@@ -78,7 +80,7 @@ public class LearnStartFragment extends MyFragment {
     private Switch switchTranslate;
     private Switch switchTranscript;
 
-    private Button start;
+    private Button startButton;
     private Spinner mSpinner;
 
     private int type;
@@ -93,10 +95,6 @@ public class LearnStartFragment extends MyFragment {
 
     public LearnStartFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void updateUI() {
     }
 
     public static LearnStartFragment newInstance(Group group, ArrayList<Word> mWords) {
@@ -151,19 +149,14 @@ public class LearnStartFragment extends MyFragment {
         }
 
         inflateMyView(view);
-        /*switch (type){
-            case TRUE_FALSE:
-                typeOne.setEnabled(false);
-                break;
-            case ANSWER_QUESTION:
-                typeTwo.setEnabled(false);
-                break;
-            case QUIZ:
-                typeThree.setEnabled(false);
-                break;
-        }*/
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+//        updateUI();
     }
 
     @Override
@@ -185,7 +178,6 @@ public class LearnStartFragment extends MyFragment {
             case R.id.menu_cancel:
                 cancel();
                 mSelectedWords.clear();
-                updateOptions(mWords);
                 return true;
 
             case R.id.menu_select_all:
@@ -212,9 +204,6 @@ public class LearnStartFragment extends MyFragment {
 
         TextView textView = view.findViewById(R.id.type_test);
         textView.requestFocus();
-        /*typeOne = view.findViewById(R.id.true_false_button);
-        typeTwo = view.findViewById(R.id.answer_question_button);
-        typeThree = view.findViewById(R.id.quiz_button);*/
 
         switchOriginal = view.findViewById(R.id.switch_original);
         switchTranscript = view.findViewById(R.id.switch_transcription);
@@ -248,30 +237,14 @@ public class LearnStartFragment extends MyFragment {
         });
         mViewPagerObject.setOffscreenPageLimit(5);
         switchEnabled(mViewPagerObject.getCurrentItem());
-        mViewPagerObject.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int i, float v, int i1) {
 
-            }
-
-            @Override
-            public void onPageSelected(int i) {
-                switchEnabled(i);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int i) {
-
-            }
-        });
-
-
-        start = view.findViewById(R.id.start_button);
+        startButton = view.findViewById(R.id.start_button);
+        mEditText = view.findViewById(R.id.count_word_edit_text);
         setListeners();
 
-        if (!isSelectMode()) {
+        /*if (!isSelectMode()) {
             updateOptions(mWords);
-        }
+        }*/
 
         FrameLayout frameLayout = view.findViewById(R.id.recycler_container);
         recyclerView = frameLayout.findViewById(R.id.recycler_detail);
@@ -284,27 +257,6 @@ public class LearnStartFragment extends MyFragment {
         recyclerView.setLongClickable(true);
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(),DividerItemDecoration.VERTICAL));
 
-
-        mEditText = view.findViewById(R.id.count_word_edit_text);
-        mEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.toString().equals("")) return;
-
-                int i = Integer.valueOf(s.toString());
-                start.setEnabled(i > 2);
-            }
-        });
         if (mSpinner.getSelectedItemPosition()==0 || mSpinner.getSelectedItemPosition() == 1){
             mEditText.setEnabled(false);
         }
@@ -335,15 +287,32 @@ public class LearnStartFragment extends MyFragment {
     }
 
     private void setListeners() {
-//        ButtonListener buttonListener = new ButtonListener();
-        /*typeOne.setOnClickListener(buttonListener);
-        typeTwo.setOnClickListener(buttonListener);
-        typeThree.setOnClickListener(buttonListener);*/
 
-      /*  SwitchListener switchListener = new SwitchListener();
-         switchOriginal.setOnCheckedChangeListener(switchListener);
-         switchTranscript.setOnCheckedChangeListener(switchListener);
-         switchTranslate.setOnCheckedChangeListener(switchListener);*/
+        mViewPagerType.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+            }
+            @Override
+            public void onPageSelected(int i) {
+                updateUI();
+            }
+            @Override
+            public void onPageScrollStateChanged(int i) {
+            }
+        });
+        mViewPagerObject.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+            }
+            @Override
+            public void onPageSelected(int i) {
+                switchEnabled(i);
+                updateUI();
+            }
+            @Override
+            public void onPageScrollStateChanged(int i) {
+            }
+        });
 
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
@@ -355,13 +324,14 @@ public class LearnStartFragment extends MyFragment {
                 }
                 switch (position) {
                     case 0:
+                        mEditText.setText("");
                         mEditText.setEnabled(false);
                         break;
                     case 1:
+                        mEditText.setText("");
                         mEditText.setEnabled(false);
                         if (!isSelectMode()) {
                             setSelectMode(true);
-                            updateOptions(mSelectedWords);
                         }
                         break;
                     case 2:
@@ -376,6 +346,7 @@ public class LearnStartFragment extends MyFragment {
                 if (mEditText.isEnabled()){
                     mEditText.requestFocus();
                 }
+                updateUI();
             }
 
             @Override
@@ -383,180 +354,82 @@ public class LearnStartFragment extends MyFragment {
 
             }
         });
-        start.setOnClickListener(new View.OnClickListener() {
+
+        mEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v) {
-                boolean isAllReady = true;
-                ArrayList<Word> learnList = new ArrayList<>();
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString().equals("")) return;
 
-                /* На краях ViewPager getChildCount == 2
-                 * Пофиксил увеличением лимита загружаемых страниц setOffscreenPage(5)
-                 */
-
-                Log.d(TAG, "Current " + mViewPagerType.getCurrentItem()+
-                        " Count " + mViewPagerType.getChildCount());
-
-                View currentType = mViewPagerType.getChildAt(mViewPagerType.getCurrentItem());
-                if (!currentType.isEnabled()){
-                    Toast.makeText(getContext(), getString(R.string.enabled_type), Toast.LENGTH_SHORT).show();//temp
-                    return;
-                }
-
-                View currentObject = mViewPagerObject.getChildAt(mViewPagerObject.getCurrentItem());
-                if (!currentObject.isEnabled()){
-                    Toast.makeText(getContext(), getString(R.string.enabled_object), Toast.LENGTH_SHORT).show();//temp
-                    return;
-                }
-                Intent intent = LearnDetailActivity.newIntent( // Тут предаются выбратнные атрибуты для начала теста
-                        getContext(),
-                        learnList,
-                        mGroup,
-                        mViewPagerType.getCurrentItem(),
-                        mViewPagerObject.getCurrentItem(),
-                        new boolean[]{switchOriginal.isChecked(),switchTranscript.isChecked(),switchTranslate.isChecked()});
-
-                int count = 0;
-                if (!mEditText.getText().toString().equals("")) {
-                    count = Integer.valueOf(mEditText.getText().toString());
-                    if (count>mWords.size()){
-                        count = mWords.size();
-                        mEditText.setText(Integer.toString(count));
-                        mEditText.setSelection(mEditText.length());
-                    }
-                }
-
-                switch (mSpinner.getSelectedItemPosition()) {
-                    case 0:
-                        learnList.addAll(mWords);
-                        break;
-                    case 1:
-                        if (selectedList.isEmpty() || selectedList.size() == 1) {
-                            try {
-                                Toast.makeText(getContext(), "Please select some words else", Toast.LENGTH_LONG).show();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        } else {
-                            learnList.addAll(mSelectedWords);
-                        }
-                        break;
-                    case 2:
-                        if (count == 0) {
-                            isAllReady = false;
-                            mEditText.setError("is empty");
-                        } else {
-                            for (int i = 0; i < count; i++) {
-                                learnList.add(mWords.get(i));
-                            }
-                        }
-                        break;
-                    case 3:
-                        if (count == 0) {
-                            isAllReady = false;
-                            mEditText.setError("is empty");
-                        }else {
-                            for (int i = 1; i <= count; i++) {
-                                learnList.add(mWords.get(mWords.size() - i));
-                            }
-                            break;
-                        }
-                }
-
-                //Если ни один не выбран
-                if (!switchOriginal.isChecked() &&
-                        !switchTranslate.isChecked() &&
-                        !switchTranscript.isChecked()) {
-                    isAllReady = false;
-                    Toast.makeText(getContext(), getString(R.string.no_used_object), Toast.LENGTH_LONG).show();
-                }
-                // Если выбран один, но имеет пустые ячейки
-                int i = 0;
-                boolean[] booleans = {switchOriginal.isChecked(), switchTranslate.isChecked(), switchTranscript.isChecked()};
-                for (boolean b : booleans){
-                    if (b){
-                        i++;
-                    }
-                }
-                if (i == 1){
-                    int j = 0;
-                    for (Word w : mWords){
-                        if (switchOriginal.isChecked()) {
-                            if (w.getOriginal().equals("")) j++;
-                        }
-                        if (switchTranslate.isChecked()) {
-                            if (w.getTranslate().equals("")) j++;
-                        }
-                        if (switchTranscript.isChecked()) {
-                            if (w.getTranscript().equals("")) j++;
-                        }
-                    }
-                    if (j != 0){
-                        isAllReady = false;
-                        Toast.makeText(getContext(),getString(R.string.your_used_object_have_empty_cells) , Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                if (isAllReady) { // Выполнять если все требования соблюдены
-                    startActivity(intent);
-                }
+                int i = Integer.valueOf(s.toString());
+                int min = 2;
+                if (mViewPagerType.getCurrentItem() == QUIZ) min = 4;
+                startButton.setEnabled(i >= min);
             }
         });
+
+        CompoundButton.OnCheckedChangeListener switchListener = new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                updateUI();
+            }
+        };
+
+        switchOriginal.setOnCheckedChangeListener(switchListener);
+        switchTranscript.setOnCheckedChangeListener(switchListener);
+        switchTranslate.setOnCheckedChangeListener(switchListener);
+
+        startButton.setOnClickListener(this);
     }
 
-    private void updateOptions(ArrayList<Word> list){
-        ArrayList<Word> removeWords = new ArrayList<>();
-        originalIsEmpty = false;
-        transcriptIsEmpty = false;
-        translateIsEmpty = false;
-        for (Word w :list){
-            int i = 0;
-            if (w.getOriginal()== null || w.getOriginal().equals("")){
-                i++;
-            }
-            if (w.getTranscript()== null || w.getTranscript().equals("")){
-                i++;
-            }
-            if (w.getTranslate()== null || w.getTranslate().equals("")){
-                i++;
-            }
-
-            if (i>=2){
-                removeWords.add(w);
-            }else {
-                Log.d(TAG,"before "+originalIsEmpty+" "+ translateIsEmpty +" "+ transcriptIsEmpty);
-                Log.d(TAG,w.getOriginal()+" "+ w.getTranslate() +" "+ w.getTranscript());
-                if (w.getOriginal()== null || w.getOriginal().equals("")){
-                    originalIsEmpty = true;
-                }
-                if (w.getTranscript()== null || w.getTranscript().equals("")){
-                    transcriptIsEmpty = true;
-                }
-                if (w.getTranslate()== null || w.getTranslate().equals("")){
-                    translateIsEmpty = true;
-                }
-            }
-        }
-       /* for (Word r :removeWords){
-            list.remove(r);
-        }
-        if (list.size()<3){
-            typeThree.setVisibility(View.GONE);
-        }else {
-            typeThree.setVisibility(View.VISIBLE);
-        }*/
-
-       /* if (originalIsEmpty) {
-            switchOne.setChecked(false);
+    @Override
+    public void updateUI() {
+        boolean isAllReady = true;
+        View currentType = mViewPagerType.getChildAt(mViewPagerType.getCurrentItem());
+        if (currentType == null){
+            Toast.makeText(getContext(),"On a null object reference (for developers)",Toast.LENGTH_SHORT).show(); // Temp
+        }else if (!currentType.isEnabled()){
+            isAllReady = false;
         }
 
-        Log.d(TAG,originalIsEmpty+" "+ translateIsEmpty +" "+ transcriptIsEmpty);
-        switchOne.setEnabled(!originalIsEmpty);
-        switchTwo.setEnabled(!translateIsEmpty);
-        switchThree.setEnabled(!transcriptIsEmpty);
+        View currentObject = mViewPagerObject.getChildAt(mViewPagerObject.getCurrentItem());
 
-        if (originalIsEmpty && transcriptIsEmpty && translateIsEmpty) {
-            start.setEnabled(false);
-        }*/
+        if (currentObject == null){
+            Toast.makeText(getContext(),"On a null object reference (for developers)",Toast.LENGTH_SHORT).show(); // Temp
+        }else if (!currentObject.isEnabled()){
+            isAllReady = false;
+        }
+
+        //Если ни один не выбран
+        if (!switchOriginal.isChecked() &&
+                !switchTranslate.isChecked() &&
+                !switchTranscript.isChecked()) {
+            isAllReady = false;
+        }
+
+        startButton.setEnabled(isAllReady);
+    }
+
+    private void removeWordsWithEmptyCells(int objectTests, ArrayList<Word> words){
+        ArrayList<Word> tempList = new ArrayList<>(words);
+        for (Word w : tempList){
+            switch (objectTests){
+                case ORIGINAL:
+                    if (w.getOriginal().equals("")){words.remove(w);}
+                    break;
+                case TRANSCRIPT:
+                    if (w.getTranscript().equals("")){words.remove(w);}
+                    break;
+                case TRANSLATE:
+                    if (w.getTranslate().equals("")){words.remove(w);}
+                    break;
+            }
+        }
     }
 
     private void createAdapter() {
@@ -626,7 +499,6 @@ public class LearnStartFragment extends MyFragment {
                         mSelectedWords.add(mWords.get(position));
                         view.setBackgroundColor(getResources().getColor(R.color.colorSelected));
                     }
-                    updateOptions(mSelectedWords);
                     checkBox.setChecked(!checkBox.isChecked());
                     updateActionBarTitle();
                 }
@@ -637,7 +509,6 @@ public class LearnStartFragment extends MyFragment {
                 if (!isSelectMode()) {
                     selectedList.add(position);
                     mSelectedWords.add(mWords.get(position));
-                    updateOptions(mSelectedWords);
                     setSelectMode(true);
                     view.setBackgroundColor(getResources().getColor(R.color.colorSelected));
                     mSpinner.setSelection(1);
@@ -651,62 +522,126 @@ public class LearnStartFragment extends MyFragment {
         });
     }
 
-/*
-    class ButtonListener implements View.OnClickListener{
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.true_false_button:
-                    v.setEnabled(false);
-                    typeTwo.setEnabled(true);
-                    typeThree.setEnabled(true);
-                    type = TRUE_FALSE;
-                    break;
-                case R.id.answer_question_button:
-                    v.setEnabled(false);
-                    typeOne.setEnabled(true);
-                    typeThree.setEnabled(true);
-                    type = ANSWER_QUESTION;
-                    break;
-                case R.id.quiz_button:
-                    v.setEnabled(false);
-                    typeOne.setEnabled(true);
-                    typeTwo.setEnabled(true);
-                    type = QUIZ;
-                    break;
 
-                    default:
+    @Override
+    public void onClick(View v) {
+        {
+            boolean isAllReady = true;
+            ArrayList<Word> learnList = new ArrayList<>();
+            String s;
+
+            /* На краях ViewPager getChildCount == 2
+             * Пофиксил увеличением лимита загружаемых страниц setOffscreenPage(5)
+             */
+
+            Log.d(TAG, "Current " + mViewPagerType.getCurrentItem()+
+                    " Count " + mViewPagerType.getChildCount());
+
+            Intent intent = LearnDetailActivity.newIntent( // Тут предаются выбратнные атрибуты для начала теста
+                    getContext(),
+                    learnList,
+                    mGroup,
+                    mViewPagerType.getCurrentItem(),
+                    mViewPagerObject.getCurrentItem(),
+                    new boolean[]{switchOriginal.isChecked(),switchTranscript.isChecked(),switchTranslate.isChecked()});
+
+            int count = 0;
+            if (!mEditText.getText().toString().equals("")) {
+                count = Integer.valueOf(mEditText.getText().toString());
+                if (count > mWords.size()){
+                    count = mWords.size();
+                    mEditText.setText(Integer.toString(count));
+                    mEditText.setSelection(mEditText.length());
+                }
+            }
+
+            switch (mSpinner.getSelectedItemPosition()) {
+                case 0:
+                    learnList.addAll(mWords);
+                    break;
+                case 1:
+                    if (selectedList.isEmpty() || selectedList.size() == 1) {
+                        s = getString(R.string.select_some_word_else);
+                        Toast.makeText(getContext(), s, Toast.LENGTH_LONG).show();
+                    } else {
+                        learnList.addAll(mSelectedWords);
+                    }
+                    break;
+                case 2:
+                    if (count == 0) {
+                        isAllReady = false;
+                        s = getString(R.string.is_empty);
+                        mEditText.setError(s);
+                    } else {
+                        for (int i = 0; i < count; i++) {
+                            learnList.add(mWords.get(i));
+                        }
+                    }
+                    break;
+                case 3:
+                    if (count == 0) {
+                        isAllReady = false;
+                        s = getString(R.string.is_empty);
+                        mEditText.setError(s);
+                    }else {
+                        for (int i = 1; i <= count; i++) {
+                            learnList.add(mWords.get(mWords.size() - i));
+                        }
                         break;
+                    }
             }
-            if (mWords.size()<3){
-                typeThree.setVisibility(View.INVISIBLE);
+
+
+            // Если выбран один, но имеет пустые ячейки
+            int i = 0;
+            boolean[] booleans = {switchOriginal.isChecked(), switchTranslate.isChecked(), switchTranscript.isChecked()};
+            for (boolean b : booleans){
+                if (b){
+                    i++;
+                }
+            }
+            if (i == 1){
+                int j = 0;
+                for (Word w : mWords){
+                    if (switchOriginal.isChecked()) {
+                        if (w.getOriginal().equals("")) j++;
+                    }
+                    if (switchTranslate.isChecked()) {
+                        if (w.getTranslate().equals("")) j++;
+                    }
+                    if (switchTranscript.isChecked()) {
+                        if (w.getTranscript().equals("")) j++;
+                    }
+                }
+                if (j != 0){
+                    isAllReady = false;
+                    Toast.makeText(getContext(),getString(R.string.your_used_object_have_empty_cells) , Toast.LENGTH_LONG).show();
+                }
+            }
+
+            if (mViewPagerObject.getCurrentItem() == TRANSCRIPT){
+                int learnSize = learnList.size();
+                removeWordsWithEmptyCells(TRANSCRIPT,learnList);
+                int min = 2;
+                if (mViewPagerType.getCurrentItem() == QUIZ) min = 4;
+
+                if (learnList.size() < min){
+                    isAllReady = false;
+                    s = getString(R.string.min_transcript_list_size,min);
+                    Toast.makeText(getContext(), s, Toast.LENGTH_LONG).show();
+                }else if (isAllReady && learnList.size() != learnSize){
+                    s = getString(R.string.word_without_transcription);
+                    Toast toast = Toast.makeText(getContext(),s , Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.TOP,toast.getXOffset(),toast.getYOffset());
+                    toast.show();
+//                    Snackbar.make(getView(),s,Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            if (isAllReady) { // Выполнять, если все требования соблюдены
+                startActivity(intent);
             }
         }
-
-    }
-*/
-    class SwitchListener implements CompoundButton.OnCheckedChangeListener {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-           Toast.makeText(getContext(),"Написать слушателя",Toast.LENGTH_SHORT).show();
-        }
-
     }
 
-
-/*
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK) {
-            return;
-        }
-
-        switch (requestCode){// так мы понимаем что именно для этой активности предназначаются данные из интента
-
-            case REQUEST_RESULT:
-                getActivity().finish();
-                break;
-        }
-
-    }
-*/
 }

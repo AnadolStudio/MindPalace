@@ -78,6 +78,10 @@
     <string name="group_detail_edit_text_hint">Group</string>
     <string name="color_image_translation">color_image_translation</string>
     <string name="testing_group">Testing %1$s</string>
+    <string name="min_word_list_size">You need at least 2 words</string>
+    <string name="min_transcript_list_size">You need at least %1$d words with transcription</string>
+    <string name="word_without_transcription">Some words do not have transcription, so they are not used</string>
+    <string name="select_some_word_else">Please select some words else</string>
 
 
     <plurals name="word_items">

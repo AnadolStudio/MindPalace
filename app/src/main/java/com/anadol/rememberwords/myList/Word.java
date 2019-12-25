@@ -108,6 +108,7 @@ public class Word implements Parcelable,Comparable{
         return id;
     }
 
+    @NonNull
     public String getOriginal() {
         if (original == null) {
             original = "";
@@ -119,6 +120,7 @@ public class Word implements Parcelable,Comparable{
         this.original = original;
     }
 
+    @NonNull
     public String getTranscript() {
         if (transcript == null) {
             transcript = "";
@@ -130,6 +132,7 @@ public class Word implements Parcelable,Comparable{
         this.transcript = transcript;
     }
 
+    @NonNull
     public String getTranslate() {
         if (translate == null) {
             translate = "";
