@@ -33,10 +33,11 @@ public abstract class DoInBackground extends AsyncTask<String, Void, Boolean> {
 
     public abstract void onPost(boolean b);
 
-    protected MyCursorWrapper queryTable(@NonNull SQLiteDatabase db, String table, String whereClause, String[] whereArgs){ // do in background
+
+    protected MyCursorWrapper queryTable(@NonNull SQLiteDatabase db, String table,String[] columns,String whereClause, String[] whereArgs){ // do in background
         Cursor cursor = db.query(
                 table,
-                null,
+                columns,
                 whereClause,
                 whereArgs,
                 null,null,null

@@ -2,6 +2,7 @@ package com.anadol.rememberwords.fragments;
 
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -54,6 +55,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
+import static com.anadol.rememberwords.database.DbSchema.Tables.Cols.NAME_GROUP;
 import static com.anadol.rememberwords.database.DbSchema.Tables.GROUPS;
 import static com.anadol.rememberwords.database.DbSchema.Tables.WORDS;
 import static com.anadol.rememberwords.fragments.DialogResult.RESULT;
@@ -260,6 +262,11 @@ public class GroupDetailFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+    }
+
     @TargetApi(21)
     private void addTransitionListener() {
         final Transition transition = getActivity().getWindow().getSharedElementEnterTransition();
@@ -312,7 +319,8 @@ public class GroupDetailFragment extends Fragment {
             mAdapter.setList(mWords);
         }
 
-        if (allGroupsNames == null){
+        if (allGroupsNames.isEmpty()){
+            Log.i(TAG, "allGroupsNames.isEmpty()");
             new WordBackground().execute(GET_GROUPS_NAME);
         }
     }
@@ -811,6 +819,7 @@ public class GroupDetailFragment extends Fragment {
                     case ADD_GROUP:
                         cursor = queryTable(db,
                                 GROUPS,
+                                null,
                                 Cols.UUID + " = ?",
                                 new String[]{mGroup.getIdString()});
 
@@ -834,7 +843,8 @@ public class GroupDetailFragment extends Fragment {
                             cursor = queryTable(
                                     db,
                                     WORDS,
-                                    Cols.NAME_GROUP + " = ?",
+                                    null,
+                                    NAME_GROUP + " = ?",
                                     new String[]{g.getName()}
                             );
 
@@ -860,16 +870,19 @@ public class GroupDetailFragment extends Fragment {
                         cursor = queryTable(
                                 db,
                                 GROUPS,
-                                Cols.NAME_GROUP + " = ?",
+                                new String[]{NAME_GROUP},
+                                null,
                                 null
                         );
 
                         if (cursor.getCount() != 0){
                             cursor.moveToFirst();
-                            while (cursor.isAfterLast()) {
-                                groupsNames.add(cursor.getString(0));
+                            while (!cursor.isAfterLast()) {
+                                groupsNames.add(cursor.getString(cursor.getColumnIndex(NAME_GROUP)));
+//                                groupsNames.add(cursor.getString(0));
                                 cursor.moveToNext();
                             }
+//                            Log.i(TAG,"" + groupsNames.size());
                             //Удаляю имена текущей группы/групп (Unify)
                             groupsNames.remove(mGroup.getName());
                             if (mGroups != null){
@@ -902,6 +915,7 @@ public class GroupDetailFragment extends Fragment {
                             System.out.println(trans);
                             cursor = queryTable(db,
                                     WORDS,
+                                    null,
                                     Cols.UUID + " = ?",
                                     new String[]{id.toString()});
                             if (cursor.getCount() != 0) {
@@ -930,7 +944,8 @@ public class GroupDetailFragment extends Fragment {
                         cursor = queryTable(
                                 db,
                                 WORDS,
-                                Cols.NAME_GROUP + " = ?",
+                                null,
+                                NAME_GROUP + " = ?",
                                 new String[]{mGroup.getName()}
                         );
 
@@ -959,6 +974,7 @@ public class GroupDetailFragment extends Fragment {
                             wordsRemove.add(mWords.get(i));
                             cursor = queryTable(db,
                                     WORDS,
+                                    null,
                                     Cols.UUID + " = ?",
                                     new String[]{mWords.get(i).getId().toString()});
                             if (cursor.getCount() !=0) {
@@ -987,18 +1003,15 @@ public class GroupDetailFragment extends Fragment {
             switch (cmd){
                 case ADD_WORDS:
 
-                    try {
-                        if (!b){
-                            Log.i(TAG,"ERROR in onPOST");
-                            Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(getActivity(), getString(R.string.saved_succes_toast), Toast.LENGTH_SHORT).show();
-                        }
-                    }catch (Exception ex){
-                        ex.printStackTrace();
+                    if (!b){
+                        Log.i(TAG,"ERROR in onPOST");
+                        Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
+                    }else {
+                        Toast.makeText(getActivity(), getString(R.string.saved_succes_toast), Toast.LENGTH_SHORT).show();
                     }
                     isChanged = true;
                     if (isCreated){
+                        getActivity().setResult(RESULT_OK, new Intent().putExtra(CHANGED_ITEM,mGroup));
                         activity.finish();
                     }
                     break;

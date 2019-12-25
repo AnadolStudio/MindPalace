@@ -15,7 +15,7 @@
         <item name="android:fontFamily">serif</item>
         <item name="android:textViewStyle">@style/TextViewStyle</item>
         <item name="android:buttonStyle">@style/ButtonStyle</item>
-<!--        <item name="editTextStyle">@style/EditTextStyle</item>-->
+        <item name="editTextStyle">@style/EditTextStyle</item>
 <!--        <item name="checkboxStyle">@style/CheckBoxStyle</item>-->
         <item name="switchStyle">@style/SwitchStyle</item>
     </style>
@@ -73,6 +73,15 @@
     <style name="MyCardView" parent="CardView">
         <item name="android:minHeight">150dp</item>
         <item name="android:radius">5dp</item>
+    </style>
+
+    <style name="SpinnerStyle" parent="CardView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:entries">@array/start_type</item>
+        <item name="android:gravity">fill</item>
+        <item name="android:foreground">@drawable/spinner_foreground</item>
     </style>
 
 

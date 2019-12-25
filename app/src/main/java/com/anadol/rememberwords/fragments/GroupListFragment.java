@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -259,20 +260,29 @@ public class GroupListFragment extends MyFragment {
         if (resultCode != RESULT_OK){
             return;
         }
+        int position;
         switch (requestCode){
             case REQUIRED_CHANGE:
                 boolean b = data.getBooleanExtra(IS_CHANGED,false);
-                int position = data.getIntExtra(POSITION, 0);//для FilterList
+                position = data.getIntExtra(POSITION, 0);//для FilterList
                 if (b) {
 
                     Group group = data.getParcelableExtra(CHANGED_ITEM);
                     mAdapter.getList().set(position, group);
 
                     Log.i(TAG, "Changed item: " + position);
-                    new GroupBackground().execute(INVALIDATE_GROUP);
+//                    new GroupBackground().execute(INVALIDATE_GROUP);
                     mAdapter.notifyItemChanged(position);
                 }
 
+                break;
+            case REQUIRED_CREATE:
+
+                Group group = data.getParcelableExtra(CHANGED_ITEM);
+                Log.i(TAG, "Create item: " + group.hashCode());
+                GroupBackground groupBackground = new GroupBackground();
+                groupBackground.setGroup(group);
+                groupBackground.execute(INVALIDATE_GROUP);
                 break;
         }
     }
@@ -484,9 +494,10 @@ public class GroupListFragment extends MyFragment {
 
     public  class GroupBackground extends DoInBackground{
         private ArrayList<Group> invalidate;
-        MyCursorWrapper cursor;
-        SQLiteDatabase db;
-        String c;
+        private MyCursorWrapper cursor;
+        private SQLiteDatabase db;
+        private String c;
+        private Group mGroupTemp;
         @Override
         public Boolean doIn(String command) {
             c = command;
@@ -498,6 +509,7 @@ public class GroupListFragment extends MyFragment {
                         cursor = queryTable(
                                 db,
                                 GROUPS,
+                                null,
                                 null,
                                 null
                         );
@@ -519,6 +531,7 @@ public class GroupListFragment extends MyFragment {
                         cursor = queryTable(
                                 db,
                                 GROUPS,
+                                null,
                                 null,
                                 null
                         );
@@ -576,13 +589,28 @@ public class GroupListFragment extends MyFragment {
                 case INVALIDATE_GROUP:
                     mGroups.clear();
                     mGroups.addAll(invalidate);
-                    mAdapter.smoothUpdate(mGroups);
+                    mAdapter.setList(mGroups);
+                    mAdapter.notifyDataSetChanged();
+                    if (mGroupTemp != null){
+                        int position = -1;
+                        for (Group g: mAdapter.getList()) {
+                            // Потому что mGroupTemp.equals(g) == false
+                            if (g.getName().equals(mGroupTemp.getName())){
+                                position = mAdapter.getList().indexOf(g);
+                            }
+                        }
+                        mRecyclerView.scrollToPosition(position);
+                    }
                     break;
                 case GET_GROUPS:
                     updateUI();
                     break;
             }
 
+        }
+
+        public void setGroup(Group group) {
+            mGroupTemp = group;
         }
     }
 

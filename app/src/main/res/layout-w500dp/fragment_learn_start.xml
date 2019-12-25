@@ -189,13 +189,7 @@
 
             <Spinner
                 android:id="@+id/spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:entries="@array/start_type"
-                android:gravity="center"
+                style="@style/SpinnerStyle"
                 app:layout_constraintBottom_toBottomOf="@+id/start_button"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/start_button" />
