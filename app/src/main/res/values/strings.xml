@@ -66,6 +66,7 @@
     <string name="name_is_taken">Name is already taken</string>
     <string name="is_empty">Is empty</string>
 
+<!--    TODO: Тут должун быть правильный английский текст-->
     <string name="enabled_type">Тут должен быть правильный английский текст 1</string>
     <string name="enabled_object">Тут должен быть правильный английский текст 2</string>
     <string name="settings">Settings</string>
@@ -74,8 +75,9 @@
     <string name="echelon_layout">Echelon Layout</string>
     <string name="skid_layout">Skid Layout</string>
     <string name="apply">Apply</string>
-    <string name="detail_fragment_edit_text_hint">Enter a text for the group</string>
+    <string name="group_detail_edit_text_hint">Group</string>
     <string name="color_image_translation">color_image_translation</string>
+    <string name="testing_group">Testing %1$s</string>
 
 
     <plurals name="word_items">

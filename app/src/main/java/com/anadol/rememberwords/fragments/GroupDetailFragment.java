@@ -2,33 +2,28 @@ package com.anadol.rememberwords.fragments;
 
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.core.view.ViewCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.transition.Transition;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,13 +31,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.LayoutAnimationController;
-import android.view.animation.TranslateAnimation;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -59,10 +47,7 @@ import com.anadol.rememberwords.myList.DoInBackground;
 import com.anadol.rememberwords.myList.Group;
 import com.anadol.rememberwords.myList.LabelEmptyList;
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.myList.MyRecyclerAdapter;
-import com.anadol.rememberwords.myList.MyViewHolder;
 import com.anadol.rememberwords.myList.Word;
-import com.dingmouren.layoutmanagergroup.slide.ItemTouchHelperCallback;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -992,7 +977,7 @@ public class GroupDetailFragment extends Fragment {
                 ex.printStackTrace();
             }
 
-            return null;
+            return false;
         }
         @Override
         public void onPost(boolean b) {
@@ -1003,8 +988,12 @@ public class GroupDetailFragment extends Fragment {
                 case ADD_WORDS:
 
                     try {
-                        Toast toast = Toast.makeText(getActivity(), getString(R.string.saved_succes_toast), Toast.LENGTH_SHORT);// Ругается на эмуляторе (возможно из-за main шрифта)
-                        toast.show();
+                        if (!b){
+                            Log.i(TAG,"ERROR in onPOST");
+                            Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();// Ругается на эмуляторе (возможно из-за main шрифта)
+                        }else {
+                            Toast.makeText(getActivity(), getString(R.string.saved_succes_toast), Toast.LENGTH_SHORT).show();
+                        }
                     }catch (Exception ex){
                         ex.printStackTrace();
                     }

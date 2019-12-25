@@ -2,15 +2,11 @@ package com.anadol.rememberwords.myList;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import android.util.Log;
+import androidx.annotation.NonNull;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
 import java.util.UUID;
 
 public class Word implements Parcelable,Comparable{
@@ -113,6 +109,9 @@ public class Word implements Parcelable,Comparable{
     }
 
     public String getOriginal() {
+        if (original == null) {
+            original = "";
+        }
         return original;
     }
 
@@ -121,6 +120,9 @@ public class Word implements Parcelable,Comparable{
     }
 
     public String getTranscript() {
+        if (transcript == null) {
+            transcript = "";
+        }
         return transcript;
     }
 
@@ -129,6 +131,9 @@ public class Word implements Parcelable,Comparable{
     }
 
     public String getTranslate() {
+        if (translate == null) {
+            translate = "";
+        }
         return translate;
     }
 

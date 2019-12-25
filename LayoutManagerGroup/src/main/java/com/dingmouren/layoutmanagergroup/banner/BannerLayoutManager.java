@@ -1,34 +1,22 @@
 package com.dingmouren.layoutmanagergroup.banner;
 
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSmoothScroller;
-import android.support.v7.widget.LinearSnapHelper;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.util.SparseArray;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
-import android.widget.RelativeLayout;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 
-import static android.support.v7.widget.RecyclerView.NO_POSITION;
-import static android.support.v7.widget.RecyclerView.SCROLL_STATE_DRAGGING;
-import static android.support.v7.widget.RecyclerView.SCROLL_STATE_SETTLING;
-import static android.view.View.DRAG_FLAG_GLOBAL;
+import static androidx.recyclerview.widget.RecyclerView.NO_POSITION;
+import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_DRAGGING;
+import static androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_SETTLING;
 
 /**
  * Created by 钉某人

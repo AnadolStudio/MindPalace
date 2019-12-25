@@ -7,7 +7,7 @@
     android:padding="6dp">
 
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,12 +34,12 @@
                 android:gravity="center"
                 android:textAlignment="center"
                 android:textAllCaps="false"
-                android:textColor="@color/colorDarkWhite"
+                android:textColor="@color/colorDefaultBackground"
                 android:textSize="18sp"
                 android:textStyle="bold|italic"
                 tools:text="Name Test" />
 
         </LinearLayout>
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 </FrameLayout>

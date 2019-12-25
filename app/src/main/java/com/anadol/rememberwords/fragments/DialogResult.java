@@ -5,10 +5,11 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -61,7 +62,7 @@ public class DialogResult extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        View v = LayoutInflater.from(getContext()).inflate(R.layout.fragment_learn_result,null);
+        View v = LayoutInflater.from(getContext()).inflate(R.layout.dialog_learn_result,null);
 
         int c = getArguments().getInt(CORRECT);
         int w = getArguments().getInt(WRONG);
@@ -82,6 +83,7 @@ public class DialogResult extends DialogFragment {
         LinearLayoutManager linearLayout = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(linearLayout);
         mRecyclerView.setAdapter(adapter);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(),DividerItemDecoration.VERTICAL));
 
 
 
@@ -134,7 +136,7 @@ public class DialogResult extends DialogFragment {
                 if (b) {
                     holder.itemView.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
                 } else {
-                    holder.itemView.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
+                    holder.itemView.setBackgroundColor(getResources().getColor(R.color.colorMistake));
                 }
 
 

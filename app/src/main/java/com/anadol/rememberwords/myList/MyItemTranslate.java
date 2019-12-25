@@ -1,6 +1,6 @@
 package com.anadol.rememberwords.myList;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public class MyItemTranslate {
     private String typeName;

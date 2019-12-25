@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -22,7 +22,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -49,7 +49,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <android.support.v4.view.ViewPager
+            <androidx.viewpager.widget.ViewPager
                 android:id="@+id/view_pager_type"
                 android:layout_width="0dp"
                 android:layout_height="75dp"
@@ -80,7 +80,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-            <android.support.v4.view.ViewPager
+            <androidx.viewpager.widget.ViewPager
                 android:id="@+id/view_pager_object"
                 android:layout_width="0dp"
                 android:layout_height="75dp"
@@ -132,6 +132,7 @@
                     android:layout_margin="4dp"
                     android:layout_weight="1"
                     android:checked="true"
+                    android:fontFamily="serif"
                     android:minHeight="48dp"
                     android:text="@string/original" />
 
@@ -142,6 +143,7 @@
                     android:layout_margin="4dp"
                     android:layout_weight="1"
                     android:checked="true"
+                    android:fontFamily="serif"
                     android:minHeight="48dp"
                     android:text="@string/transcription" />
 
@@ -152,6 +154,7 @@
                     android:layout_margin="4dp"
                     android:layout_weight="1"
                     android:checked="true"
+                    android:fontFamily="serif"
                     android:minHeight="48dp"
                     android:text="@string/translate" />
 
@@ -166,7 +169,7 @@
                 android:background="?android:attr/dividerVertical"
                 app:layout_constraintTop_toBottomOf="@+id/group_object" />
 
-            <android.support.v7.widget.CardView
+            <androidx.cardview.widget.CardView
                 android:id="@+id/recycler_container"
                 style="@style/MyCardView"
                 android:layout_width="0dp"
@@ -180,14 +183,14 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/count_text">
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_detail"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:focusable="false"
-                    tools:itemCount="2"
+                    tools:itemCount="15"
                     tools:listitem="@layout/item_words_list_preview" />
-            </android.support.v7.widget.CardView>
+            </androidx.cardview.widget.CardView>
 
             <Button
                 android:id="@+id/start_button"
@@ -196,9 +199,13 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/button_learn_start"
                 android:drawableStart="@android:drawable/ic_media_play"
                 android:text="@string/start"
+                android:textColor="@color/colorDefaultBackground"
                 android:textSize="14sp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/count_word_edit_text"
@@ -231,7 +238,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/start_button" />
 
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

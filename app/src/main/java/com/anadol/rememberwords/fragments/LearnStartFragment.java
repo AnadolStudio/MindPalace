@@ -3,14 +3,16 @@ package com.anadol.rememberwords.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -284,6 +286,25 @@ public class LearnStartFragment extends MyFragment {
 
 
         mEditText = view.findViewById(R.id.count_word_edit_text);
+        mEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString().equals("")) return;
+
+                int i = Integer.valueOf(s.toString());
+                start.setEnabled(i > 2);
+            }
+        });
         if (mSpinner.getSelectedItemPosition()==0 || mSpinner.getSelectedItemPosition() == 1){
             mEditText.setEnabled(false);
         }
@@ -351,6 +372,9 @@ public class LearnStartFragment extends MyFragment {
                             mEditText.setText(Integer.toString(count));
                         }
                         break;
+                }
+                if (mEditText.isEnabled()){
+                    mEditText.requestFocus();
                 }
             }
 
@@ -421,7 +445,7 @@ public class LearnStartFragment extends MyFragment {
                             isAllReady = false;
                             mEditText.setError("is empty");
                         } else {
-                            for (int i = 0; i <= count; i++) {
+                            for (int i = 0; i < count; i++) {
                                 learnList.add(mWords.get(i));
                             }
                         }

@@ -2,15 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="1dp"
-    android:gravity="center">
+    android:gravity="center"
+    android:showDividers="middle"
+    android:divider="?android:dividerVertical">
 
     <TextView
         android:id="@+id/text_question"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@drawable/rectangle_item_background"
         android:gravity="center"
         android:minHeight="32dp"
         android:text="@string/question"
@@ -22,7 +22,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@drawable/rectangle_item_background"
         android:gravity="center"
         android:minHeight="32dp"
         android:text="@string/answer"

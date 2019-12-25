@@ -2,21 +2,15 @@ package com.anadol.rememberwords.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
-import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.fragments.LearnStartFragment;
 import com.anadol.rememberwords.myList.Group;
 import com.anadol.rememberwords.myList.Word;
 
 import java.util.ArrayList;
-
-import static com.anadol.rememberwords.fragments.ColorPicker.GRADIENT;
-import static com.anadol.rememberwords.myList.Group.NON_COLOR;
 
 public class LearnStartActivity extends SimpleFragmentActivity {
 
@@ -51,7 +45,7 @@ public class LearnStartActivity extends SimpleFragmentActivity {
         return LearnStartFragment.newInstance(mGroup ,words);
     }
 
-    @Override
+    /*@Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         mGroup = getIntent().getParcelableExtra(GROUP);
 
@@ -73,7 +67,7 @@ public class LearnStartActivity extends SimpleFragmentActivity {
         if (savedInstanceState!= null){
             mGroup = savedInstanceState.getParcelable(GROUP);
         }
-    }
+    }*/
     public static boolean isBrightColor(int red, int green, int blue) {
         boolean rtnValue = false;
 
@@ -103,7 +97,7 @@ public class LearnStartActivity extends SimpleFragmentActivity {
     private void updateActionBar(){
         if (mGroup != null){
             getSupportActionBar().setTitle(mGroup.getName());
-            getSupportActionBar().setBackgroundDrawable( mGroup.getGroupDrawable());
+//            getSupportActionBar().setBackgroundDrawable( mGroup.getGroupDrawable());
         }
     }
 

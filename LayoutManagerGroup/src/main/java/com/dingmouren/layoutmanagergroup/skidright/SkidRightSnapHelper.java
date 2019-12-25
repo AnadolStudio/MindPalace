@@ -16,9 +16,9 @@
 
 package com.dingmouren.layoutmanagergroup.skidright;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SnapHelper;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 import android.view.View;
 
 /**

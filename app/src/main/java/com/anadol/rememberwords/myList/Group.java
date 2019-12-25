@@ -6,9 +6,8 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
-import com.anadol.rememberwords.fragments.MyFragment;
-import java.util.ArrayList;
+import androidx.annotation.NonNull;
+
 import java.util.UUID;
 
 public class Group implements Parcelable, Comparable<Group>{

@@ -1,44 +1,68 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Base application theme. -->
+    <style name="SplashActivity" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/gradient</item>
+    </style>
+
     <style name="AppThemeDefault" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorError">@color/colorError</item>
+
         <item name="android:windowBackground">@color/colorDefaultBackground</item>
-<!--        <item name="android:fontFamily">serif</item>-->
-        <item name="editTextStyle">@style/MyEditText</item>
-
+        <item name="android:fontFamily">serif</item>
+        <item name="android:textViewStyle">@style/TextViewStyle</item>
+        <item name="android:buttonStyle">@style/ButtonStyle</item>
+<!--        <item name="editTextStyle">@style/EditTextStyle</item>-->
+<!--        <item name="checkboxStyle">@style/CheckBoxStyle</item>-->
+        <item name="switchStyle">@style/SwitchStyle</item>
     </style>
+    
     <style name="AppTheme" parent="AppThemeDefault"/>
-
-    <style name="SplashActivity" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">@drawable/gradient</item>
-    </style>
 
     <style name="LightTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-<!--        <item name="android:fontFamily">serif</item>-->
+
     </style>
 
     <style name="ProgressBar" parent="Widget.AppCompat.ProgressBar">
         <item name="colorAccent">@color/colorDarkWhite</item>
     </style>
 
-    <style name="MyEditText" parent="Widget.AppCompat.EditText">
+
+    <style name="CheckBoxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:fontFamily">serif</item>
+    </style>
+
+    <style name="SwitchStyle" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:fontFamily">serif</item>
+    </style>
+
+    <style name="TextViewStyle" parent="android:Widget.TextView">
+        <item name="android:fontFamily">serif</item>
+    </style>
+
+    <style name="ButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:fontFamily">serif</item>
+<!--        <item name="android:background">@color/colorAccent</item>-->
+    </style>
+
+    <style name="EditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:fontFamily">serif</item>
         <item name="android:minHeight">48dp</item>
     </style>
 
-    <style name="MyEditText.GroupDetailEditText">
+    <style name="EditTextStyle.GroupDetailEditText">
         <item name="android:maxLines">1</item>
-        <item name="android:gravity">center|top</item>
+        <item name="android:gravity">left|top</item>
         <item name="android:singleLine">true</item>
         <item name="android:imeOptions">actionDone</item>
-        <item name="android:hint">@string/detail_fragment_edit_text_hint</item>
+        <item name="android:hint">@string/group_detail_edit_text_hint</item>
     </style>
 
     <style name="DialogKeyboard" parent="Base.Theme.AppCompat.Light.Dialog">

@@ -1,14 +1,12 @@
 package com.anadol.rememberwords.activities;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.fragments.GroupListFragment;
-import com.anadol.rememberwords.fragments.MyFragment;
 
 public abstract class SimpleFragmentActivity extends AppCompatActivity {
     private Fragment fragment;

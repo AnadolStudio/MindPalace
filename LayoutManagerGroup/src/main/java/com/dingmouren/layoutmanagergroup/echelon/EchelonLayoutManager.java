@@ -1,7 +1,7 @@
 package com.dingmouren.layoutmanagergroup.echelon;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -122,6 +122,7 @@ public class EchelonLayoutManager extends RecyclerView.LayoutManager {
             view.setPivotX(view.getWidth() / 2);
             view.setPivotY(0);
             view.setScaleX(layoutInfo.getScaleXY());
+            //TODO: Echelon
             view.setScaleY(layoutInfo.getScaleXY());
         }
     }

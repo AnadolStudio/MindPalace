@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--suppress AndroidDomInspection -->
-<android.support.constraint.ConstraintLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -62,8 +62,6 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -77,6 +75,8 @@
         android:layout_marginBottom="16dp"
         android:background="@android:color/holo_red_dark"
         android:text="@string/false_button"
+        android:textStyle="bold"
+        android:textColor="@color/colorDefaultBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/space"
         app:layout_constraintStart_toStartOf="parent" />
@@ -90,8 +90,10 @@
         android:layout_marginBottom="16dp"
         android:background="@android:color/holo_green_dark"
         android:text="@string/true_button"
+        android:textStyle="bold"
+        android:textColor="@color/colorDefaultBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/space" />
 
-</android.support.constraint.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

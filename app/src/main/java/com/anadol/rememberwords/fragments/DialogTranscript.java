@@ -12,10 +12,10 @@ import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.app.AlertDialog;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -34,7 +34,6 @@ import android.widget.FrameLayout;
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.myList.Word;
 
-import static com.anadol.rememberwords.fragments.GroupDetailFragment.IS_CREATED;
 import static com.anadol.rememberwords.fragments.GroupDetailFragment.POSITION;
 
 public class DialogTranscript extends DialogFragment  implements KeyboardView.OnKeyboardActionListener{
@@ -111,8 +110,10 @@ public class DialogTranscript extends DialogFragment  implements KeyboardView.On
         }catch (NullPointerException ex){
             ex.printStackTrace();
         }
+
+        Word word = getArguments().getParcelable(TRANSCRIPT);
         String text;
-        text = getArguments().getString(TRANSCRIPT);
+        text = word.getTranscript();
 
         if (savedInstanceState != null){
             text = savedInstanceState.getString(TRANSCRIPT);

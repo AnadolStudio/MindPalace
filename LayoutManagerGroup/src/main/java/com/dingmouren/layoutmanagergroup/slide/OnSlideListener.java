@@ -1,6 +1,6 @@
 package com.dingmouren.layoutmanagergroup.slide;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by 钉某人

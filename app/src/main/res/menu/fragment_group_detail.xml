@@ -5,9 +5,9 @@
         android:id="@+id/group_one">
         <item
             android:id="@+id/add_button"
+            android:icon="@drawable/ic_menu_add"
             android:title="@string/add_word"
-            android:icon="@android:drawable/ic_menu_add"
-            app:showAsAction="always|withText"/>
+            app:showAsAction="always|withText" />
 
         <item
             android:id="@+id/menu_save"

@@ -1,15 +1,10 @@
 package com.anadol.rememberwords.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.util.Log;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.fragments.LearnAnswerFragment;
@@ -19,11 +14,8 @@ import com.anadol.rememberwords.myList.Group;
 import com.anadol.rememberwords.myList.Word;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
-import static com.anadol.rememberwords.activities.LearnStartActivity.isBrightColor;
 import static com.anadol.rememberwords.fragments.LearnStartFragment.*;
 
 public class LearnDetailActivity extends SimpleFragmentActivity {
@@ -48,32 +40,6 @@ public class LearnDetailActivity extends SimpleFragmentActivity {
         return intent;
     }
 
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-
-        Group mGroup = getIntent().getParcelableExtra(GROUP);
-
-        int[] gradient = mGroup.getColors();
-
-        int i = 0;
-
-        if (gradient.length==3){i = 1;}
-        int iRed = Color.red(gradient[i]);
-        int iGreen = Color.green(gradient[i]);
-        int iBlue = Color.blue(gradient[i]);
-
-        if (isBrightColor(iRed,iGreen,iBlue)) setTheme(R.style.LightTheme);
-
-/*
-        if (getIntent().getIntExtra(OBJECT,1)==ANSWER_QUESTION){
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-        }
-*/
-        super.onCreate(savedInstanceState);
-
-    }
 
     @Override
     protected Fragment createFragment() {
@@ -108,8 +74,9 @@ public class LearnDetailActivity extends SimpleFragmentActivity {
     private void updateActionBar(){
         Group mGroup = getIntent().getParcelableExtra(GROUP);
         if (mGroup != null){
-            getSupportActionBar().setTitle(mGroup.getName());
-            getSupportActionBar().setBackgroundDrawable( mGroup.getGroupDrawable());
+            String title = getString(R.string.testing_group,mGroup.getName());
+            getSupportActionBar().setTitle(title);
+//            getSupportActionBar().setBackgroundDrawable( mGroup.getGroupDrawable());
         }
     }
 

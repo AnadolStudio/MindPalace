@@ -2,8 +2,8 @@ package com.anadol.rememberwords.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.provider.ContactsContract;
-import android.support.v4.app.Fragment;
+
+import androidx.fragment.app.Fragment;
 
 import com.anadol.rememberwords.fragments.GroupDetailFragment;
 import com.anadol.rememberwords.myList.Group;

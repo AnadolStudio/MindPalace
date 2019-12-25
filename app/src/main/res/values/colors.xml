@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F3F3F</color>
-    <color name="colorPrimaryDark">#292929</color>
-    <color name="colorAccent">#707070</color>
+    <color name="colorPrimary">#01579B</color>
+    <color name="colorSecondary">#0277BD</color>
+    <color name="colorPrimaryDark">#000</color>
+    <color name="colorAccent">#B4001E</color>
+<!--    <color name="colorAccent">#707070</color>-->
+    <color name="colorError">#777777</color>
+
     <color name="colorDarkWhite">#DDDDDD</color>
     <color name="colorDefaultBackground">#FFFFFF</color>
     <color name="colorSelected">#068CDA</color>
@@ -15,7 +19,9 @@
     <color name="keyPressBackground">#b8b9be</color>
     <color name="keyText">#252525</color>
 
-    <color name="colorBoundsCardTypeTest">#161616</color>
-    <color name="colorBackgroundCardTypeTest">#777777</color>
-    <color name="colorBackgroundDisableCardTypeTest">#CECECE</color>
-</resources>
+    <color name="colorBoundsCardTypeTest">@color/colorPrimaryDark</color>
+    <color name="colorBackgroundCardTypeTest">@color/colorAccent</color>
+    <color name="colorBackgroundDisableCardTypeTest">@color/colorError</color>
+
+    <color name="colorMistake">#D50000</color>
+    </resources>
