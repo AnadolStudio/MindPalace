@@ -156,8 +156,8 @@ public class GroupDetailFragment extends Fragment {
         outState.putBoolean(IS_CREATED,isCreated);
         outState.putBoolean(TYPE_SORT,typeSort);
         outState.putBoolean(SELECT_MODE, selectMode);
-        outState.putBoolean(DATA_IS_CHANGED, isChanged);
         outState.putIntegerArrayList(SELECT_LIST, selectedList);
+        outState.putBoolean(DATA_IS_CHANGED, isChanged);
         outState.putStringArrayList(NAMES_ALL_GROUPS, allGroupsNames);
 
 //        outState.putBoolean(SUBTITLE,mySubtitleVisible);
@@ -260,11 +260,6 @@ public class GroupDetailFragment extends Fragment {
         }else {
             mAdapter.addList(mWords);
         }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
     }
 
     @TargetApi(21)

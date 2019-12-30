@@ -3,7 +3,10 @@ package com.anadol.rememberwords.fragments;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +14,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.Fragment;
@@ -20,7 +25,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 
+import android.util.ArrayMap;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,6 +35,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.FrameLayout;
@@ -64,7 +72,7 @@ import static com.anadol.rememberwords.fragments.GroupDetailFragment.POSITION;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GroupListFragment extends MyFragment {
+public class GroupListFragment extends MyFragment implements IOnBackPressed {
     private static final String TAG = "GroupListFragment";
 
     public static final String SELECT_MODE = "select_mode";
@@ -82,24 +90,46 @@ public class GroupListFragment extends MyFragment {
     private static final String GET_GROUPS = "groups";
     private static final String INVALIDATE_GROUP = "invalidate_groups";
     private static final String REMOVE_GROUP = "remove_group";
+    private static final String SELECT_ALL = "select_all";
+    private static final String SELECT_COUNT = "select_count";
+    private static final String QUERY = "query";
 
     private RecyclerView mRecyclerView;
+    private SearchView searchView;
+    private FloatingActionButton fab;
     private /*static*/ LabelEmptyList mLabelEmptyList;
 
     private ArrayList<Group> mGroups;
 
     private GroupAdapter mAdapter;
-    private Group[] changes;
     private ProgressBar mProgressBar;
+    private boolean selectAll;
+    private int selectCount;
+    private String query;
+    private ArrayList<String> selectArray;
+    private boolean selectable = false;
 
-//    private GroupBackground backgroundTask = new GroupBackground();
+
+    //    private GroupBackground backgroundTask = new GroupBackground();
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(SELECT_MODE, selectMode);
-        outState.putIntegerArrayList(SELECT_LIST, selectedList);
+        outState.putBoolean(SELECT_MODE, mAdapter.isSelectable);
         outState.putParcelableArrayList(GROUP_SAVE, mGroups);
+
+        selectArray = new ArrayList<>();
+
+        for (int i = 0; i < mAdapter.mSelectionsArray.size();i++) {
+            if (mAdapter.mSelectionsArray.valueAt(i)) {
+                selectArray.add(mAdapter.mSelectionsArray.keyAt(i));
+            }
+        }
+        Log.i(TAG, "onSaveInstanceState: " + selectArray.size());
+        outState.putStringArrayList(SELECT_LIST, selectArray);
+        outState.putBoolean(SELECT_ALL,selectAll);
+        outState.putInt(SELECT_COUNT,selectCount);
+        outState.putString(QUERY,query);
     }
 
     @Override
@@ -113,23 +143,28 @@ public class GroupListFragment extends MyFragment {
         // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.fragment_group_list, container, false);
-        FrameLayout frameLayout = view.findViewById(R.id.recycler_container);
+        FrameLayout frameLayout = view.findViewById(R.id.group_list_container);
 
         if (savedInstanceState != null) {
             mGroups = savedInstanceState.getParcelableArrayList(GROUP_SAVE);
-            selectMode = savedInstanceState.getBoolean(SELECT_MODE);
-            selectedList = savedInstanceState.getIntegerArrayList(SELECT_LIST);
+            selectAll = savedInstanceState.getBoolean(SELECT_ALL);
+            selectCount = savedInstanceState.getInt(SELECT_COUNT);
+            query = savedInstanceState.getString(QUERY);
+            selectArray = savedInstanceState.getStringArrayList(SELECT_LIST);
+            selectable = savedInstanceState.getBoolean(SELECT_MODE);
         }else {
             mGroups = new ArrayList<>();
+            selectArray = new ArrayList<>();
             new GroupBackground().execute(GET_GROUPS);
-            selectMode = false;
-            selectedList = new ArrayList<>();
+            selectAll = false;
+            selectCount = 0;
+            query = "";
         }
 
 
         mProgressBar = view.findViewById(R.id.progressBar);
 
-        FloatingActionButton fab = view.findViewById(R.id.fab);
+        fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,8 +175,11 @@ public class GroupListFragment extends MyFragment {
 
         mAdapter = new GroupAdapter(mGroups);
 
+        mAdapter.isSelectable = selectable;
+
         createRecyclerLayoutManager(SettingsPreference.getLayoutPreference(getActivity()));
         mRecyclerView.setAdapter(mAdapter);
+//        mRecyclerView.setLongClickable(true);
 
         mLabelEmptyList = new LabelEmptyList(
                 getContext(),
@@ -154,34 +192,94 @@ public class GroupListFragment extends MyFragment {
     @Override
     public void onStart() {
         super.onStart();
-        Log.i(TAG, "onStart");
+//        Log.i(TAG, "onStart");
     }
 
     @Override
     public void onResume() {
         super.onResume();
         mProgressBar.setVisibility(View.INVISIBLE);
-        Log.i(TAG, "onResume ");
+//        Log.i(TAG, "onResume ");
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.fragment_group_list,menu);
-        MenuItem item = menu.findItem(R.id.menu_search);
-        final SearchView searchView = (SearchView) item.getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
+        if (mode == MODE_NORMAL || mode == MODE_SEARCH) {
+            inflater.inflate(R.menu.fragment_group_list,menu);
+            MenuItem item = menu.findItem(R.id.menu_search);
 
-            @Override
-            public boolean onQueryTextChange(String s) {
-                mAdapter.getFilter().filter(s);
-                return true;
+            searchView = (SearchView) item.getActionView();
+            searchView.setQueryHint(getResources().getString(R.string.search));
+            searchView.setOnSearchClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mode = MODE_SEARCH;
+                }
+            });
+            searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+                @Override
+                public boolean onClose() {
+                    mode = MODE_NORMAL;
+                    return false;
+                }
+            });
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String s) {
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String s) {
+                    query = s;
+                    mAdapter.getFilter().filter(s);
+                    return true;
+                }
+            });
+            if (!query.equals("")){
+                searchView.setIconified(false);
+                searchView.setQuery(query,true);
             }
-        });
+        } else if (mode == MODE_SELECT){
+            inflater.inflate(R.menu.menu_group_selected_list,menu);
+            MenuItem item = menu.findItem(R.id.menu_select_all);
+            if (selectAll){
+                item.setIcon(R.drawable.ic_menu_select_all_on);
+            }else {
+                item.setIcon(R.drawable.ic_menu_select_all_off);
+            }
+            updateActionBarTitle(true);
+        }
+    }
+
+    @Override
+    public boolean onBackPressed() {
+
+        switch (mode){
+            case MODE_SEARCH:
+                mode = MODE_NORMAL;
+                getActivity().invalidateOptionsMenu();
+                searchView.onActionViewCollapsed();
+                return true;
+            case MODE_SELECT:
+                modeSelectedTurnOff();
+                mAdapter.mSelectionsArray.clear();
+                for (int i = 0; i < mAdapter.getList().size(); i++) {
+                    Group group = mAdapter.getList().get(i);
+                    mAdapter.mSelectionsArray.put(group.getIdString(),false);
+                }
+                selectCount = 0;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void modeSelectedTurnOff() {
+        mAdapter.setSelectable(false);
+        mAdapter.notifyDataSetChanged();
+        updateActionBarTitle(false);
     }
 
     @Override
@@ -191,29 +289,47 @@ public class GroupListFragment extends MyFragment {
                 createActivitySettings();
                 return true;
             case R.id.menu_remove:
+                modeSelectedTurnOff();
                 new GroupBackground().execute(REMOVE_GROUP);
                 return true;
-            case R.id.menu_unify:
-                unifyGroup();
+            case R.id.menu_merge:
+                mergeGroup();
                 return true;
             case R.id.menu_cancel:
-                cancel();
+//                mAdapter.setSelectable(false);
+//                mAdapter.notifyDataSetChanged();
                 return true;
             case R.id.menu_select_all:
 //                System.out.println("selectedList.size() == mGroups.size()) " + selectedList.size() +" "+ mGroups.size());
-                if (selectedList.size() == mGroups.size()){
-                    selectedList.clear();
-                }else {
-                    selectedList.clear();
-                    for (int i = 0; i < mGroups.size(); i++) {
-                        selectedList.add(i);
+                selectAll = !selectAll;
+                mAdapter.mSelectionsArray.clear();
+                if (selectAll){
+                    for (int i = 0; i < mAdapter.getList().size(); i++) {
+                        Group group = mAdapter.getList().get(i);
+                        mAdapter.mSelectionsArray.put(group.getIdString(),true);
                     }
+                    selectCount = mAdapter.getList().size();
+                }else {
+                    for (int i = 0; i < mAdapter.getList().size(); i++) {
+                        Group group = mAdapter.getList().get(i);
+                        mAdapter.mSelectionsArray.put(group.getIdString(),false);
+                    }
+                    selectCount = 0;
                 }
-                updateActionBarTitle();
+                getActivity().invalidateOptionsMenu();
+                updateActionBarTitle(true);
                 mAdapter.notifyDataSetChanged();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+    public void updateActionBarTitle(boolean selectMode){
+        AppCompatActivity activity = (AppCompatActivity)getActivity();
+        if (!selectMode) {
+            activity.getSupportActionBar().setTitle(getString(R.string.app_name));
+        }else {
+            activity.getSupportActionBar().setTitle(String.valueOf(selectCount));
         }
     }
 
@@ -292,7 +408,7 @@ public class GroupListFragment extends MyFragment {
         startActivityForResult(intent,REQUIRED_CREATE);
     }
 
-    private void unifyGroup() {
+    private void mergeGroup() {
         ArrayList<Group> groupsUnify = new ArrayList<>();
         for(Integer j :selectedList) {
             int i = j;
@@ -349,60 +465,106 @@ public class GroupListFragment extends MyFragment {
 
     }
 
-    public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         private TextView mTextView;
         private ImageView mImageView;
+        private boolean isSelectableMode = false; //default
+        private boolean isSelectableItem = false; //default
+        private GroupAdapter myParentAdapter;
 
         public GroupHolder(@NonNull View itemView) {
             super(itemView);
             mTextView = itemView.findViewById(R.id.text_group);
             mImageView = itemView.findViewById(R.id.image_group);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
-        public void onBind(String name, Drawable drawable){
+        public void onBind(String name, Drawable drawable, GroupAdapter parentAdapter){
             mTextView.setText(name);
             mImageView.setImageDrawable(drawable);
-            if (itemView.getAlpha() != 1.0f) {
-                itemView.animate()
-                        .alpha(1.0f)
-                        .setDuration(100)
-                        .start();
-                itemView.animate().setDuration(0);
+            myParentAdapter = parentAdapter;
+            isSelectableMode = myParentAdapter.isSelectable;
+            int position = getAdapterPosition();
+            isSelectableItem = myParentAdapter.isItemSelectable(mAdapter.getList().get(position).getIdString());
+
+            if (isSelectableMode) {
+
+                Resources resources = getResources();
+                if (isSelectableItem) {
+                    // Here will be some Drawable
+                    mImageView.setImageDrawable(new ColorDrawable(resources.getColor(R.color.colorAccent)));
+                }else {
+                    mImageView.setImageDrawable(new ColorDrawable(resources.getColor(R.color.colorSecondary)));
+                }
             }
         }
 
         @Override
         public void onClick(View v) {
             int i = getAdapterPosition();
-
             if (i == RecyclerView.NO_POSITION) return;
 
-            Intent intent = GroupDetailActivity.newIntent(getContext(),mAdapter.getList().get(i),i);
+            if (!isSelectableMode) {
+                Intent intent = GroupDetailActivity.newIntent(getContext(), mAdapter.getList().get(i),i);
 
-            String nameTranslation = getString(R.string.color_image_translation);
-            ActivityOptionsCompat activityOptions =
-                    ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-                            new Pair<View, String>(mImageView,nameTranslation));
+                String nameTranslation = getString(R.string.color_image_translation);
+                ActivityOptionsCompat activityOptions =
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+                                new Pair<View, String>(mImageView,nameTranslation));
 
 //            ActivityCompat.startActivityForResult(getActivity(),intent,REQUIRED_CHANGE,activityOptions.toBundle());
-            startActivityForResult(intent,REQUIRED_CHANGE,activityOptions.toBundle());
+                startActivityForResult(intent,REQUIRED_CHANGE,activityOptions.toBundle());
+            } else {
+                isSelectableItem = !isSelectableItem;
+                myParentAdapter.setItemChecked((mAdapter.getList().get(i).getIdString()),isSelectableItem);
+                Resources resources = getResources();
+                if (isSelectableItem) {
+                    // Here will be some Drawable
+                    mImageView.setImageDrawable(new ColorDrawable(resources.getColor(R.color.colorAccent)));
+                    selectCount++;
+                }else {
+                    mImageView.setImageDrawable(new ColorDrawable(resources.getColor(R.color.colorSecondary)));
+                    selectCount--;
+                }
+                updateActionBarTitle(true);
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            if (!myParentAdapter.isSelectable) {
+                myParentAdapter.setSelectable(true);
+                int i = getAdapterPosition();
+                myParentAdapter.setItemChecked((mAdapter.getList().get(i).getIdString()),true);
+                mAdapter.notifyDataSetChanged();
+                selectCount++;
+                updateActionBarTitle(true);
+            }
+            return true;
         }
     }
-
     public class GroupAdapter extends RecyclerView.Adapter<GroupHolder> implements Filterable {
-        List<Group> mList;
-        List<Group> mFilterList;
+        private List<Group> mList;
+        private List<Group> mFilterList;
+        private ArrayMap<String,Boolean> mSelectionsArray = new ArrayMap<>();
+        private boolean isSelectable = false;
 
         public GroupAdapter(List<Group> list) {
             setList(list);
-            addAnimation();
+            addTranslationAnim();
         }
 
         public void setList(List<Group> list) {
             Collections.sort(list);
             mList = list;
             mFilterList = list;
+            setSelectionsArray(selectArray);
+
+            for (int i = 0; i < mList.size(); i++) {
+                Group g = mList.get(i);
+                Log.i(TAG, "mList: " + g.getIdString() + " mSelectionsArray: " +mSelectionsArray.keyAt(i));
+            }
         }
 
         public void smoothUpdate(List<Group> list){
@@ -424,7 +586,7 @@ public class GroupListFragment extends MyFragment {
         @Override
         public void onBindViewHolder(@NonNull GroupHolder groupHolder, int i) {
             Group group = mFilterList.get(i);
-            groupHolder.onBind(group.getName(),group.getGroupDrawable());
+            groupHolder.onBind(group.getName(),group.getGroupDrawable(),this);
         }
 
         @Override
@@ -462,9 +624,60 @@ public class GroupListFragment extends MyFragment {
                 }
             };
         }
+
+        private void setItemChecked(String name, boolean isChecked){
+            mSelectionsArray.put(name,isChecked);
+            int j = 0;
+            for (int i = 0; i < mSelectionsArray.size(); i++) {
+                if (mSelectionsArray.valueAt(i)) j++;
+            }
+            selectAll = (j == mSelectionsArray.size());
+            getActivity().invalidateOptionsMenu();
+        }
+
+        private boolean isItemSelectable(String id){
+            return mSelectionsArray.get(id) == null ? false : mSelectionsArray.get(id);
+        }
+
+
+        public void setSelectable(boolean selectable) {
+            isSelectable = selectable;
+            if (isSelectable){
+                mode = MODE_SELECT;
+                fab.hide();
+            }else {
+                mode = MODE_NORMAL;
+                fab.show();
+            }
+
+            getActivity().invalidateOptionsMenu();
+//            addAlphaAnim();
+        }
+
+        public boolean isSelectable() {
+            return isSelectable;
+        }
+
+        public void setSelectionsArray(ArrayList<String> selectionsArray) {
+            if (!selectionsArray.isEmpty()) {
+                for (int i = 0; i < selectionsArray.size(); i++) {
+                    mSelectionsArray.put(selectionsArray.get(i), true);
+                }
+                Log.i(TAG, "StringArray.size(): "+ selectionsArray.size());
+            }
+            for (int i = 0; i < mList.size(); i++) {
+                Group group = mList.get(i);
+                if (mSelectionsArray.get(group.getIdString()) == null) {
+                    mSelectionsArray.put(group.getIdString(), false);
+                }
+
+            }
+            Log.i(TAG, "mSelectionsArray.size(): "+ mSelectionsArray.size());
+
+        }
     }
 
-    private void addAnimation() {
+    private void addTranslationAnim() {
         mRecyclerView.getViewTreeObserver().addOnPreDrawListener(
                 new ViewTreeObserver.OnPreDrawListener() {
 
@@ -485,15 +698,35 @@ public class GroupListFragment extends MyFragment {
                         }
 
                         mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
-                        Log.i(TAG, "Remove OnPreDrawListener");
                         return true;
                     }
                 });
     }
 
+    private void addAlphaAnim() {
+        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+
+                    @Override
+                    public boolean onPreDraw() {
+
+                        for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+                            View v = mRecyclerView.getChildAt(i);
+                            v.setAlpha(0.0f);
+                            v.animate().alpha(1.0f)
+                                    .setDuration(200)
+                                    .start();
+                        }
+
+                        mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        return true;
+                    }
+                });
+    }
 
     public  class GroupBackground extends DoInBackground{
         private ArrayList<Group> invalidate;
+        ArrayList<Group> groupsRemove;
         private MyCursorWrapper cursor;
         private SQLiteDatabase db;
         private String c;
@@ -552,21 +785,26 @@ public class GroupListFragment extends MyFragment {
                         return true;
 
                     case REMOVE_GROUP:
-                        ArrayList<Group> groupsRemove = new ArrayList<>();
-                        for(Integer j :selectedList) {
-                            int i = j;
-                            groupsRemove.add(mGroups.get(i));
+                        groupsRemove = new ArrayList<>();
+                        for (int i = 0; i < mAdapter.mSelectionsArray.size(); i++) {
+                            if (mAdapter.mSelectionsArray.valueAt(i)) {
+                                for (Group g : mGroups) {
+                                    if (g.getIdString().equals(mAdapter.mSelectionsArray.keyAt(i))){
+                                        groupsRemove.add(g);
+                                    }
+                                }
+                            }
+                        }
+                        for(Group g : groupsRemove) {
+                            int i = mGroups.indexOf(g);
                             db.delete(GROUPS,
                                     DbSchema.Tables.Cols.UUID + " = ?",
-                                    new String[]{mGroups.get(i).getId().toString()});
+                                    new String[]{mGroups.get(i).getIdString()});
                             db.delete(WORDS,
                                     DbSchema.Tables.Cols.NAME_GROUP + " = ?",
                                     new String[]{mGroups.get(i).getName()});
                         }
-                        for (Group g :groupsRemove){
-                            mGroups.remove(g);
-                        }
-                        selectedList.clear();
+
                         return true;
 
 
@@ -584,7 +822,19 @@ public class GroupListFragment extends MyFragment {
         public void onPost(boolean b) {
             switch (c){
                 case REMOVE_GROUP:
-                    setSelectMode(false);
+                    int j;
+                    for (Group g : groupsRemove){
+                        j = mAdapter.getList().indexOf(g);
+                        mAdapter.notifyItemRemoved(j);
+                        mGroups.remove(g);
+                        Log.i(TAG, "Group removed: " + g.getName());
+                    }
+                    mAdapter.mSelectionsArray.clear();
+                    for (int i = 0; i < mAdapter.getList().size(); i++) {
+                        Group group = mAdapter.getList().get(i);
+                        mAdapter.mSelectionsArray.put(group.getIdString(),false);
+                    }
+                    selectCount = 0;
                     break;
                 case INVALIDATE_GROUP:
                     mGroups.clear();
@@ -596,6 +846,7 @@ public class GroupListFragment extends MyFragment {
                         for (Group g: mAdapter.getList()) {
                             // Потому что mGroupTemp.equals(g) == false
                             if (g.getName().equals(mGroupTemp.getName())){
+                                Log.i(TAG,"" + g.hashCode());
                                 position = mAdapter.getList().indexOf(g);
                             }
                         }

@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
-    android:layout_width="match_parent"
-    android:layout_height="200dp"
-
     style="@style/MyCardView"
+    android:layout_width="match_parent"
+
+    android:layout_height="200dp"
     android:layout_margin="10dp"
     card_view:layout_constraintBottom_toBottomOf="parent"
     card_view:layout_constraintEnd_toEndOf="parent"
@@ -37,9 +36,9 @@
             android:id="@+id/image_group"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_launcher_background"
             android:scaleType="centerCrop"
-            android:transitionName="@string/color_image_translation"/>
+            android:src="@drawable/ic_launcher_background"
+            android:transitionName="@string/color_image_translation" />
 
 
     </LinearLayout>

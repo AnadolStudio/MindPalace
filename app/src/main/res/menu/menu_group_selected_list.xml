@@ -3,27 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_select_all"
-        android:title="@string/select_all"
-        android:icon="@drawable/ic_menu_select_all"
-        app:showAsAction="always|withText"/>
-    <item
-        android:id="@+id/menu_unify"
-        android:title="@string/unify"
-        android:icon="@drawable/ic_menu_unify"
-        app:showAsAction="always|withText"/>
+        android:id="@+id/menu_merge"
+        android:title="@string/merge"
+        android:icon="@drawable/ic_menu_merge"
+        app:showAsAction="ifRoom|withText"/>
 
     <item
         android:id="@+id/menu_remove"
         android:title="@string/remove"
         android:icon="@drawable/ic_menu_delete"
-        app:showAsAction="always|withText"/>
+        app:showAsAction="ifRoom|withText"/>
 
     <item
-        android:id="@+id/menu_cancel"
-        android:title="@android:string/cancel"
-        android:icon="@drawable/ic_menu_cancel"
-        app:showAsAction="always"/>
+      android:id="@+id/menu_select_all"
+      android:title="@string/select_all"
+      android:icon="@drawable/ic_menu_select_all_off"
+      app:showAsAction="ifRoom|withText"/>
+
+  <!--<item
+      android:id="@+id/menu_cancel"
+      android:title="@android:string/cancel"
+      android:icon="@drawable/ic_menu_cancel"
+      app:showAsAction="always"/>-->
 
 
 </menu>

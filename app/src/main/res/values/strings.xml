@@ -34,7 +34,7 @@
     <string name="view">VIew</string>
     <string name="edit">Edit</string>
     <string name="create">Create</string>
-    <string name="search">Search</string>
+    <string name="search">Search&#8230;</string>
     <string name="sort">Sort</string>
     <string name="sort_by_original">Sort by original</string>
     <string name="sort_by_translate">Sort by translate</string>
@@ -49,6 +49,7 @@
     <string name="false_button">False</string>
     <string name="question">Question</string>
     <string name="unify">Unify</string>
+    <string name="merge">Merge</string>
     <string name="select_all">Select all</string>
     <string name="add_word">Add word</string>
     <string name="word_count">Count: %1$s</string>
