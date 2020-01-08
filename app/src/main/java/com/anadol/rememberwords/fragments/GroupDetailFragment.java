@@ -5,8 +5,10 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,11 +26,13 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.transition.Transition;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -66,7 +70,7 @@ import static com.anadol.rememberwords.myList.Group.NON_COLOR;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GroupDetailFragment extends Fragment {
+public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
     private static final String TAG = "GroupDetailFragment";
 
     public static final String GROUP = "group";
@@ -92,13 +96,13 @@ public class GroupDetailFragment extends Fragment {
     private static final String DATA_IS_CHANGED = "data_is_changed";
 
 
+
     private LabelEmptyList mLabelEmptyList;
     private RecyclerView mRecyclerView;
     private WordAdapter mAdapter;
     private Group mGroup;
     private ArrayList<Word> mWords;
     private ArrayList<Group> mGroups;
-    private ArrayList<Integer> selectedList;
 
     private EditText nameGroup;
     //    private ImageButton addButton;
@@ -108,8 +112,11 @@ public class GroupDetailFragment extends Fragment {
     private boolean isCreated;
     private boolean typeSort;
     private boolean sortIsNeed = true;
-    protected boolean selectMode = false;
-    protected boolean isChanged;
+    private boolean selectAll;
+    private int selectCount;
+    private ArrayList<String> selectArray;
+    private boolean selectable = false;
+    private boolean isChanged;
     private TextView countWords;
 
 
@@ -155,8 +162,20 @@ public class GroupDetailFragment extends Fragment {
         outState.putIntArray(GRADIENT, colors);// key GRADIENT in other places
         outState.putBoolean(IS_CREATED,isCreated);
         outState.putBoolean(TYPE_SORT,typeSort);
-        outState.putBoolean(SELECT_MODE, selectMode);
-        outState.putIntegerArrayList(SELECT_LIST, selectedList);
+        outState.putBoolean(SELECT_MODE, mAdapter.isSelectable);
+
+        selectArray.clear();
+
+        for (int i = 0; i < mAdapter.mSelectionsArray.size();i++) {
+            if (mAdapter.mSelectionsArray.valueAt(i)) {
+                selectArray.add(mAdapter.mSelectionsArray.keyAt(i));
+            }
+        }
+        Log.i(TAG, "onSaveInstanceState: " + selectArray.size());
+        outState.putStringArrayList(SELECT_LIST, selectArray);
+
+        outState.putInt(SELECT_COUNT,selectCount);
+        outState.putBoolean(SELECT_ALL,selectAll);
         outState.putBoolean(DATA_IS_CHANGED, isChanged);
         outState.putStringArrayList(NAMES_ALL_GROUPS, allGroupsNames);
 
@@ -194,17 +213,20 @@ public class GroupDetailFragment extends Fragment {
             colors = savedInstanceState.getIntArray(GRADIENT);
             isCreated = savedInstanceState.getBoolean(IS_CREATED);
             typeSort = savedInstanceState.getBoolean(TYPE_SORT);
-            selectMode = savedInstanceState.getBoolean(SELECT_MODE);
-            selectedList = savedInstanceState.getIntegerArrayList(SELECT_LIST);
+            selectable = savedInstanceState.getBoolean(SELECT_MODE);
             allGroupsNames = savedInstanceState.getStringArrayList(NAMES_ALL_GROUPS);
             isChanged = savedInstanceState.getBoolean(DATA_IS_CHANGED);
+            selectArray = savedInstanceState.getStringArrayList(SELECT_LIST);
+            selectCount = savedInstanceState.getInt(SELECT_COUNT);
+            selectAll = savedInstanceState.getBoolean(SELECT_ALL);
 //            mySubtitleVisible = savedInstanceState.getBoolean(SUBTITLE);
         } else {
             mWords = new ArrayList<>();
-            selectMode = false;
-            selectedList = new ArrayList<>();
+            selectArray = new ArrayList<>();
             allGroupsNames = new ArrayList<>();
             isChanged = false;
+            selectCount = 0;
+            selectAll = false;
         }
 
         //For UNIFY, selected groups;
@@ -233,11 +255,29 @@ public class GroupDetailFragment extends Fragment {
 
         //mWord передается адаптеру после завершения анимации (если она есть)
         mAdapter = new WordAdapter();
+        mAdapter.setSelectable(selectable);
+
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(),DividerItemDecoration.VERTICAL));
+/*
+        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                return false;
+            }
 
+            @Override
+            public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+            }
+        });
+*/
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new WordItemHelperCallBack(mAdapter));
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
@@ -328,17 +368,32 @@ public class GroupDetailFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.fragment_group_detail,menu);
 
-        menu.setGroupVisible(R.id.group_one,!selectMode);
-        menu.setGroupVisible(R.id.group_two,selectMode);
+        if (mode == MODE_NORMAL ) {
+            inflater.inflate(R.menu.fragment_group_detail,menu);
+            MenuItem play = menu.findItem(R.id.menu_start);
 
-        MenuItem play = menu.findItem(R.id.menu_start);
-        if (selectMode || mWords.size()<1 ){
-            play.setVisible(false);
-        }else {
-            play.setVisible(true);
+            if (mWords.size()<1 ){
+                play.setVisible(false);
+            }else {
+                play.setVisible(true);
+            }
+
+        } else if (mode == MODE_SELECT){
+            inflater.inflate(R.menu.menu_group_selected_list,menu);
+            MenuItem item = menu.findItem(R.id.menu_select_all);
+
+            MenuItem merge = menu.findItem(R.id.menu_merge);
+            merge.setVisible(false);
+
+            if (selectAll){
+                item.setIcon(R.drawable.ic_menu_select_all_on);
+            }else {
+                item.setIcon(R.drawable.ic_menu_select_all_off);
+            }
+            updateActionBarTitle(true);
         }
+
 
        /* MenuItem sort = menuBottom.findItem(R.id.menu_sort);
         sort.setVisible(!selectMode);*/
@@ -347,10 +402,7 @@ public class GroupDetailFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.menu_sort:
-                typeSort = !typeSort;
-                mAdapter.sortList();
-                return true;
+
 
             case R.id.menu_start:
                 if (!(mWords.size() < 2)) {
@@ -364,10 +416,6 @@ public class GroupDetailFragment extends Fragment {
                 removeWord();
                 return true;
 
-            case R.id.menu_cancel:
-                cancel();
-                return true;
-
             case R.id.add_button:
                 //TODO: добавление нескольких Words при помощи
                 // Settings и SettingsPreference
@@ -375,15 +423,24 @@ public class GroupDetailFragment extends Fragment {
                 return true;
 
             case R.id.menu_select_all:
-                if (selectedList.size() == mWords.size()){
-                    selectedList.clear();
-                }else {
-                    selectedList.clear();
-                    for (int i = 0; i < mWords.size(); i++) {
-                        selectedList.add(i);
+                selectAll = !selectAll;
+                mAdapter.mSelectionsArray.clear();
+
+                if (selectAll){
+                    for (int i = 0; i < mAdapter.getList().size(); i++) {
+                        Word word = mAdapter.getList().get(i);
+                        mAdapter.mSelectionsArray.put(word.getIdString(),true);
                     }
+                    selectCount = mAdapter.getList().size();
+                }else {
+                    for (int i = 0; i < mAdapter.getList().size(); i++) {
+                        Word word = mAdapter.getList().get(i);
+                        mAdapter.mSelectionsArray.put(word.getIdString(),false);
+                    }
+                    selectCount = 0;
                 }
-                updateActionBarTitle();
+                getActivity().invalidateOptionsMenu();
+                updateActionBarTitle(true);
                 mAdapter.notifyDataSetChanged();
                 return true;
 
@@ -393,6 +450,37 @@ public class GroupDetailFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+    @Override
+    public boolean onBackPressed() {
+        switch (mode){
+            /*case MODE_SEARCH:
+                mode = MODE_NORMAL;
+                getActivity().invalidateOptionsMenu();
+                searchView.onActionViewCollapsed();
+                return true;*/
+            case MODE_SELECT:
+                mode = MODE_NORMAL;
+                modeSelectedTurnOff();
+                mAdapter.mSelectionsArray.clear();
+                for (int i = 0; i < mAdapter.getList().size(); i++) {
+                    Word word = mAdapter.getList().get(i);
+                    mAdapter.mSelectionsArray.put(word.getIdString(),false);
+                }
+                selectCount = 0;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void modeSelectedTurnOff() {
+        mAdapter.setSelectable(false);
+        mAdapter.notifyDataSetChanged();
+        updateActionBarTitle(false);
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -494,33 +582,13 @@ public class GroupDetailFragment extends Fragment {
         countWords.setText(getResources().getString(R.string.word_count,stringCount));
     }
 
-    private void menuSelected(){
-        AppCompatActivity activity = (AppCompatActivity)getActivity();
-        activity.invalidateOptionsMenu();
-        mAdapter.notifyDataSetChanged();
-        if (!selectMode) {
-            selectedList.clear();
-        }
-        updateActionBarTitle();
-    }
-
-    public void setSelectMode(boolean selectMode) {
-        this.selectMode = selectMode;
-        menuSelected();
-    }
-
-    private void updateActionBarTitle(){
+    private void updateActionBarTitle(boolean selectMode){
         AppCompatActivity activity = (AppCompatActivity)getActivity();
         if (!selectMode) {
             activity.getSupportActionBar().setTitle(getString(R.string.app_name));
-            activity.getSupportActionBar().setSubtitle(null);
         }else {
-            activity.getSupportActionBar().setTitle(String.valueOf(selectedList.size()));
+            activity.getSupportActionBar().setTitle(String.valueOf(selectCount));
         }
-    }
-
-    protected void cancel(){
-        setSelectMode(false);
     }
 
     private void removeWord(){
@@ -535,17 +603,34 @@ public class GroupDetailFragment extends Fragment {
 
     private void removeFromAdapter() {
         ArrayList<Word> wordsRemove = new ArrayList<>();
-        for(Integer j :selectedList) {
-            int i  = j;
-            wordsRemove.add(mWords.get(i));
+        // Заполняю
+        for (int i = 0; i < mAdapter.mSelectionsArray.size(); i++) {
+            if (mAdapter.mSelectionsArray.valueAt(i)) {
+                for (Word w : mWords) {
+                    if (w.getIdString().equals(mAdapter.mSelectionsArray.keyAt(i))){
+                        wordsRemove.add(w);
+                    }
+                }
+            }
         }
-        for (Word w :wordsRemove){
-            mAdapter.notifyItemRemoved(mWords.indexOf(w));
+        int j;
+        //Удаляю
+        for (Word w : wordsRemove){
+            j = mAdapter.getList().indexOf(w);
+            mAdapter.notifyItemRemoved(j);
             mWords.remove(w);
+            Log.i(TAG, "Word removed: " + w.getOriginal());
         }
-        selectedList.clear();
-//        setSelectMode(false);
+        mAdapter.mSelectionsArray.clear();
+        // Обновляю
+        for (int i = 0; i < mAdapter.getList().size(); i++) {
+            Word w = mAdapter.getList().get(i);
+            mAdapter.mSelectionsArray.put(w.getIdString(),false);
+        }
+        selectCount = 0;
         updateWordCount();
+
+//        setSelectMode(false);
     }
 
     private void createDialogMultiTranslate(int position) {
@@ -604,13 +689,152 @@ public class GroupDetailFragment extends Fragment {
                 });
     }
 
+    public class WordHolder extends RecyclerView.ViewHolder
+            implements View.OnClickListener, View.OnLongClickListener{
+        EditText original;
+        TextView transcription;
+        EditText translate;
+        EditText comment;
+
+        private boolean isSelectableMode = false; //default
+        private boolean isSelectableItem = false; //default
+        private WordAdapter myParentAdapter;
+
+        public WordHolder(@NonNull View itemView, WordAdapter parentAdapter) {
+            super(itemView);
+
+            original = itemView.findViewById(R.id.text_original);
+            transcription = itemView.findViewById(R.id.text_transcription);
+            translate = itemView.findViewById(R.id.text_translate);
+            comment = itemView.findViewById(R.id.edit_comment);
+
+            original.addTextChangedListener(new MyTextWatch(this,MyTextWatch.ORIGINAL));
+            translate.addTextChangedListener(new MyTextWatch(this,MyTextWatch.TRANSLATE));
+            comment.addTextChangedListener(new MyTextWatch(this,MyTextWatch.COMMENT));
+            transcription.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    createDialogTranscript(WordHolder.this);
+                }
+            });
+
+            myParentAdapter = parentAdapter;
+
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+        }
+
+
+        public void bind(Word word){
+            int position = getAdapterPosition();
+
+            String origStr = word.getOriginal();
+            String transcriptStr = word.getTranscript();
+            String tranStr;
+            if (word.hasMultiTrans() == Word.FALSE) {
+                tranStr = word.getTranslate();
+            }else {
+                tranStr = word.getMultiTranslate();
+            }
+            String commentStr = word.getComment();
+
+            isSelectableMode = myParentAdapter.isSelectable;
+            isSelectableItem = myParentAdapter.isItemSelectable(mAdapter.getList().get(position).getIdString());
+
+            original.setText(origStr);
+            transcription.setText(transcriptStr);
+            translate.setText(tranStr);
+            comment.setText(commentStr);
+
+            original.setSelection(original.length());
+            translate.setSelection(translate.length());
+            comment.setSelection(comment.length());
+
+            setEnabledAll(!isSelectableMode);
+            translate.setEnabled(word.hasMultiTrans() == Word.FALSE && !isSelectableMode);
+
+            if (isSelectableMode && isSelectableItem) {
+                Resources resources = getResources();
+                itemView.setBackground(new ColorDrawable(resources.getColor(R.color.colorAccent)));
+
+            }else {
+                itemView.setBackground(null);
+            }
+
+
+        }
+
+        private void setEnabledAll(boolean b){
+            original.setEnabled(b);
+            transcription.setEnabled(b);
+            translate.setEnabled(b);
+            comment.setEnabled(b);
+        }
+
+        @Override
+        public void onClick(View view) {
+            int i = getAdapterPosition();
+            if (i == RecyclerView.NO_POSITION) return;
+
+            if (isSelectableMode){
+                isSelectableItem = !isSelectableItem;
+                myParentAdapter.setItemChecked((mAdapter.getList().get(i).getIdString()),isSelectableItem);
+                Resources resources = getResources();
+                if (isSelectableItem) {
+                    // Here will be some Drawable
+                    itemView.setBackground(new ColorDrawable(resources.getColor(R.color.colorAccent)));
+                    selectCount++;
+                }else {
+                    itemView.setBackground(null);
+                    selectCount--;
+                }
+                updateActionBarTitle(true);
+            }
+
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            int position = getAdapterPosition();
+            if (!isSelectableMode) {
+                myParentAdapter.setSelectable(true);
+//                myParentAdapter.notifyItemChanged(position);
+                myParentAdapter.notifyDataSetChanged();
+
+                myParentAdapter.setItemChecked((mAdapter.getList().get(position).getIdString()), true);
+
+                selectCount++;
+                updateActionBarTitle(true);
+//                    wordHolder.setEnabledAll(false);
+            }else {
+                isSelectableItem = !isSelectableItem;
+
+                myParentAdapter.setItemChecked((mAdapter.getList().get(position).getIdString()), isSelectableItem);
+                if (isSelectableItem) {
+                    Resources resources = getResources();
+                    itemView.setBackground(new ColorDrawable(resources.getColor(R.color.colorAccent)));
+                    selectCount++;
+                }else {
+                    itemView.setBackground(null);
+                    selectCount--;
+                }
+                myParentAdapter.notifyItemChanged(position);
+            }
+            Log.i(TAG, "onLongClick: true");
+//                    notifyItemChanged(position);
+            return true;
+        }
+    }
+
     public class WordAdapter extends RecyclerView.Adapter<WordHolder>
             implements ItemTouchHelperAdapter{
 
         private ArrayList<Word> mList;
+        private ArrayMap<String,Boolean> mSelectionsArray = new ArrayMap<>();
+        private boolean isSelectable = false;
 
         public WordAdapter(ArrayList<Word> list) {
-            sortList();
+            Collections.sort(list);
             mList = list;
         }
 
@@ -619,27 +843,29 @@ public class GroupDetailFragment extends Fragment {
         }
 
         public void addList(ArrayList<Word> list) {
-            sortList();
             if (mList.isEmpty() && Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                 addAnimation();
             }
-            mList = list;
-            notifyDataSetChanged();
-            mLabelEmptyList.update();
+            setList(list);
         }
 
         public void setList(ArrayList<Word> list) {
-            sortList();
+            Collections.sort(list);
             mList = list;
             notifyDataSetChanged();
             mLabelEmptyList.update();
+            setSelectionsArray(selectArray);
+        }
+
+        public ArrayList<Word> getList() {
+            return mList;
         }
 
         @NonNull
         @Override
         public WordHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
             View view = LayoutInflater.from(getContext()).inflate(R.layout.item_words_list,viewGroup,false);
-            return new WordHolder(view);
+            return new WordHolder(view,this);
         }
 
         @Override
@@ -659,139 +885,69 @@ public class GroupDetailFragment extends Fragment {
             switch (flag){
                 case ItemTouchHelper.START://Выделить
 
-                    if (!selectedList.contains(Integer.valueOf(position))) {
+                    wordHolder.onLongClick(wordHolder.itemView);
 
-                        selectedList.add(position);
-                        setSelectMode(true);
-                        wordHolder.itemView.setBackgroundColor(getResources().getColor(R.color.colorSelected));
-
-
-                        wordHolder.original.setEnabled(!selectMode);
-                        wordHolder.transcription.setEnabled(!selectMode);
-                        wordHolder.translate.setEnabled(!selectMode);
-                        wordHolder.comment.setEnabled(!selectMode);
-
-                        wordHolder.mCheckBox.setChecked(true);
-                    }
-                    mAdapter.notifyItemChanged(position);
                     break;
                 case ItemTouchHelper.END://DialogTranslate
-                    createDialogMultiTranslate(position);
+                    if (!isSelectable) {
+                        createDialogMultiTranslate(position);
+                    }else {
+                        Toast.makeText(getActivity(), getString(R.string.close_select_mode) , Toast.LENGTH_SHORT).show();
+                        notifyItemChanged(position);
+                    }
                     break;
             }
-//            mAdapter.notifyDataSetChanged();//tmp
         }
 
-        public void sortList(){
-            if (typeSort) {
-                Collections.sort(mWords,new Word.OriginalCompare());
+        private void setItemChecked(String id, boolean isChecked){
+            mSelectionsArray.put(id,isChecked);
+            int j = 0;
+            for (int i = 0; i < mSelectionsArray.size(); i++) {
+                if (mSelectionsArray.valueAt(i)) j++;
+            }
+            selectAll = (j == mSelectionsArray.size());
+            getActivity().invalidateOptionsMenu();
+        }
+
+        private boolean isItemSelectable(String id){
+            return mSelectionsArray.get(id) == null ? false : mSelectionsArray.get(id);
+        }
+
+
+        public void setSelectable(boolean selectable) {
+            isSelectable = selectable;
+            if (isSelectable){
+                mode = MODE_SELECT;
             }else {
-                Collections.sort(mWords,new Word.TranslateCompare());
+                mode = MODE_NORMAL;
             }
+
+            getActivity().invalidateOptionsMenu();
+//            addAlphaAnim();
         }
 
-    }
+        public boolean isSelectable() {
+            return isSelectable;
+        }
 
-    public class WordHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener, View.OnLongClickListener {
-        EditText original;
-        TextView transcription;
-        EditText translate;
-        EditText comment;
-        CheckBox mCheckBox;
+        public void setSelectionsArray(ArrayList<String> selectionsArray) {
+            if (selectionsArray == null )return;
 
-        public WordHolder(@NonNull View itemView) {
-            super(itemView);
-
-            original = itemView.findViewById(R.id.text_original);
-            transcription = itemView.findViewById(R.id.text_transcription);
-            translate = itemView.findViewById(R.id.text_translate);
-            comment = itemView.findViewById(R.id.edit_comment);
-            mCheckBox = itemView.findViewById(R.id.checkBox);
-
-            original.addTextChangedListener(new MyTextWatch(this,MyTextWatch.ORIGINAL));
-            translate.addTextChangedListener(new MyTextWatch(this,MyTextWatch.TRANSLATE));
-            comment.addTextChangedListener(new MyTextWatch(this,MyTextWatch.COMMENT));
-            transcription.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    createDialogTranscript(WordHolder.this);
+            if (!selectionsArray.isEmpty()) {
+                for (int i = 0; i < selectionsArray.size(); i++) {
+                    mSelectionsArray.put(selectionsArray.get(i), true);
                 }
-            });
-
-            itemView.setOnClickListener(this);
-//            itemView.setOnLongClickListener(this);
-        }
-
-
-        public void bind(Word word){
-            int position = getAdapterPosition();
-
-            String origStr = word.getOriginal();
-            String transcriptStr = word.getTranscript();
-            String tranStr;
-            if (word.hasMultiTrans() == Word.FALSE) {
-                tranStr = word.getTranslate();
-            }else {
-                tranStr = word.getMultiTranslate();
+                Log.i(TAG, "StringArray.size(): "+ selectionsArray.size());
             }
-            String commentStr = word.getComment();
-
-
-            original.setText(origStr);
-            transcription.setText(transcriptStr);
-            translate.setText(tranStr);
-            comment.setText(commentStr);
-
-            original.setSelection(original.length());
-            translate.setSelection(translate.length());
-            comment.setSelection(comment.length());
-
-            original.setEnabled(!selectMode);
-            transcription.setEnabled(!selectMode);
-            translate.setEnabled(word.hasMultiTrans() == Word.FALSE && !selectMode);
-            comment.setEnabled(!selectMode);
-
-
-
-
-            if (selectMode){
-                mCheckBox.setVisibility(View.VISIBLE);
-                if (selectedList.indexOf(position) != -1){
-//                        System.out.println("position " + position);
-                    mCheckBox.setChecked(true);
-                    itemView.setBackgroundColor(getResources().getColor(R.color.colorSelected));
-                }else {
-                    mCheckBox.setChecked(false);
-                    itemView.setBackgroundColor(getResources().getColor(R.color.colorDefaultBackground));
+            for (int i = 0; i < mList.size(); i++) {
+                Word word = mList.get(i);
+                if (mSelectionsArray.get(word.getIdString()) == null) {
+                    mSelectionsArray.put(word.getIdString(), false);
                 }
-            }else {
-                mCheckBox.setChecked(false);
-                mCheckBox.setVisibility(View.GONE);
-                itemView.setBackgroundColor(getResources().getColor(R.color.colorDefaultBackground));
-            }
-        }
 
-        @Override
-        public void onClick(View view) {
-            int position = getAdapterPosition();
-            if (selectMode) {
-                Integer i = Integer.valueOf(position);
-                if (mCheckBox.isChecked()){
-                    selectedList.remove(i);
-                    view.setBackgroundColor(getResources().getColor(R.color.colorDefaultBackground));
-                }else {
-                    selectedList.add(i);
-                    view.setBackgroundColor(getResources().getColor(R.color.colorSelected));
-                }
-                mCheckBox.setChecked(!mCheckBox.isChecked());
-                updateActionBarTitle();
             }
-        }
+            Log.i(TAG, "mSelectionsArray.size(): "+ mSelectionsArray.size());
 
-        @Override
-        public boolean onLongClick(View v) {
-            return false;
         }
     }
 
@@ -802,6 +958,7 @@ public class GroupDetailFragment extends Fragment {
         private SQLiteDatabase db;
 
         private ArrayList<Word> mWordsToLearn;
+        private ArrayList<Word> wordsRemove;
 
         @Override
         public Boolean doIn(String command) {
@@ -963,24 +1120,30 @@ public class GroupDetailFragment extends Fragment {
                         return true;
 
                     case REMOVE_WORD:
-                        ArrayList<Word> wordsRemove = new ArrayList<>();
-                        for(Integer j :selectedList) {
-                            int i = j;
-                            wordsRemove.add(mWords.get(i));
+                        wordsRemove = new ArrayList<>();
+                        for (int i = 0; i < mAdapter.mSelectionsArray.size(); i++) {
+                            if (mAdapter.mSelectionsArray.valueAt(i)) {
+                                for (Word w : mWords) {
+                                    if (w.getIdString().equals(mAdapter.mSelectionsArray.keyAt(i))){
+                                        wordsRemove.add(w);
+                                    }
+                                }
+                            }
+                        }
+                        for(Word w : wordsRemove) {
+                            int i = mWords.indexOf(w);
                             cursor = queryTable(db,
                                     WORDS,
                                     null,
                                     Cols.UUID + " = ?",
-                                    new String[]{mWords.get(i).getId().toString()});
+                                    new String[]{mWords.get(i).getIdString()});
                             if (cursor.getCount() !=0) {
                                 db.delete(WORDS,
                                         Cols.UUID + " = ?",
-                                        new String[]{mWords.get(i).getId().toString()});
+                                        new String[]{mWords.get(i).getIdString()});
                             }
                         }
                         return true;
-
-
                 }
                 cursor.close();
                 db.close();
@@ -1012,7 +1175,19 @@ public class GroupDetailFragment extends Fragment {
                     break;
 
                 case REMOVE_WORD:
-                    removeFromAdapter();
+                    int j;
+                    for (Word w : wordsRemove){
+                        j = mAdapter.getList().indexOf(w);
+                        mAdapter.notifyItemRemoved(j);
+                        mWords.remove(w);
+                        Log.i(TAG, "Word removed: " + w.getOriginal());
+                    }
+                    mAdapter.mSelectionsArray.clear();
+                    for (int i = 0; i < mAdapter.getList().size(); i++) {
+                        Word w = mAdapter.getList().get(i);
+                        mAdapter.mSelectionsArray.put(w.getIdString(),false);
+                    }
+                    selectCount = 0;
                     break;
 
                 case GET_WORDS:
@@ -1023,7 +1198,7 @@ public class GroupDetailFragment extends Fragment {
                         sortIsNeed = true;
                         removeEmptyWords(mWordsToLearn);
                         if (mWordsToLearn.size() < 2){
-                            String s = getString(R.string.min_word_list_size);
+                            String s = getString(R.string.min_word_list_size,2);
                             Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
                             return;
                         }

@@ -21,36 +21,7 @@
             android:icon="@drawable/ic_menu_play"
             app:showAsAction="ifRoom|withText" />
 
-        <item
-            android:id="@+id/menu_sort"
-            android:icon="@android:drawable/ic_menu_sort_alphabetically"
-            android:title="@string/sort"
-            app:showAsAction="never|withText" />
-
     </group>
-
-    <group
-        android:id="@+id/group_two">
-        <item
-            android:id="@+id/menu_select_all"
-            android:title="@string/select_all"
-            android:icon="@drawable/ic_menu_select_all"
-            app:showAsAction="ifRoom|withText"/>
-
-        <item
-            android:id="@+id/menu_remove"
-            android:title="@string/remove"
-            android:icon="@drawable/ic_menu_delete"
-            app:showAsAction="ifRoom|withText"/>
-
-        <item
-            android:id="@+id/menu_cancel"
-            android:title="@android:string/cancel"
-            android:icon="@drawable/ic_menu_cancel"
-            app:showAsAction="always"/>
-    </group>
-
-
 
 
 </menu>

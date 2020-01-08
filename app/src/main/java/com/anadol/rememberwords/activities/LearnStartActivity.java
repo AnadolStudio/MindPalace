@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.anadol.rememberwords.R;
+import com.anadol.rememberwords.fragments.IOnBackPressed;
 import com.anadol.rememberwords.fragments.LearnStartFragment;
 import com.anadol.rememberwords.myList.Group;
 import com.anadol.rememberwords.myList.Word;
@@ -27,15 +29,6 @@ public class LearnStartActivity extends SimpleFragmentActivity {
         return intent;
     }
 
-    /*@Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fragment);
-
-
-
-
-    }*/
 
     @Override
     protected Fragment createFragment() {
@@ -43,6 +36,14 @@ public class LearnStartActivity extends SimpleFragmentActivity {
         ArrayList<Word> words = getIntent().getParcelableArrayListExtra(WORDS);
 
         return LearnStartFragment.newInstance(mGroup ,words);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (!(fragment instanceof IOnBackPressed) || !((IOnBackPressed)fragment).onBackPressed()) {
+            super.onBackPressed();
+        }
     }
 
     /*@Override
@@ -68,23 +69,16 @@ public class LearnStartActivity extends SimpleFragmentActivity {
             mGroup = savedInstanceState.getParcelable(GROUP);
         }
     }*/
-    public static boolean isBrightColor(int red, int green, int blue) {
-        boolean rtnValue = false;
 
-        int brightness = (int) Math.sqrt(red * red * .241 + green * green + .691 + blue * blue * .068);
-        if (brightness >=200){
-            return !rtnValue;
-        }else
-            return rtnValue;
-    }
-
-    @Override
+    /*@Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(GROUP,mGroup);
-    }
+    }*/
 
-    @Override
+
+
+   /* @Override
     protected void onResume() {
         super.onResume();
         LearnStartFragment fragment = (LearnStartFragment) getFragment();
@@ -93,7 +87,7 @@ public class LearnStartActivity extends SimpleFragmentActivity {
         }else {
             updateActionBar();
         }
-    }
+    }*/
     private void updateActionBar(){
         if (mGroup != null){
             getSupportActionBar().setTitle(mGroup.getName());

@@ -90,7 +90,7 @@ public class LearnDetailActivity extends SimpleFragmentActivity {
                 rtnArray.add(i);
             }
             if (rtnArray.size() == size){
-                b =true;
+                b = true;
             }
         }
         return rtnArray;

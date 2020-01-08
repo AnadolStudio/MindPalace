@@ -78,11 +78,14 @@
     <string name="apply">Apply</string>
     <string name="group_detail_edit_text_hint">Group</string>
     <string name="color_image_translation">color_image_translation</string>
-    <string name="testing_group">Testing %1$s</string>
-    <string name="min_word_list_size">You need at least 2 words</string>
+    <string name="testing_group">Testing: %1$s</string>
+    <string name="min_word_list_size">You need at least %1$d words</string>
+    <string name="override_number_words">The number of words exceeds the allowed size</string>
     <string name="min_transcript_list_size">You need at least %1$d words with transcription</string>
     <string name="word_without_transcription">Some words do not have transcription, so they are not used</string>
     <string name="select_some_word_else">Please select some words else</string>
+    <string name="close_select_mode">You must close select mode for this</string>
+    <string name="diapason_error">Diapason Error</string>
 
 
     <plurals name="word_items">
@@ -107,9 +110,9 @@
 
     <string-array name="start_type">
         <item>All</item>
-        <item>Selected</item>
-        <item>First:</item>
-        <item>Last:</item>
+        <item>Selected:</item>
+        <item>Diapason:</item>
+        <item>Random:</item>
     </string-array>
 
     <string-array name="words_type">

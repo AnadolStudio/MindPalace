@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.UUID;
 
-public class Word implements Parcelable,Comparable{
+public class Word implements Parcelable,Comparable<Word>{
     private static final String TAG = "word";
     public static final int TRUE = 1;
     public static final int FALSE = 0;
@@ -106,6 +106,10 @@ public class Word implements Parcelable,Comparable{
 
     public UUID getId() {
         return id;
+    }
+
+    public String getIdString() {
+        return id.toString();
     }
 
     @NonNull
@@ -231,8 +235,8 @@ public class Word implements Parcelable,Comparable{
     }
 
     @Override
-    public int compareTo(@NonNull Object o) {
-        return original.compareTo(((Word)o).getOriginal());
+    public int compareTo(@NonNull Word word) {
+        return original.compareTo(word.getOriginal());
     }
 
 

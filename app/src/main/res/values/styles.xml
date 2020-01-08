@@ -64,6 +64,14 @@
         <item name="android:hint">@string/group_detail_edit_text_hint</item>
     </style>
 
+    <style name="EditTextStyle.EditTextNumber">
+        <item name="android:inputType">date</item>
+        <item name="android:maxWidth">100dp</item>
+        <item name="android:minWidth">50dp</item>
+        <item name="android:textAlignment">gravity</item>
+        <item name="android:longClickable">false</item>
+    </style>
+
 
     <style name="DialogKeyboard" parent="Base.Theme.AppCompat.Light.Dialog">
         <item name="android:windowMinWidthMajor">100%</item>

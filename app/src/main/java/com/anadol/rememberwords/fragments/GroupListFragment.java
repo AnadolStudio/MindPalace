@@ -76,7 +76,6 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     private static final String TAG = "GroupListFragment";
 
     public static final String SELECT_MODE = "select_mode";
-    public static final String SELECT_LIST = "select_list";
     public static final String CHANGED_ITEM = "changed_item";
     public static final int REQUIRED_CHANGE = 1;
     private static final int REQUEST_SETTINGS = 2;
@@ -90,8 +89,6 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     private static final String GET_GROUPS = "groups";
     private static final String INVALIDATE_GROUP = "invalidate_groups";
     private static final String REMOVE_GROUP = "remove_group";
-    private static final String SELECT_ALL = "select_all";
-    private static final String SELECT_COUNT = "select_count";
     private static final String QUERY = "query";
 
     private RecyclerView mRecyclerView;
@@ -103,9 +100,10 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
 
     private GroupAdapter mAdapter;
     private ProgressBar mProgressBar;
+    private String query;
+
     private boolean selectAll;
     private int selectCount;
-    private String query;
     private ArrayList<String> selectArray;
     private boolean selectable = false;
 
@@ -118,7 +116,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         outState.putBoolean(SELECT_MODE, mAdapter.isSelectable);
         outState.putParcelableArrayList(GROUP_SAVE, mGroups);
 
-        selectArray = new ArrayList<>();
+        selectArray.clear();
 
         for (int i = 0; i < mAdapter.mSelectionsArray.size();i++) {
             if (mAdapter.mSelectionsArray.valueAt(i)) {
@@ -295,10 +293,6 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
             case R.id.menu_merge:
                 mergeGroup();
                 return true;
-            case R.id.menu_cancel:
-//                mAdapter.setSelectable(false);
-//                mAdapter.notifyDataSetChanged();
-                return true;
             case R.id.menu_select_all:
 //                System.out.println("selectedList.size() == mGroups.size()) " + selectedList.size() +" "+ mGroups.size());
                 selectAll = !selectAll;
@@ -324,7 +318,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                 return super.onOptionsItemSelected(item);
         }
     }
-    public void updateActionBarTitle(boolean selectMode){
+    private void updateActionBarTitle(boolean selectMode){
         AppCompatActivity activity = (AppCompatActivity)getActivity();
         if (!selectMode) {
             activity.getSupportActionBar().setTitle(getString(R.string.app_name));
@@ -409,7 +403,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     }
 
     private void mergeGroup() {
-        ArrayList<Group> groupsUnify = new ArrayList<>();
+       /* ArrayList<Group> groupsUnify = new ArrayList<>();
         for(Integer j :selectedList) {
             int i = j;
             groupsUnify.add(mGroups.get(i));
@@ -423,7 +417,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         selectedList.clear();
         intent.putExtra(GROUPS,groupsUnify);
         setSelectMode(false);
-        startActivityForResult(intent,REQUIRED_UNIFY);
+        startActivityForResult(intent,REQUIRED_UNIFY);*/
     }
 
     public void updateUI(){
@@ -472,20 +466,21 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         private boolean isSelectableItem = false; //default
         private GroupAdapter myParentAdapter;
 
-        public GroupHolder(@NonNull View itemView) {
+        public GroupHolder(@NonNull View itemView, GroupAdapter parentAdapter) {
             super(itemView);
             mTextView = itemView.findViewById(R.id.text_group);
             mImageView = itemView.findViewById(R.id.image_group);
+            myParentAdapter = parentAdapter;
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
 
-        public void onBind(String name, Drawable drawable, GroupAdapter parentAdapter){
+        public void onBind(String name, Drawable drawable){
             mTextView.setText(name);
             mImageView.setImageDrawable(drawable);
-            myParentAdapter = parentAdapter;
-            isSelectableMode = myParentAdapter.isSelectable;
+
             int position = getAdapterPosition();
+            isSelectableMode = myParentAdapter.isSelectable;
             isSelectableItem = myParentAdapter.isItemSelectable(mAdapter.getList().get(position).getIdString());
 
             if (isSelectableMode) {
@@ -561,10 +556,10 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
             mFilterList = list;
             setSelectionsArray(selectArray);
 
-            for (int i = 0; i < mList.size(); i++) {
+            /*for (int i = 0; i < mList.size(); i++) {
                 Group g = mList.get(i);
                 Log.i(TAG, "mList: " + g.getIdString() + " mSelectionsArray: " +mSelectionsArray.keyAt(i));
-            }
+            }*/
         }
 
         public void smoothUpdate(List<Group> list){
@@ -580,13 +575,13 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         @Override
         public GroupHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
             View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_group_list,viewGroup, false);
-            return new GroupHolder(view);
+            return new GroupHolder(view,this);
         }
 
         @Override
         public void onBindViewHolder(@NonNull GroupHolder groupHolder, int i) {
             Group group = mFilterList.get(i);
-            groupHolder.onBind(group.getName(),group.getGroupDrawable(),this);
+            groupHolder.onBind(group.getName(),group.getGroupDrawable());
         }
 
         @Override
@@ -625,8 +620,8 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
             };
         }
 
-        private void setItemChecked(String name, boolean isChecked){
-            mSelectionsArray.put(name,isChecked);
+        private void setItemChecked(String id, boolean isChecked){
+            mSelectionsArray.put(id,isChecked);
             int j = 0;
             for (int i = 0; i < mSelectionsArray.size(); i++) {
                 if (mSelectionsArray.valueAt(i)) j++;

@@ -218,12 +218,11 @@
                 android:layout_marginStart="8dp"
                 android:gravity="center"
                 android:hint="@string/_0"
-                android:inputType="number"
-                android:textAlignment="gravity"
+                style="@style/EditTextStyle.EditTextNumber"
                 app:layout_constraintBottom_toBottomOf="@+id/start_button"
                 app:layout_constraintStart_toEndOf="@+id/spinner"
                 app:layout_constraintTop_toTopOf="@+id/start_button"
-                tools:text="15" />
+                tools:text="150-500"/>
 
             <Spinner
                 android:id="@+id/spinner"

@@ -9,7 +9,9 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.fragments.GroupDetailFragment;
+import com.anadol.rememberwords.fragments.IOnBackPressed;
 import com.anadol.rememberwords.myList.Group;
 
 import java.util.UUID;
@@ -47,12 +49,17 @@ public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pa
 
     @Override
     public void onBackPressed() {
-        GroupDetailFragment fragment = (GroupDetailFragment) getFragment();
-        Intent intent = fragment.dataIsChanged();
-        int i = getIntent().getIntExtra(POSITION,0);
-        intent.putExtra(POSITION,i);
-        setResult(RESULT_OK,intent);
-        super.onBackPressed();
+
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (!(fragment instanceof IOnBackPressed) || !((IOnBackPressed)fragment).onBackPressed()) {
+
+            Intent intent = ((GroupDetailFragment)fragment).dataIsChanged();
+            int i = getIntent().getIntExtra(POSITION,0);
+            intent.putExtra(POSITION,i);
+            setResult(RESULT_OK,intent);
+            super.onBackPressed();
+        }
+
     }
 
 

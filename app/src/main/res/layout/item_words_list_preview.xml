@@ -7,12 +7,6 @@
     android:divider="?android:attr/dividerHorizontal"
     android:showDividers="middle">
 
-    <CheckBox
-        android:id="@+id/checkBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:visibility="gone" />
-
     <TextView
         android:id="@+id/text_question"
         android:layout_width="0dp"
