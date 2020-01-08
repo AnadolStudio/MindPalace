@@ -447,8 +447,6 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
             @Override
             public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
                 String newString = source.toString();
-                newString = newString.replaceAll("/","");
-                newString = newString.replaceAll("\\.","");
                 String old = dest.toString();
 
                 if (newString.contains("-") && old.contains("-")){

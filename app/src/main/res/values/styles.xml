@@ -65,7 +65,9 @@
     </style>
 
     <style name="EditTextStyle.EditTextNumber">
-        <item name="android:inputType">date</item>
+        <item name="android:digits">-0123456789</item>
+        <item name="android:numeric">integer</item>
+        <item name="android:inputType">numberSigned</item>
         <item name="android:maxWidth">100dp</item>
         <item name="android:minWidth">50dp</item>
         <item name="android:textAlignment">gravity</item>
