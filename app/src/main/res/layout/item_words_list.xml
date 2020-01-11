@@ -29,7 +29,6 @@
             android:background="@android:color/transparent"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine|textNoSuggestions"
-            android:minHeight="32dp"
             android:textColor="@android:color/black"
             android:textSize="14sp"
             tools:text="Original" />
@@ -42,13 +41,12 @@
         <TextView
             android:id="@+id/text_transcription"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginStart="2dp"
             android:layout_marginEnd="2dp"
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:gravity="center"
-            android:minHeight="32dp"
             android:textColor="@android:color/black"
             android:textSize="14sp"
             tools:text="Transcription" />
@@ -69,7 +67,6 @@
             android:background="@android:color/transparent"
             android:imeOptions="actionDone"
             android:inputType="textMultiLine|textNoSuggestions"
-            android:minHeight="32dp"
             android:textColor="@android:color/black"
             android:textSize="14sp"
             tools:text="Translate" />

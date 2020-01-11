@@ -43,10 +43,6 @@
             android:windowSoftInputMode="stateHidden|adjustResize">
 
         </activity>
-        <activity
-            android:name=".activities.SettingActivity"
-            android:parentActivityName=".activities.GroupListActivity"
-            android:windowSoftInputMode="stateHidden"></activity>
 
     </application>
 

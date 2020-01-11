@@ -18,18 +18,11 @@ import java.util.UUID;
 
 
 public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pager
-    //TODO: Используется для Unify, проверить на надобность
-    public static final String GROUPS = "groups";
-
     public static final String CURRENT_GROUP = "current_group";
 
-    public static final String MY_UUID = "uuid";
     private static final String TAG = "GroupDetailActivity";
     private static final String POSITION = "position";
     private Group mGroup;
-    private UUID id;
-    private ViewPager viewPager;
-    private Toolbar bottomBar;
 
 
     public static Intent newIntent(Context context,Group mGroup, int position){

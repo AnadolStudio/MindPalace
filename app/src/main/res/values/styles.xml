@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="SplashActivity" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">@drawable/gradient</item>
+    <style name="SplashActivity" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowBackground">@drawable/splash_activity</item>
     </style>
 
     <style name="AppThemeDefault" parent="Theme.AppCompat.Light.DarkActionBar">

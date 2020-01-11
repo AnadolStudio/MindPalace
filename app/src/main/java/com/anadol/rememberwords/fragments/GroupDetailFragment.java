@@ -87,11 +87,11 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
     private static final int REQUEST_MULTI_TRANSLATE = 2;
 
     private static final String GET_WORDS = "words";
-    private static final String ADD_GROUP = "add_group";
-    private static final String ADD_WORDS = "add_words";
+    private static final String SAVE_GROUP = "add_group";
+    private static final String SAVE_WORDS = "add_words";
     private static final String REMOVE_WORD = "remove_words";
     private static final String TYPE_SORT = "type_sort";
-    private static final String UNIFY_GROUPS = "unify_groups";
+    private static final String MERGE_GROUPS = "unify_groups";
     private static final String GET_GROUPS_NAME = "get_groups_name";
     private static final String DATA_IS_CHANGED = "data_is_changed";
 
@@ -102,7 +102,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
     private WordAdapter mAdapter;
     private Group mGroup;
     private ArrayList<Word> mWords;
-    private ArrayList<Group> mGroups;
+    private ArrayList<Group> mGroupsForMerge;
 
     private EditText nameGroup;
     //    private ImageButton addButton;
@@ -124,7 +124,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
         // Required empty public constructor
     }
 
-    // TODO: Для UNIFY необходимо добавить Dialog с цветами объединенных групп,
+    // TODO: Для MERGE необходимо добавить Dialog с цветами объединенных групп,
     //  возможно стоит создать новый фрагмент, либо добавить это возможность
     //  для всех GroupDetailFragment
     //  Идеи: добавить в ColorPicker подобие actionbar как в DialogMultiTranslate,
@@ -146,8 +146,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
     public static GroupDetailFragment newInstance(@NonNull ArrayList<Group> groups) {
         Bundle args = new Bundle();
 
-        Group group = new Group(UUID.randomUUID(), new int[]{ColorPicker.COLOR_START}, "");
-        args.putBoolean(IS_CREATED,true);
+        Group group = new Group(UUID.randomUUID(), groups.get(0).getColors(), "");
         args.putParcelable(GROUP, group);
         args.putParcelableArrayList(GROUPS, groups);
         GroupDetailFragment fragment = new GroupDetailFragment();
@@ -229,11 +228,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
             selectAll = false;
         }
 
-        //For UNIFY, selected groups;
-        mGroups = getArguments().getParcelableArrayList(GROUPS);
-        if (mWords.isEmpty() && mGroups != null){
-            new WordBackground().execute(UNIFY_GROUPS);
-        }
+        //For Merge, selected groups;
+        mGroupsForMerge = getArguments().getParcelableArrayList(GROUPS);
 
         groupColor.setImageDrawable(mGroup.getGroupDrawable());
 
@@ -317,39 +313,35 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                             mAdapter.addList(mWords);
                         }
                     },10);//Чтобы избежать небольшого тормоза в конце анимации
-
                 }
-
                 @Override
                 public void onTransitionStart(Transition transition) {
-
                 }
-
                 @Override
                 public void onTransitionCancel(Transition transition) {
                     transition.removeListener(this);
                 }
-
                 @Override
                 public void onTransitionPause(Transition transition) {
-
                 }
-
                 @Override
                 public void onTransitionResume(Transition transition) {
 
                 }
             });
-
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (!isCreated && mWords.isEmpty()) {
+        if (mGroupsForMerge != null && mWords.isEmpty()){
+            new WordBackground().execute(MERGE_GROUPS);
+
+        }else if (!isCreated && mWords.isEmpty()) {
             new WordBackground().execute(GET_WORDS);
-        }else {
+
+        } else {
             updateUI();//При поворотах
             mAdapter.setList(mWords);
         }
@@ -371,9 +363,9 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
 
         if (mode == MODE_NORMAL ) {
             inflater.inflate(R.menu.fragment_group_detail,menu);
-            MenuItem play = menu.findItem(R.id.menu_start);
 
-            if (mWords.size()<1 ){
+            MenuItem play = menu.findItem(R.id.menu_start);
+            if (mWords.size() < 1 || isCreated || mGroupsForMerge != null){
                 play.setVisible(false);
             }else {
                 play.setVisible(true);
@@ -381,15 +373,18 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
 
         } else if (mode == MODE_SELECT){
             inflater.inflate(R.menu.menu_group_selected_list,menu);
-            MenuItem item = menu.findItem(R.id.menu_select_all);
+            MenuItem select = menu.findItem(R.id.menu_select_all);
 
             MenuItem merge = menu.findItem(R.id.menu_merge);
             merge.setVisible(false);
 
+            MenuItem remove = menu.findItem(R.id.menu_remove);
+            remove.setVisible(mGroupsForMerge == null);
+
             if (selectAll){
-                item.setIcon(R.drawable.ic_menu_select_all_on);
+                select.setIcon(R.drawable.ic_menu_select_all_on);
             }else {
-                item.setIcon(R.drawable.ic_menu_select_all_off);
+                select.setIcon(R.drawable.ic_menu_select_all_off);
             }
             updateActionBarTitle(true);
         }
@@ -505,10 +500,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                 mGroup.setColors(colors);
                 groupColor.setImageDrawable(mGroup.getGroupDrawable());
                 break;
-            /*case REQUEST_LEARN:
-                Intent intent = LearnStartActivity.newIntent(getContext(),mGroup,mWords);
-                startActivity(intent);
-                break;*/
             case REQUEST_TRANSLATE_RESULT:
             case REQUEST_MULTI_TRANSLATE:
                 int p = data.getIntExtra(POSITION,0);
@@ -551,7 +542,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
     private void saveGroup() {
         String name = nameGroup.getText().toString();
         // Подразумевается, что групп с именим "" или " " быть не должно
-        if (isCreated || !name.equals(mGroup.getName())){
+        if (isCreated || mGroupsForMerge != null ||!name.equals(mGroup.getName())){
             if (name.equals("") || name.equals(" ")) {
                 nameGroup.setError(getString(R.string.is_empty));
                 return;
@@ -562,8 +553,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
             }
         }
         mGroup.setName(name);
-        new WordBackground().execute(ADD_GROUP);
-        new WordBackground().execute(ADD_WORDS);
+        new WordBackground().execute(SAVE_GROUP);
+        new WordBackground().execute(SAVE_WORDS);
 
     }
 
@@ -796,6 +787,12 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
         @Override
         public boolean onLongClick(View v) {
             int position = getAdapterPosition();
+            if (mGroupsForMerge != null) {
+                myParentAdapter.notifyItemChanged(position);
+                Toast.makeText(getContext(), getString(R.string.do_not_select), Toast.LENGTH_SHORT).show();
+                return true;
+            }
+
             if (!isSelectableMode) {
                 myParentAdapter.setSelectable(true);
 //                myParentAdapter.notifyItemChanged(position);
@@ -968,7 +965,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                 db = new DatabaseHelper(getContext()).getWritableDatabase();
 //                System.out.println("NAME " + mGroup.getName());
                 switch (command) {
-                    case ADD_GROUP:
+                    case SAVE_GROUP:
                         cursor = queryTable(db,
                                 GROUPS,
                                 null,
@@ -990,33 +987,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                         }
                         return true;
 
-                    case UNIFY_GROUPS:
-                        for (Group g : mGroups) {
-                            cursor = queryTable(
-                                    db,
-                                    WORDS,
-                                    null,
-                                    NAME_GROUP + " = ?",
-                                    new String[]{g.getName()}
-                            );
-
-                            if (cursor.getCount() != 0) {
-
-                                cursor.moveToFirst();
-                                words = new ArrayList<>();
-                                while (!cursor.isAfterLast()) {
-                                    words.add(cursor.getWord());
-                                    cursor.moveToNext();
-                                }
-                                if (sortIsNeed) {
-                                    Collections.sort(words);
-                                }
-                                mWords.addAll(words);
-                            }
-                        }
-
-                        return true;
-
                     case GET_GROUPS_NAME:
                         ArrayList<String> groupsNames = new ArrayList<>();
                         cursor = queryTable(
@@ -1036,31 +1006,30 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                             }
 //                            Log.i(TAG,"" + groupsNames.size());
                             //Удаляю имена текущей группы/групп (Unify)
-                            groupsNames.remove(mGroup.getName());
-                            if (mGroups != null){
-                                for (Group g : mGroups) {
-                                    groupsNames.remove(g);
+
+                            if (mGroupsForMerge != null){
+                                for (Group g : mGroupsForMerge) {
+                                    groupsNames.remove(g.getName());
                                 }
-                            }
+                            }else groupsNames.remove(mGroup.getName());
+
                         }
                         allGroupsNames.addAll(groupsNames);
 
                         return true;
 
-                    case ADD_WORDS:
+                    case SAVE_WORDS:
                         String orig;
                         String trans;
                         String transcript;
                         String comment;
                         int isMultiTrans;
 
-
                         for (int i = 0; i < mWords.size(); i++) {
                             UUID id = mWords.get(i).getId();
                             orig = mWords.get(i).getOriginal().toLowerCase().trim();
                             transcript = mWords.get(i).getTranscript().toLowerCase().trim();
                             trans = mWords.get(i).getTranslate().toLowerCase().trim();
-//                            System.out.println(trans);
                             comment = mWords.get(i).getComment().toLowerCase().trim();
                             isMultiTrans = mWords.get(i).hasMultiTrans();
 
@@ -1083,8 +1052,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                                 );
                             }
                         }
-                        if (mGroups != null){// Removing before unify
-                            for (Group g : mGroups) {
+                        if (mGroupsForMerge != null){// Removing before merge
+                            for (Group g : mGroupsForMerge) {
                                 db.delete(GROUPS,
                                         DbSchema.Tables.Cols.UUID + " = ?",
                                         new String[]{g.getId().toString()});
@@ -1117,6 +1086,31 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                                 mWordsToLearn.addAll(words);
                             }
                         }
+                        return true;
+
+                    case MERGE_GROUPS:
+                        for (Group g : mGroupsForMerge) {
+                            cursor = queryTable(
+                                    db,
+                                    WORDS,
+                                    null,
+                                    NAME_GROUP + " = ?",
+                                    new String[]{g.getName()}
+                            );
+
+                            if (cursor.getCount() != 0) {
+
+                                cursor.moveToFirst();
+                                words = new ArrayList<>();
+                                while (!cursor.isAfterLast()) {
+                                    words.add(cursor.getWord());
+                                    cursor.moveToNext();
+                                }
+                                mWords.addAll(words);
+                            }
+                            Collections.sort(mWords);
+                        }
+
                         return true;
 
                     case REMOVE_WORD:
@@ -1159,7 +1153,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
             Intent intent = null;
 
             switch (cmd){
-                case ADD_WORDS:
+                case SAVE_WORDS:
 
                     if (!b){
                         Log.i(TAG,"ERROR in onPOST");
@@ -1168,10 +1162,11 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                         Toast.makeText(getActivity(), getString(R.string.saved_succes_toast), Toast.LENGTH_SHORT).show();
                     }
                     isChanged = true;
-                    if (isCreated){
-                        getActivity().setResult(RESULT_OK, new Intent().putExtra(CHANGED_ITEM,mGroup));
+                    if (isCreated || mGroupsForMerge != null){
+                        getActivity().setResult(RESULT_OK, new Intent().putExtra(CHANGED_ITEM, mGroup));
                         activity.finish();
                     }
+
                     break;
 
                 case REMOVE_WORD:
@@ -1190,8 +1185,9 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                     selectCount = 0;
                     break;
 
+                case MERGE_GROUPS:
+                    mAdapter.addList(mWords);
                 case GET_WORDS:
-                case UNIFY_GROUPS:
                     if (sortIsNeed) {
                         updateUI();
                     }else {

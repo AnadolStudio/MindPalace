@@ -6,7 +6,7 @@ import android.util.Log;
 
 public class SettingsPreference {
     public static final String TAG = "SettingsPreference";
-    public static final String LAYOUT = "layout";
+    private static final String LAYOUT = "layout";
 
     public static void setLayoutPreference(Context context, int layout){
         PreferenceManager.getDefaultSharedPreferences(context)
@@ -16,7 +16,7 @@ public class SettingsPreference {
     }
     public static int getLayoutPreference(Context context){
         int i = PreferenceManager.getDefaultSharedPreferences(context)
-                .getInt(LAYOUT, 1);
+                .getInt(LAYOUT, 0);
         return i;
     }
 }

@@ -212,7 +212,7 @@ public class Word implements Parcelable,Comparable<Word>{
 
     public boolean isExistTranslate(String s){
         ArrayList<String> arrayList = addAllTranslates();
-        return arrayList.contains(s.toLowerCase());
+        return arrayList.contains(s);
     }
 
     public String getGroup() {

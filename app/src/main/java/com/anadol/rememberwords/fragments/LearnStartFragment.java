@@ -289,12 +289,7 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
-        if (mode == MODE_NORMAL ) {
-            inflater.inflate(R.menu.fragment_group_list,menu);
-            MenuItem search = menu.findItem(R.id.menu_search);
-            search.setVisible(false);
-
-        } else if (mode == MODE_SELECT){
+      if (mode == MODE_SELECT){
             inflater.inflate(R.menu.menu_group_selected_list,menu);
             MenuItem item = menu.findItem(R.id.menu_select_all);
 
@@ -339,8 +334,6 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
                 mAdapter.notifyDataSetChanged();
                 return true;
 
-            case R.id.menu_settings:
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -876,6 +869,11 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
                     int max = Math.max(countInt[0],countInt[1]);
                     int min = Math.min(countInt[0],countInt[1]);
 
+                    if (min == 0){
+                        Toast.makeText(getContext(), getString(R.string.diapason_error), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     if (max - min < minCount ){
                         Toast.makeText(getContext(), getString(R.string.min_word_list_size,minCount), Toast.LENGTH_SHORT).show();
                         return;
@@ -885,7 +883,7 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
                         return;
                     }
 
-                    for (int i = min; i < max; i++){
+                    for (int i = min - 1; i < max; i++){
                         learnList.add(mWords.get(i));
                     }
 

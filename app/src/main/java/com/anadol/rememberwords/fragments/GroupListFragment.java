@@ -5,10 +5,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,7 +14,6 @@ import androidx.annotation.Nullable;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.core.util.Pair;
@@ -27,7 +24,6 @@ import androidx.appcompat.widget.SearchView;
 
 import android.util.ArrayMap;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,16 +31,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
-import com.anadol.rememberwords.activities.SettingActivity;
 import com.anadol.rememberwords.database.DatabaseHelper;
 import com.anadol.rememberwords.database.DbSchema;
 import com.anadol.rememberwords.database.SettingsPreference;
@@ -55,8 +49,6 @@ import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.activities.CreateGroupActivity;
 import com.anadol.rememberwords.activities.GroupDetailActivity;
 import com.anadol.rememberwords.myList.LabelEmptyList;
-import com.dingmouren.layoutmanagergroup.echelon.EchelonLayoutManager;
-import com.dingmouren.layoutmanagergroup.skidright.SkidRightLayoutManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,7 +71,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     public static final String CHANGED_ITEM = "changed_item";
     public static final int REQUIRED_CHANGE = 1;
     private static final int REQUEST_SETTINGS = 2;
-    private static final int REQUIRED_UNIFY = 3;
+    private static final int REQUIRED_MERGE = 3;
     private static final int REQUIRED_CREATE = 4;
 
 
@@ -99,7 +91,6 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     private ArrayList<Group> mGroups;
 
     private GroupAdapter mAdapter;
-    private ProgressBar mProgressBar;
     private String query;
 
     private boolean selectAll;
@@ -160,8 +151,6 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         }
 
 
-        mProgressBar = view.findViewById(R.id.progressBar);
-
         fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,26 +177,23 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-//        Log.i(TAG, "onStart");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mProgressBar.setVisibility(View.INVISIBLE);
-//        Log.i(TAG, "onResume ");
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         if (mode == MODE_NORMAL || mode == MODE_SEARCH) {
             inflater.inflate(R.menu.fragment_group_list,menu);
-            MenuItem item = menu.findItem(R.id.menu_search);
+            MenuItem viewList = menu.findItem(R.id.menu_list);
+            int i = SettingsPreference.getLayoutPreference(getActivity());
+            switch (i){
+                case 0:
+                    viewList.setIcon(getResources().getDrawable(R.drawable.ic_menu_view_linear));
+                    break;
+                case 1:
+                    viewList.setIcon(getResources().getDrawable(R.drawable.ic_menu_view_grid));
+                    break;
+            }
 
-            searchView = (SearchView) item.getActionView();
+            MenuItem menuSearch = menu.findItem(R.id.menu_search);
+            searchView = (SearchView) menuSearch.getActionView();
             searchView.setQueryHint(getResources().getString(R.string.search));
             searchView.setOnSearchClickListener(new View.OnClickListener() {
                 @Override
@@ -262,12 +248,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                 return true;
             case MODE_SELECT:
                 modeSelectedTurnOff();
-                mAdapter.mSelectionsArray.clear();
-                for (int i = 0; i < mAdapter.getList().size(); i++) {
-                    Group group = mAdapter.getList().get(i);
-                    mAdapter.mSelectionsArray.put(group.getIdString(),false);
-                }
-                selectCount = 0;
+                selectArrayDefault();
                 return true;
             default:
                 return false;
@@ -279,12 +260,20 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         mAdapter.notifyDataSetChanged();
         updateActionBarTitle(false);
     }
+    private void selectArrayDefault() {
+        mAdapter.mSelectionsArray.clear();
+        for (int i = 0; i < mAdapter.getList().size(); i++) {
+            Group group = mAdapter.getList().get(i);
+            mAdapter.mSelectionsArray.put(group.getIdString(), false);
+        }
+        selectCount = 0;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_settings:
-                createActivitySettings();
+            case R.id.menu_list:
+                changeLayoutManager();
                 return true;
             case R.id.menu_remove:
                 modeSelectedTurnOff();
@@ -318,6 +307,14 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private void changeLayoutManager() {
+        int i = SettingsPreference.getLayoutPreference(getActivity());
+        i = (i+1)%2;// 2 - количество вариантов
+        SettingsPreference.setLayoutPreference(getActivity(),i);
+        createRecyclerLayoutManager(i);
+    }
+
     private void updateActionBarTitle(boolean selectMode){
         AppCompatActivity activity = (AppCompatActivity)getActivity();
         if (!selectMode) {
@@ -327,39 +324,11 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         }
     }
 
-    public String[] getNames() {
-        String[] names = new String[mGroups.size()];
-        for (int i = 0;i<mGroups.size();i++){
-            names[i] = mGroups.get(i).getName();
-        }
-        return names;
-    }
-
-    public String[] getNames(String[] s) {
-        ArrayList<String> arrayList = new ArrayList<>();
-
-        for (int i = 0;i<mGroups.size();i++){
-            if (!namesEqual(mGroups.get(i).getName(),s)) {
-                arrayList.add(mGroups.get(i).getName());
-            }
-        }
-        String[] names = new String[arrayList.size()];
-        names = arrayList.toArray(names);
-        return names;
-    }
-
     public static boolean namesEqual(String s, String[]strings){
         for (int i = 0; i<strings.length;i++){
             if (s.equals(strings[i])) return true;
         }
         return false;
-    }
-
-    private void createActivitySettings() {
-        //TODO: overridePendingTransition
-        Intent intent = SettingActivity.newIntent(getActivity());
-        // Задумка не удалась, можно заменить на обычный startActivity(Intent intent)
-        startActivityForResult(intent, REQUEST_SETTINGS);
     }
 
     @Override
@@ -386,10 +355,13 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                 }
 
                 break;
+            case REQUIRED_MERGE:
+                modeSelectedTurnOff();
+                selectArrayDefault();
             case REQUIRED_CREATE:
 
                 Group group = data.getParcelableExtra(CHANGED_ITEM);
-                Log.i(TAG, "Create item: " + group.hashCode());
+                Log.i(TAG, "Create/Merge item: " + group.getName());
                 GroupBackground groupBackground = new GroupBackground();
                 groupBackground.setGroup(group);
                 groupBackground.execute(INVALIDATE_GROUP);
@@ -398,26 +370,28 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     }
 
     private void createGroup() {
-        Intent intent = CreateGroupActivity.newIntent(getContext(), getNames());
+        Intent intent = CreateGroupActivity.newIntent(getContext());
         startActivityForResult(intent,REQUIRED_CREATE);
     }
 
     private void mergeGroup() {
-       /* ArrayList<Group> groupsUnify = new ArrayList<>();
-        for(Integer j :selectedList) {
-            int i = j;
-            groupsUnify.add(mGroups.get(i));
-        }
+        ArrayList<Group> groupsForMerge = new ArrayList<>();
 
-        String[] s = new String[groupsUnify.size()];
-        for (int i = 0; i<groupsUnify.size(); i++){
-            s[i] = groupsUnify.get(i).getName();
+        for (int i = 0; i < mAdapter.mSelectionsArray.size(); i++) {
+            if (mAdapter.mSelectionsArray.valueAt(i)) {
+                for (Group g : mGroups) {
+                    if (g.getIdString().equals(mAdapter.mSelectionsArray.keyAt(i))){
+                        groupsForMerge.add(g);
+                    }
+                }
+            }
         }
-        Intent intent = CreateGroupActivity.newIntent(getContext(), getNames(s));
-        selectedList.clear();
-        intent.putExtra(GROUPS,groupsUnify);
-        setSelectMode(false);
-        startActivityForResult(intent,REQUIRED_UNIFY);*/
+        if (groupsForMerge.size() < 2){
+            Toast.makeText(getContext(), getString(R.string.min_group_list_size,2), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent intent = CreateGroupActivity.newIntent(getContext(), groupsForMerge);
+        startActivityForResult(intent,REQUIRED_MERGE);
     }
 
     public void updateUI(){
@@ -429,17 +403,11 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     private void createRecyclerLayoutManager(int i){
         RecyclerView.LayoutManager manager = null;
 
-
-        Log.i(TAG, "RecyclerLayoutManager item: " + i);
-//        SettingsPreference.setLayoutPreference(getActivity(),i);
-
-
         switch (i){
-            default:
-            case 1:
+            case 0:
                 manager = new LinearLayoutManager(getActivity());
                 break;
-            case 2:
+            case 1:
                 Configuration configuration = getResources().getConfiguration();
                 Log.i(TAG,"Configuration.screenWidthDp: "+ configuration.screenWidthDp);
                 if (configuration.screenWidthDp < 500){
@@ -448,15 +416,9 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                     manager = new GridLayoutManager(getActivity(),3);
                 }
                 break;
-            case 3:
-                manager = new EchelonLayoutManager(getActivity());
-                break;
-            case 4:
-                manager = new SkidRightLayoutManager(1.65f,0.85f);
-                break;
         }
         mRecyclerView.setLayoutManager(manager);
-
+        getActivity().invalidateOptionsMenu();
     }
 
     public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -471,6 +433,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
             mTextView = itemView.findViewById(R.id.text_group);
             mImageView = itemView.findViewById(R.id.image_group);
             myParentAdapter = parentAdapter;
+//            itemView.setBackground(getResources().getDrawable(R.drawable.ripple_item_group_list));
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
@@ -508,7 +471,6 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                         ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
                                 new Pair<View, String>(mImageView,nameTranslation));
 
-//            ActivityCompat.startActivityForResult(getActivity(),intent,REQUIRED_CHANGE,activityOptions.toBundle());
                 startActivityForResult(intent,REQUIRED_CHANGE,activityOptions.toBundle());
             } else {
                 isSelectableItem = !isSelectableItem;
@@ -539,6 +501,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
             return true;
         }
     }
+
     public class GroupAdapter extends RecyclerView.Adapter<GroupHolder> implements Filterable {
         private List<Group> mList;
         private List<Group> mFilterList;
@@ -743,7 +706,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                         );
 
                         if (cursor.getCount() == 0) {
-                            return null;
+                            return false;
                         }
                         cursor.moveToFirst();
 
@@ -767,10 +730,9 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                         invalidate = new ArrayList<>();
 
                         if (cursor.getCount() == 0) {
-                            return null;
+                            return false;
                         }
                         cursor.moveToFirst();
-
 
                         while (!cursor.isAfterLast()) {
                             invalidate.add(cursor.getGroup());
@@ -810,7 +772,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                 ex.printStackTrace();
             }
 
-            return null;
+            return false;
         }
 
         @Override
@@ -824,12 +786,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                         mGroups.remove(g);
                         Log.i(TAG, "Group removed: " + g.getName());
                     }
-                    mAdapter.mSelectionsArray.clear();
-                    for (int i = 0; i < mAdapter.getList().size(); i++) {
-                        Group group = mAdapter.getList().get(i);
-                        mAdapter.mSelectionsArray.put(group.getIdString(),false);
-                    }
-                    selectCount = 0;
+                    selectArrayDefault();
                     break;
                 case INVALIDATE_GROUP:
                     mGroups.clear();

@@ -44,7 +44,7 @@
     </Row>
 
     <Row>
-        <Key android:codes="44"  android:keyLabel="," android:keyEdgeFlags="left" />
+        <Key android:codes="885"  android:keyLabel="͵" android:keyEdgeFlags="left" />
         <Key android:codes="39"  android:keyLabel="'" />
         <Key android:codes="601" android:keyLabel="ə" />
         <Key android:codes="603" android:keyLabel="ɛ" />
@@ -55,9 +55,9 @@
         <Key android:codes="-5" android:keyIcon="@drawable/ic_backspace" android:keyWidth="15%p" android:keyEdgeFlags="right" android:isRepeatable="true" />
     </Row>
     <Row android:rowEdgeFlags="bottom">
-        <Key android:codes="91" android:keyLabel="[" android:keyWidth="25%p" android:keyEdgeFlags="left"/>
+        <Key android:codes="40" android:keyLabel="(" android:keyWidth="25%p" android:keyEdgeFlags="left"/>
         <Key android:codes="32" android:keyLabel=" " android:keyWidth="50%p" android:isRepeatable="true"/>
-        <Key android:codes="93" android:keyLabel="]" android:keyWidth="25%p" android:keyEdgeFlags="right"/>
+        <Key android:codes="41" android:keyLabel=")" android:keyWidth="25%p" android:keyEdgeFlags="right"/>
     </Row>
 
 </Keyboard>

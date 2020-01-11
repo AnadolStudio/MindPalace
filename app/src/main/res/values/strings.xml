@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mind Place</string>
+    <string name="app_name">Remember Words</string>
 
     <string name="replace">Replace</string>
     <string name="remove">Delete</string>
@@ -68,8 +68,8 @@
     <string name="is_empty">Is empty</string>
 
 <!--    TODO: Тут должун быть правильный английский текст-->
-    <string name="enabled_type">Тут должен быть правильный английский текст 1</string>
-    <string name="enabled_object">Тут должен быть правильный английский текст 2</string>
+<!--    <string name="enabled_type">Тут должен быть правильный английский текст 1</string>-->
+<!--    <string name="enabled_object">Тут должен быть правильный английский текст 2</string>-->
     <string name="settings">Settings</string>
     <string name="linear_layout">Linear Layout</string>
     <string name="grid_layout">Grid Layout</string>
@@ -80,12 +80,15 @@
     <string name="color_image_translation">color_image_translation</string>
     <string name="testing_group">Testing: %1$s</string>
     <string name="min_word_list_size">You need at least %1$d words</string>
+    <string name="min_group_list_size">You need at least %1$d groups</string>
     <string name="override_number_words">The number of words exceeds the allowed size</string>
     <string name="min_transcript_list_size">You need at least %1$d words with transcription</string>
     <string name="word_without_transcription">Some words do not have transcription, so they are not used</string>
     <string name="select_some_word_else">Please select some words else</string>
     <string name="close_select_mode">You must close select mode for this</string>
     <string name="diapason_error">Diapason Error</string>
+    <string name="do_not_select">You don`t select words in this mode</string>
+    <string name="view_list">View list</string>
 
 
     <plurals name="word_items">

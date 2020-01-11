@@ -125,7 +125,7 @@ public class LearnAnswerFragment extends Fragment implements TextView.OnEditorAc
         if (actionId == EditorInfo.IME_ACTION_NEXT){
             mProgressBar.incrementProgressBy(1);//plus method correct or wrong Answer
 
-            String myAnswer =  mEditText.getText().toString().trim();
+            String myAnswer =  mEditText.getText().toString().toLowerCase().trim();
             myAnswersList[count] = myAnswer;
             Word word = mWords.get(random.get(count));
 
