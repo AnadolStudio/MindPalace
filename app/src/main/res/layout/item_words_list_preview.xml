@@ -13,11 +13,11 @@
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
         android:layout_weight="1"
-        android:gravity="start|center_vertical"
+        android:gravity="center"
         android:minHeight="32dp"
-        android:text="Original"
         android:textColor="@android:color/black"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        tools:text="Original" />
 
     <TextView
         android:id="@+id/text_transcription"
@@ -27,7 +27,7 @@
         android:layout_weight="1"
         android:gravity="center"
         android:minHeight="32dp"
-        android:text="Transcription"
+        tools:text="Transcription"
         android:textColor="@android:color/black"
         android:textSize="14sp" />
 
@@ -38,11 +38,11 @@
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
         android:layout_weight="1"
-        android:gravity="start|center_vertical"
+        android:gravity="center"
         android:minHeight="32dp"
-        android:text="Translate"
         android:textColor="@android:color/black"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        tools:text="Translate" />
 
 
 </LinearLayout>

@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:divider="?android:attr/dividerHorizontal"
     android:gravity="center"
-    android:showDividers="middle">
+    android:showDividers="middle"
+    android:background="@android:color/white">
 
     <LinearLayout
         android:id="@+id/linearLayout6"
@@ -23,53 +24,27 @@
             android:id="@+id/text_original"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="2dp"
-            android:layout_marginEnd="2dp"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:imeOptions="actionDone"
-            android:inputType="textMultiLine|textNoSuggestions"
-            android:textColor="@android:color/black"
-            android:textSize="14sp"
-            tools:text="Original" />
+            android:hint="@string/original"
+            style="@style/EditTextStyle.GroupDetailWords"/>
 
-        <!--    <View-->
-        <!--        android:layout_width="1dp"-->
-        <!--        android:layout_height="match_parent"-->
-        <!--        android:background="@drawable/separator" />-->
 
-        <TextView
+        <EditText
             android:id="@+id/text_transcription"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginStart="2dp"
-            android:layout_marginEnd="2dp"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:gravity="center"
-            android:textColor="@android:color/black"
-            android:textSize="14sp"
-            tools:text="Transcription" />
+            android:hint="@string/association"
+            style="@style/EditTextStyle.GroupDetailWords"/>
 
-        <!--    <View-->
-        <!--        android:layout_width="1dp"-->
-        <!--        android:layout_height="match_parent"-->
-        <!--        android:background="@drawable/separator" />-->
 
         <EditText
             android:id="@+id/text_translate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="2dp"
-
-            android:layout_marginEnd="2dp"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:imeOptions="actionDone"
-            android:inputType="textMultiLine|textNoSuggestions"
-            android:textColor="@android:color/black"
-            android:textSize="14sp"
-            tools:text="Translate" />
+            android:hint="@string/translate"
+            style="@style/EditTextStyle.GroupDetailWords"/>
 
 
     </LinearLayout>
@@ -94,20 +69,16 @@
 
     <EditText
         android:id="@+id/edit_comment"
-        style="@style/EditTextStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-
+        android:minHeight="32dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_weight="1"
-        android:background="@android:color/transparent"
-        android:imeOptions="actionDone"
-        android:inputType="textMultiLine|textNoSuggestions"
-        android:minHeight="32dp"
-        android:text="Translate"
-        android:textColor="@android:color/black"
-        android:textSize="14sp"
+        tools:text="Translate"
+        android:gravity="start|center_vertical"
+        style="@style/EditTextStyle.GroupDetailWords"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView"

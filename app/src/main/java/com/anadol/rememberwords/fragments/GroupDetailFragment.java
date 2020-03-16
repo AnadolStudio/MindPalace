@@ -353,11 +353,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
@@ -476,7 +471,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
         updateActionBarTitle(false);
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != RESULT_OK) {
@@ -534,9 +528,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                 Word.FALSE));
         mAdapter.notifyItemInserted(0);//Добавит ввод в начало ЛИСТА
         mRecyclerView.getLayoutManager().scrollToPosition(0);
-        mLabelEmptyList.update();
-        getActivity().invalidateOptionsMenu();
-        updateWordCount();
+        updateUI();
     }
 
     private void saveGroup() {
@@ -564,7 +556,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
 
     private void createLearnFragment() {
         sortIsNeed = false;
-
         new WordBackground().execute(GET_WORDS);//Доделывает в Post
     }
 
@@ -583,8 +574,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
     }
 
     private void removeWord(){
-        /*AppCompatActivity activity = (AppCompatActivity)getActivity();
-        activity.invalidateOptionsMenu();*/
         if (!isCreated) {
             new WordBackground().execute(REMOVE_WORD);
         }else {
@@ -619,7 +608,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
             mAdapter.mSelectionsArray.put(w.getIdString(),false);
         }
         selectCount = 0;
-        updateWordCount();
+        updateUI();
 
 //        setSelectMode(false);
     }
@@ -645,9 +634,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
         for (Word w : tempList){
             int i = 0;
             if (w.getOriginal().equals("")){i++;}
-            if (w.getTranscript().equals("")){i++;}
             if (w.getTranslate().equals("")){i++;}
-            if (i>=2){
+            if (i >= 1){
                 words.remove(w);
             }
         }
@@ -683,7 +671,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
     public class WordHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener{
         EditText original;
-        TextView transcription;
+        EditText transcription;
         EditText translate;
         EditText comment;
 
@@ -701,13 +689,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
 
             original.addTextChangedListener(new MyTextWatch(this,MyTextWatch.ORIGINAL));
             translate.addTextChangedListener(new MyTextWatch(this,MyTextWatch.TRANSLATE));
+            transcription.addTextChangedListener(new MyTextWatch(this,MyTextWatch.TRANSCRIPT));
             comment.addTextChangedListener(new MyTextWatch(this,MyTextWatch.COMMENT));
-            transcription.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    createDialogTranscript(WordHolder.this);
-                }
-            });
 
             myParentAdapter = parentAdapter;
 
@@ -1182,6 +1165,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                         Word w = mAdapter.getList().get(i);
                         mAdapter.mSelectionsArray.put(w.getIdString(),false);
                     }
+                    updateUI();
                     selectCount = 0;
                     break;
 
@@ -1236,7 +1220,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
     public class MyTextWatch implements TextWatcher{
         static final int ORIGINAL = 0;
         static final int TRANSLATE = 1;
-        static final int COMMENT = 2;
+        static final int TRANSCRIPT = 2;
+        static final int COMMENT = 3;
 
         private RecyclerView.ViewHolder holder;
         private int type;
@@ -1279,6 +1264,11 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                                 word.setTranslate(s.toString().trim());
                             }
                             break;
+                    }
+                    break;
+                case TRANSCRIPT:
+                    if (!word.getTranscript().equals(s.toString())) {
+                        word.setTranscript(s.toString().trim());
                     }
                     break;
                 case COMMENT:

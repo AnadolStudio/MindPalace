@@ -64,7 +64,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     Cols.COLOR_THREE + " integer," +
                     Cols.NAME_GROUP + " text)");
 
-            db.execSQL("insert into " + GROUPS +"("+ Cols.UUID + ", " +
+            db.execSQL("insert into " + GROUPS +"("+
+                    Cols.UUID + ", " +
                     Cols.COLOR_ONE + ", " +
                     Cols.COLOR_TWO + ", " +
                     Cols.NAME_GROUP+ ")" +

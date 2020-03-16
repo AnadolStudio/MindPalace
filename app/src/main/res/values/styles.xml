@@ -56,12 +56,23 @@
         <item name="android:minHeight">48dp</item>
     </style>
 
-    <style name="EditTextStyle.GroupDetailEditText">
+    <style name="EditTextStyle.GroupDetailNameEditText">
         <item name="android:maxLines">1</item>
         <item name="android:gravity">left|top</item>
         <item name="android:singleLine">true</item>
         <item name="android:imeOptions">actionDone</item>
         <item name="android:hint">@string/group_detail_edit_text_hint</item>
+    </style>
+
+    <style name="EditTextStyle.GroupDetailWords">
+        <item name="android:layout_marginStart">2dp</item>
+        <item name="android:layout_marginEnd">2dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:inputType">textMultiLine|textNoSuggestions</item>
+        <item name="android:imeOptions">actionDone</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
     <style name="EditTextStyle.EditTextNumber">

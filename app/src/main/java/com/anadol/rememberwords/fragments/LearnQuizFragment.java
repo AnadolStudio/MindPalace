@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.myList.Word;
@@ -35,7 +36,7 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
     private ArrayList<Integer> random;
     private ArrayList<Word> mWords;
     private int object;
-    private boolean[] use;
+    private int usedObject;
     private int count;
     private boolean[] correctWrong;
     private String[] myAnswersList;
@@ -45,12 +46,12 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
     private ProgressBar mProgressBar;
 
 
-    public static LearnQuizFragment newInstance(ArrayList<Word> words, int object, boolean[] use) {
+    public static LearnQuizFragment newInstance(ArrayList<Word> words, int object, int used) {
 
         Bundle args = new Bundle();
         args.putParcelableArrayList(WORDS,words);
         args.putInt(OBJECT,object);
-        args.putBooleanArray(USE,use);
+        args.putInt(USE,used);
 
         LearnQuizFragment fragment = new LearnQuizFragment();
         fragment.setArguments(args);
@@ -76,7 +77,7 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mWords = getArguments().getParcelableArrayList(WORDS);
         object = getArguments().getInt(OBJECT);
-        use = getArguments().getBooleanArray(USE);
+        usedObject = getArguments().getInt(USE);
 
         View v = inflater.inflate(R.layout.fragment_learn_quiz,container,false);
         first = v.findViewById(R.id.first_button);
@@ -88,11 +89,8 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
         third.setOnClickListener(this);
         fourth.setOnClickListener(this);
 
-
         mProgressBar = v.findViewById(R.id.progressBar);
         mProgressBar.setMax(mWords.size());
-
-
 
         String q;
 
@@ -130,18 +128,26 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
     public void onClick(View v) {
         mProgressBar.incrementProgressBy(1);
         Button button = (Button) v;
-        String a = button.getText().toString().toLowerCase();
-        if (a.equals(answerStr)){
-            correctWrong[count] = true;
-        }else {
-            correctWrong[count] = false;
+
+        Word word = mWords.get(random.get(count));
+        String a = "";
+        switch (usedObject){
+            case ORIGINAL:
+                a = button.getText().toString().toLowerCase();
+                correctWrong[count] = a.equals(answerStr);
+                break;
+            case TRANSLATE:
+                a = button.getText().toString().toLowerCase();
+                correctWrong[count] = word.isExistTranslate(a);
+                break;
         }
+
         myAnswersList[count] = a;
         count++;
 
         if (count != mWords.size()) {
             mTextView.setText(addTextQuestion(mWords,object,random.get(count)));
-            myQuestionList[count]=mTextView.getText().toString();
+            myQuestionList[count] = mTextView.getText().toString();
             addTextToButton();
         } else{
             disableButtons();
@@ -170,9 +176,17 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
                 buttonAnswers[j] = addTextAnswer(true);
             }else {
                 buttonAnswers[j] = addTextAnswer(false);
-                while (hasDuplicate(buttonAnswers)) {
+                int number = 0;
+                while (hasDuplicate(buttonAnswers) && number <10000) {
                     buttonAnswers[j] = addTextAnswer(false);
-                    System.out.println(buttonAnswers[3]+ "_"+ buttonAnswers[2]+ "_"+ buttonAnswers[2]+ "_"+ buttonAnswers[3]);
+                    //TODO: написать тест для проверки апгрейда (переработка проверки в QUIZ и TRUE/FALSE)
+                    // А также добавить проверку в LearnStart на количество возможных вариантов не учитывая дубликаты
+                    number++;
+                    System.out.println(number +" "+buttonAnswers[0]+ "_"+ buttonAnswers[1]+ "_"+ buttonAnswers[2]+ "_"+ buttonAnswers[3]);
+                }
+                if (number == 10000){
+                    Toast.makeText(getActivity(), getString(R.string.duplicate_error), Toast.LENGTH_SHORT).show();
+                    getActivity().finish();
                 }
             }
         }
@@ -203,13 +217,13 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
     }
 
 
-    private String addTextAnswer(boolean trueFalse){
+    private String addTextAnswer(boolean isTrue){
         StringBuilder builder = new StringBuilder();
 
         Random r = new Random();
         Word word;
 
-        if (trueFalse){
+        if (isTrue){
             word = mWords.get(random.get(count));
         }else {
             int i = r.nextInt(mWords.size());
@@ -222,59 +236,24 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
             word = mWords.get(i);
         }
 
-
-
-        int usedObject;
-        int[] allUsedObjects = new int[2];
-        int tmp = 0;
-        for (int i = 0; i < use.length; i++) {
-            if (use[i]){
-                allUsedObjects[tmp] = i;
-                tmp++;
-            }
+        switch (usedObject){
+            case ORIGINAL:
+                builder.append(word.getOriginal());
+//                if (!word.getTranscript().equals("")){
+//                    builder.append("\n").append(word.getTranscript());
+//                }
+                break;
+            case TRANSLATE:
+                if (word.hasMultiTrans() == Word.TRUE) {
+                    builder.append(word.getOneTranslate(r.nextInt(word.getCountTranslates())));
+                }else {
+                    builder.append(word.getTranslate());
+                }
+                break;
         }
 
-        boolean b = r.nextBoolean();
-
-        if (tmp == 1){
-            usedObject = allUsedObjects[0];
-        }else { // tmp == 2
-            if (b){
-                usedObject = allUsedObjects[0];
-            }else {
-                usedObject = allUsedObjects[1];
-            }
-        }
-
-        String s = "";
-        while (s.equals("")) {
-            switch (usedObject){
-                case ORIGINAL:
-                    s = (word.getOriginal());
-                    break;
-                case TRANSCRIPT:
-                    s = (word.getTranscript());
-                    break;
-                case TRANSLATE:
-                    if (word.hasMultiTrans() == Word.TRUE) {
-                        s = (word.getOneTranslate(r.nextInt(word.getCountTranslates())));
-                    }else {
-                        s = (word.getTranslate());
-                    }
-                    break;
-            }
-            System.out.println();
-            b = !b;
-            if (b){
-                usedObject = allUsedObjects[0];
-            }else {
-                usedObject = allUsedObjects[1];
-            }
-        }
-        builder.append(s);
-
-
-        if (trueFalse){
+        // Для 1 правильной кнопки из 4
+        if (isTrue){
             answerStr = builder.toString();
         }
         return builder.toString();

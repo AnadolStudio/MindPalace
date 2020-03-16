@@ -89,6 +89,8 @@
     <string name="diapason_error">Diapason Error</string>
     <string name="do_not_select">You don`t select words in this mode</string>
     <string name="view_list">View list</string>
+    <string name="association">Association</string>
+    <string name="duplicate_error">Duplicate error</string>
 
 
     <plurals name="word_items">

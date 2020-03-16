@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,10 +34,11 @@ import static com.anadol.rememberwords.fragments.LearnStartFragment.WORDS;
 public class LearnTrueFalseFragment extends Fragment implements View.OnClickListener{
 
     private static final String TRUE_FALSE = "true_false";
+    private static final String TAG = "learnTrueFalseFragment";
 
     private ArrayList<Word> mWords;
     private int object;
-    private boolean[] use;
+    private int usedObject;
 
     private ArrayList<Integer> random;
     private int count;
@@ -50,13 +53,13 @@ public class LearnTrueFalseFragment extends Fragment implements View.OnClickList
     private TextView answer;
     private ProgressBar mProgressBar;
 
-    public static LearnTrueFalseFragment newInstance(ArrayList<Word> words, int object, boolean[] use) {
+    public static LearnTrueFalseFragment newInstance(ArrayList<Word> words, int object,int used) {
 
         Bundle args = new Bundle();
         args.putParcelableArrayList(WORDS,words);
         args.putInt(OBJECT,object);
-        args.putBooleanArray(USE,use);
-
+        args.putInt(USE,used);
+        
         LearnTrueFalseFragment fragment = new LearnTrueFalseFragment();
         fragment.setArguments(args);
         return fragment;
@@ -83,7 +86,7 @@ public class LearnTrueFalseFragment extends Fragment implements View.OnClickList
 
         mWords = getArguments().getParcelableArrayList(WORDS);
         object = getArguments().getInt(OBJECT);
-        use = getArguments().getBooleanArray(USE);
+        usedObject = getArguments().getInt(USE);
 
         mProgressBar = v.findViewById(R.id.progressBar);
         mProgressBar.setMax(mWords.size());
@@ -144,11 +147,25 @@ public class LearnTrueFalseFragment extends Fragment implements View.OnClickList
         }
 
 
-        if (myAnswer == trueAnswer) {
-            correctWrong[count] = true;
-        } else {
-            correctWrong[count] = false;
+        Word word = mWords.get(random.get(count));
+
+        String a;
+        switch (usedObject){
+            case TRANSLATE:
+                a = answer.getText().toString().toLowerCase();
+                Log.i(TAG, "Has multiTrans: "+word.hasMultiTrans());
+                if (word.hasMultiTrans() == Word.TRUE) {
+                    correctWrong[count] = myAnswer == word.isExistTranslate(a);
+                }else {
+                    correctWrong[count] = myAnswer == trueAnswer;
+                }
+                break;
+
+            case ORIGINAL:
+                correctWrong[count] = myAnswer == trueAnswer;
+                break;
         }
+
         myAnswersList[count] = Boolean.toString(myAnswer);
         count++;
 
@@ -202,54 +219,21 @@ public class LearnTrueFalseFragment extends Fragment implements View.OnClickList
             word = mWords.get(i);
         }
 
-        int usedObject;
-        int[] allUsedObjects = new int[2];
-        int tmp = 0;
-        for (int i = 0; i < use.length; i++) {
-            if (use[i]){
-                allUsedObjects[tmp] = i;
-                tmp++;
-            }
+        switch (usedObject){
+            case ORIGINAL:
+                builder.append(word.getOriginal());
+                /*if (!word.getTranscript().equals("")){
+                    builder.append("\n").append(word.getTranscript());
+                }*/
+                break;
+            case TRANSLATE:
+                if (word.hasMultiTrans() == Word.TRUE) {
+                    builder.append(word.getOneTranslate(r.nextInt(word.getCountTranslates())));
+                }else {
+                    builder.append(word.getTranslate());
+                }
+                break;
         }
-
-        boolean b = r.nextBoolean();
-
-        if (tmp == 1){
-            usedObject = allUsedObjects[0];
-        }else { // tmp == 2
-            if (b){
-                usedObject = allUsedObjects[0];
-            }else {
-                usedObject = allUsedObjects[1];
-            }
-        }
-
-        String s = "";
-        while (s.equals("")) {
-            switch (usedObject){
-                case ORIGINAL:
-                    s = (word.getOriginal());
-                    break;
-                case TRANSCRIPT:
-                    s = (word.getTranscript());
-                    break;
-                case TRANSLATE:
-                    if (word.hasMultiTrans() == Word.TRUE) {
-                        s = (word.getOneTranslate(r.nextInt(word.getCountTranslates())));
-                    }else {
-                        s = (word.getTranslate());
-                    }
-                    break;
-            }
-            System.out.println();
-            b = !b;
-            if (b){
-                usedObject = allUsedObjects[0];
-            }else {
-                usedObject = allUsedObjects[1];
-            }
-        }
-        builder.append(s);
 
         return builder.toString();
     }

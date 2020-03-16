@@ -44,7 +44,7 @@ public class LearnAnswerFragment extends Fragment implements TextView.OnEditorAc
 
     private ArrayList<Word> mWords;
     private int object;
-    boolean[] use;
+    int usedObject;
 
     private EditText mEditText;
     private TextView mTextView;
@@ -52,12 +52,12 @@ public class LearnAnswerFragment extends Fragment implements TextView.OnEditorAc
     private String[] myAnswersList;
     private String[] myQuestionList;
 
-    public static LearnAnswerFragment newInstance(ArrayList<Word> words, int object, boolean[] use) {
+    public static LearnAnswerFragment newInstance(ArrayList<Word> words, int object, int used) {
 
         Bundle args = new Bundle();
         args.putParcelableArrayList(WORDS,words);
         args.putInt(OBJECT,object);
-        args.putBooleanArray(USE,use);
+        args.putInt(USE,used);
 
         LearnAnswerFragment fragment = new LearnAnswerFragment();
         fragment.setArguments(args);
@@ -85,7 +85,7 @@ public class LearnAnswerFragment extends Fragment implements TextView.OnEditorAc
 
         mWords = getArguments().getParcelableArrayList(WORDS);
         object = getArguments().getInt(OBJECT);
-        use = getArguments().getBooleanArray(USE);
+        usedObject = getArguments().getInt(USE);
 
         String q;
         String a="";
@@ -133,49 +133,19 @@ public class LearnAnswerFragment extends Fragment implements TextView.OnEditorAc
             if (myAnswer.equals("")){
                 correctWrong[count] = false;
             }else {
+//                correctWrong[count] = false; // Default
 
-                int[] allUsedObjects = new int[2];
-                int tmp = 0;
-                for (int i = 0; i < use.length; i++) {
-                    if (use[i]){
-                        allUsedObjects[tmp] = i;
-                        tmp++;
-                    }
-                }
-                correctWrong[count] = false; // Default
-                for (int i = 0; i < tmp; i++) {
-
-                    if (allUsedObjects[i] == ORIGINAL){
-                        if (myAnswer.equals(word.getOriginal())) {
-                            correctWrong[count] = true;
-                            break;
-                        }
-                    }
-                    if (allUsedObjects[i] == TRANSLATE){
-                        if (word.hasMultiTrans() == Word.TRUE){
-                            if (word.isExistTranslate(myAnswer)) {
-                                correctWrong[count] = true;
-                                break;
-                            }
-                        }else {
-                            if (myAnswer.equals(word.getTranslate())) {
-                                correctWrong[count] = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (allUsedObjects[i] == TRANSCRIPT){
-                        if (myAnswer.equals(word.getTranscript())) {
-                            correctWrong[count] = true;
-                            break;
-                        }
-                    }
+                switch (usedObject){
+                    case ORIGINAL:
+                        correctWrong[count] = myAnswer.equals(word.getOriginal());
+                        break;
+                    case TRANSLATE:
+                        correctWrong[count] = word.isExistTranslate(myAnswer);
+                    break;
                 }
             }
 
-
             count++;
-
 
             if (count != mWords.size()) {
                 String q = addTextQuestion(mWords, object, random.get(count));

@@ -2,6 +2,8 @@ package com.anadol.rememberwords.myList;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -211,8 +213,15 @@ public class Word implements Parcelable,Comparable<Word>{
     }
 
     public boolean isExistTranslate(String s){
-        ArrayList<String> arrayList = addAllTranslates();
-        return arrayList.contains(s);
+        ArrayList<String> arrayList;
+        s = s.toLowerCase();
+        if (hasMultiTrans() == TRUE) {
+            arrayList = addAllTranslates();
+            return arrayList.contains(s);
+        } else {
+            Log.i(TAG, "isExistTranslate: "+ s+" "+ getTranslate());
+            return s.equals(getTranslate());
+        }
     }
 
     public String getGroup() {

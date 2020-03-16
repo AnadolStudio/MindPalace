@@ -9,7 +9,7 @@
     <color name="colorError">#777777</color>
 
     <color name="colorDarkWhite">#DDDDDD</color>
-    <color name="colorDefaultBackground">#FFFFFF</color>
+    <color name="colorDefaultBackground">#FAFAFA</color>
     <color name="colorSelected">#068CDA</color>
     <color name="colorProgressBarBackground">#667E7E7E</color>
     <color name="colorLightBlack">#6B6B6B</color>

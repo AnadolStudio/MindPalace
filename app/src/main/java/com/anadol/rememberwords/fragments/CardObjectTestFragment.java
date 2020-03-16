@@ -17,8 +17,7 @@ import java.util.ArrayList;
 
 public class CardObjectTestFragment extends Fragment {
     public static final int ORIGINAL_TYPE = 0;
-    public static final int TRANSCRIPT_TYPE = 1;
-    public static final int TRANSLATE_TYPE = 2;
+    public static final int TRANSLATE_TYPE = 1;
 
     private static final String OBJECT_TEST = "object_test";
     private static final String COUNT_OBJECTS_TEST = "count_objects_test";
@@ -35,13 +34,6 @@ public class CardObjectTestFragment extends Fragment {
             case ORIGINAL_TYPE:
                 for (Word w : mWords){
                     if (!w.getOriginal().equals("")){
-                        count++;
-                    }
-                }
-                break;
-            case TRANSCRIPT_TYPE:
-                for (Word w : mWords){
-                    if (!w.getTranscript().equals("")){
                         count++;
                     }
                 }
@@ -65,7 +57,6 @@ public class CardObjectTestFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.item_object_test,container,false);
 
-
         nameTest = view.findViewById(R.id.name_test);
 
         int type = getArguments().getInt(OBJECT_TEST);
@@ -73,9 +64,6 @@ public class CardObjectTestFragment extends Fragment {
         switch (type){
             case ORIGINAL_TYPE:
                 nameTest.setText(getResources().getString(R.string.original));
-                break;
-            case TRANSCRIPT_TYPE:
-                nameTest.setText(getResources().getString(R.string.transcription));
                 break;
             case TRANSLATE_TYPE:
                 nameTest.setText(getResources().getString(R.string.translate));

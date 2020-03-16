@@ -30,13 +30,12 @@ public class LearnDetailActivity extends SimpleFragmentActivity {
 
     public static final int REQUEST_RESULT = 1;
 
-    public static Intent newIntent(Context context, ArrayList<Word> words, Group group, int type, int object, boolean[] use){
+    public static Intent newIntent(Context context, ArrayList<Word> words, Group group, int type, int object){
         Intent intent = new Intent(context, LearnDetailActivity.class);
         intent.putExtra(WORDS, words);
         intent.putExtra(GROUP,group);
         intent.putExtra(TYPE,type);
         intent.putExtra(OBJECT,object);
-        intent.putExtra(USE,use);
         return intent;
     }
 
@@ -48,18 +47,28 @@ public class LearnDetailActivity extends SimpleFragmentActivity {
         int t = getIntent().getIntExtra(TYPE,-1);
         int o = getIntent().getIntExtra(OBJECT,-1);
 
-        boolean[] use = getIntent().getBooleanArrayExtra(USE);
         ArrayList<Word> words = getIntent().getParcelableArrayListExtra(WORDS);
+
+        int usedObject;
+        switch (o){
+            case ORIGINAL:
+                usedObject = TRANSLATE;
+                break;
+            default:
+            case TRANSLATE:
+                usedObject = ORIGINAL;
+                break;
+        }
 
         switch (t){
             case TRUE_FALSE:
-                fragment = LearnTrueFalseFragment.newInstance(words,o,use);
+                fragment = LearnTrueFalseFragment.newInstance(words,o,usedObject);
                 break;
             case ANSWER_QUESTION:
-                fragment = LearnAnswerFragment.newInstance(words,o,use);
+                fragment = LearnAnswerFragment.newInstance(words,o,usedObject);
                 break;
             case QUIZ:
-                fragment = LearnQuizFragment.newInstance(words,o,use);
+                fragment = LearnQuizFragment.newInstance(words,o,usedObject);
                 break;
         }
 
@@ -102,10 +111,11 @@ public class LearnDetailActivity extends SimpleFragmentActivity {
         switch (object){
             case ORIGINAL:
                 builder.append(word.getOriginal());
+                if (!word.getTranscript().equals("")){
+                    builder.append("\n").append(word.getTranscript());
+                }
                 break;
-            case TRANSCRIPT:
-                builder.append(word.getTranscript());
-                break;
+
             case TRANSLATE:
                 if (word.hasMultiTrans() == Word.TRUE) {
                     int bound = word.getCountTranslates();

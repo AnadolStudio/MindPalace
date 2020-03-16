@@ -2,7 +2,7 @@
 
     <style name="MyCardView" parent="CardView">
         <item name="android:minHeight">150dp</item>
-        <item name="android:elevation">3dp</item>
+        <item name="android:elevation">8dp</item>
         <item name="android:radius">5dp</item>
         <item name="android:stateListAnimator">@animator/item_group_list</item>
     </style>

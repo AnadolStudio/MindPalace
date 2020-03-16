@@ -4,7 +4,7 @@
         <objectAnimator
             android:propertyName="translationZ"
             android:duration="100"
-            android:valueTo="10dp"
+            android:valueTo="16dp"
             android:valueType="floatType"/>
     </item>
 
@@ -12,7 +12,7 @@
         <objectAnimator
             android:propertyName="translationZ"
             android:duration="100"
-            android:valueTo="3dp"
+            android:valueTo="8dp"
             android:valueType="floatType"/>
     </item>
 </selector>

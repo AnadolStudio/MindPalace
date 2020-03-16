@@ -74,8 +74,8 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
     public static final int ANSWER_QUESTION = 2;
 
     public static final int ORIGINAL = 0;
-    public static final int TRANSCRIPT = 1;
-    public static final int TRANSLATE = 2;
+    public static final int TRANSLATE = 1;
+    public static final int TRANSCRIPT = 2;
 
     private static final int ALL = 0;
     private static final int SELECTED = 1;
@@ -88,9 +88,6 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
     private ViewPager mViewPagerType;
     private ViewPager mViewPagerObject;
 
-    private Switch switchOriginal;
-    private Switch switchTranslate;
-    private Switch switchTranscript;
 
     private Button startButton;
     private Spinner mSpinner;
@@ -187,10 +184,6 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
         TextView textView = view.findViewById(R.id.type_test);
         textView.requestFocus();
 
-        switchOriginal = view.findViewById(R.id.switch_original);
-        switchTranscript = view.findViewById(R.id.switch_transcription);
-        switchTranslate = view.findViewById(R.id.switch_translate);
-
         mViewPagerType = view.findViewById(R.id.view_pager_type);
         mViewPagerType.setAdapter(new FragmentPagerAdapter(getActivity().getSupportFragmentManager()) {
             @Override
@@ -214,11 +207,10 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
 
             @Override
             public int getCount() {
-                return 3;
+                return 2;
             }
         });
         mViewPagerObject.setOffscreenPageLimit(5);
-        switchEnabled(mViewPagerObject.getCurrentItem());
 
         startButton = view.findViewById(R.id.start_button);
         mCountWords = view.findViewById(R.id.count_word_edit_text);
@@ -339,27 +331,6 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
         }
     }
 
-    private void switchEnabled(int i){
-        switchOriginal.setEnabled(true);
-        switchTranscript.setEnabled(true);
-        switchTranslate.setEnabled(true);
-
-        switch (i){
-            case 0:
-                switchOriginal.setEnabled(false);
-                if (switchOriginal.isChecked())switchOriginal.setChecked(false);
-                break;
-            case 1:
-                switchTranscript.setEnabled(false);
-                if (switchTranscript.isChecked())switchTranscript.setChecked(false);
-                break;
-            case 2:
-                switchTranslate.setEnabled(false);
-                if (switchTranslate.isChecked())switchTranslate.setChecked(false);
-                break;
-        }
-    }
-
     private void setListeners() {
 
         mViewPagerType.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -380,7 +351,6 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
             }
             @Override
             public void onPageSelected(int i) {
-                switchEnabled(i);
                 updateUI();
             }
             @Override
@@ -457,9 +427,6 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
             }
         };
 
-        switchOriginal.setOnCheckedChangeListener(switchListener);
-        switchTranscript.setOnCheckedChangeListener(switchListener);
-        switchTranslate.setOnCheckedChangeListener(switchListener);
 
         startButton.setOnClickListener(this);
     }
@@ -487,12 +454,6 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
 //            Toast.makeText(getContext(),"On a null object reference (for developers)",Toast.LENGTH_SHORT).show(); // Temp
 //        }else
 
-        //Если ни один не выбран
-        if (!switchOriginal.isChecked() &&
-                !switchTranslate.isChecked() &&
-                !switchTranscript.isChecked()) {
-            isAllReady = false;
-        }
 
         if (mode == MODE_SELECT){
             int min = 2;
@@ -517,9 +478,6 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
             switch (objectTests){
                 case ORIGINAL:
                     if (w.getOriginal().equals("")){words.remove(w);}
-                    break;
-                case TRANSCRIPT:
-                    if (w.getTranscript().equals("")){words.remove(w);}
                     break;
                 case TRANSLATE:
                     if (w.getTranslate().equals("")){words.remove(w);}
@@ -652,7 +610,7 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
 
 
         public void setList(ArrayList<Word> list) {
-            Collections.sort(list);
+//            Collections.sort(list);
             mList = list;
             if (mList.isEmpty() && Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
                 addAnimation();
@@ -827,8 +785,7 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
                     learnList,
                     mGroup,
                     mViewPagerType.getCurrentItem(),
-                    mViewPagerObject.getCurrentItem(),
-                    new boolean[]{switchOriginal.isChecked(),switchTranscript.isChecked(),switchTranslate.isChecked()});
+                    mViewPagerObject.getCurrentItem());
 
             switch (mSpinner.getSelectedItemPosition()) {
                 case ALL://ALL
@@ -923,8 +880,8 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
 
 
             // Если выбран один, но имеет пустые ячейки
-            int i = 0;
-            boolean[] booleans = {switchOriginal.isChecked(), switchTranslate.isChecked(), switchTranscript.isChecked()};
+            /*int i = 0;
+            boolean[] booleans = {switchOriginal.isChecked(), switchTranslate.isChecked()};
             for (boolean b : booleans){
                 if (b){
                     i++;
@@ -939,17 +896,14 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
                     if (switchTranslate.isChecked()) {
                         if (w.getTranslate().equals("")) j++;
                     }
-                    if (switchTranscript.isChecked()) {
-                        if (w.getTranscript().equals("")) j++;
-                    }
                 }
                 if (j != 0){
                     isAllReady = false;
                     Toast.makeText(getContext(),getString(R.string.your_used_object_have_empty_cells) , Toast.LENGTH_LONG).show();
                 }
-            }
+            }*/
 
-            if (mViewPagerObject.getCurrentItem() == TRANSCRIPT){
+            /*if (mViewPagerObject.getCurrentItem() == TRANSCRIPT){
                 int learnSize = learnList.size();
                 removeWordsWithEmptyCells(TRANSCRIPT,learnList);
 
@@ -958,14 +912,14 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
                     isAllReady = false;
                     s = getString(R.string.min_transcript_list_size,minCount);
                     Toast.makeText(getContext(), s, Toast.LENGTH_LONG).show();
-                }else if (isAllReady && learnList.size() != learnSize){
+                }else if (learnList.size() != learnSize){
                     s = getString(R.string.word_without_transcription);
                     Toast toast = Toast.makeText(getContext(),s , Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.TOP,toast.getXOffset(),toast.getYOffset());
                     toast.show();
 //                    Snackbar.make(getView(),s,Snackbar.LENGTH_LONG).show();
                 }
-            }
+            }*/
 
             if (isAllReady) { // Выполнять, если все требования соблюдены
                 startActivity(intent);
