@@ -13,41 +13,27 @@ import com.anadol.rememberwords.myList.MyRecyclerAdapter;
 import java.util.ArrayList;
 
 public abstract class MyFragment extends Fragment {
-    static final String SELECT_ALL = "select_all";
-    static final String SELECT_COUNT = "select_count";
-    static final String SELECT_LIST = "select_list";
+    protected static final String KEY_SELECT_ALL = "select_all";
+    protected static final String KEY_SELECT_COUNT = "select_count";
+    protected static final String KEY_SELECT_LIST = "select_list";
     public static final String MODE = "mode";
     public static final int MODE_NORMAL = 0;
     public static final int MODE_SEARCH = 1;
     public static final int MODE_SELECT = 2;
 
-    protected MyRecyclerAdapter adapter;
     protected int mode = MODE_NORMAL;
 
 
     public abstract void updateUI();
 
-/*
-    protected void menuSelected(){
-        AppCompatActivity activity = (AppCompatActivity)getActivity();
-        activity.invalidateOptionsMenu();
-        adapter.notifyDataSetChanged();
-        if (!selectMode) {
-            selectedList.clear();
-        }
-        updateActionBarTitle();
-    }
-*/
-/*
-    public boolean isSelectMode() {
-        return selectMode;
-    }
-*/
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(MODE,mode);
+    }
+
+    public int getMode() {
+        return mode;
     }
 
     @Override
@@ -57,23 +43,4 @@ public abstract class MyFragment extends Fragment {
             mode = savedInstanceState.getInt(MODE);
         }
     }
-
-    /*public void setSelectMode(boolean selectMode) {
-        this.selectMode = selectMode;
-        menuSelected();
-    }*/
-
-    /*public void updateActionBarTitle(){
-        AppCompatActivity activity = (AppCompatActivity)getActivity();
-        if (!selectMode) {
-            activity.getSupportActionBar().setTitle(getString(R.string.app_name));
-            activity.getSupportActionBar().setSubtitle(null);
-        }else {
-            activity.getSupportActionBar().setTitle(String.valueOf(selectedList.size()));
-        }
-    }*/
-
-    /*protected void cancel(){
-        setSelectMode(false);
-    }*/
 }

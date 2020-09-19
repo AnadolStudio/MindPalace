@@ -2,12 +2,11 @@ package com.anadol.rememberwords.fragments;
 
 
 import android.annotation.TargetApi;
-import android.app.Activity;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.core.view.ViewCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,11 +30,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -44,15 +40,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anadol.rememberwords.activities.LearnStartActivity;
-import com.anadol.rememberwords.database.DatabaseHelper;
+import com.anadol.rememberwords.model.DatabaseHelper;
 import com.anadol.rememberwords.database.DbSchema;
 import com.anadol.rememberwords.database.DbSchema.Tables.Cols;
-import com.anadol.rememberwords.database.MyCursorWrapper;
-import com.anadol.rememberwords.myList.DoInBackground;
-import com.anadol.rememberwords.myList.Group;
-import com.anadol.rememberwords.myList.LabelEmptyList;
+import com.anadol.rememberwords.model.MyCursorWrapper;
+import com.anadol.rememberwords.model.CreatorValues;
+import com.anadol.rememberwords.model.DataBaseSchema.Groups;
+import com.anadol.rememberwords.model.DoInBackground;
+import com.anadol.rememberwords.model.Group;
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.myList.Word;
+import com.anadol.rememberwords.model.Word;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,8 +60,8 @@ import static com.anadol.rememberwords.database.DbSchema.Tables.Cols.NAME_GROUP;
 import static com.anadol.rememberwords.database.DbSchema.Tables.GROUPS;
 import static com.anadol.rememberwords.database.DbSchema.Tables.WORDS;
 import static com.anadol.rememberwords.fragments.DialogResult.RESULT;
-import static com.anadol.rememberwords.fragments.GroupListFragment.*;
-import static com.anadol.rememberwords.myList.Group.NON_COLOR;
+import static com.anadol.rememberwords.view.Fragments.GroupListFragment.*;
+import static com.anadol.rememberwords.model.Group.NON_COLOR;
 
 
 /**
@@ -97,7 +94,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
 
 
 
-    private LabelEmptyList mLabelEmptyList;
     private RecyclerView mRecyclerView;
     private WordAdapter mAdapter;
     private Group mGroup;
@@ -133,17 +129,13 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
     public static GroupDetailFragment newInstance(Group group) {
 
         Bundle args = new Bundle();
-        if (group == null) {
-            group = new Group(UUID.randomUUID(), new int[]{Color.RED,Color.GREEN,Color.BLUE}, "");
-            args.putBoolean(IS_CREATED,true);
-        }
         args.putParcelable(GROUP, group);
         GroupDetailFragment fragment = new GroupDetailFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
-    public static GroupDetailFragment newInstance(@NonNull ArrayList<Group> groups) {
+    /*public static GroupDetailFragment newInstance(@NonNull ArrayList<Group> groups) {
         Bundle args = new Bundle();
 
         Group group = new Group(UUID.randomUUID(), groups.get(0).getColors(), "");
@@ -152,7 +144,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
         GroupDetailFragment fragment = new GroupDetailFragment();
         fragment.setArguments(args);
         return fragment;
-    }
+    }*/
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -161,7 +153,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
         outState.putIntArray(GRADIENT, colors);// key GRADIENT in other places
         outState.putBoolean(IS_CREATED,isCreated);
         outState.putBoolean(TYPE_SORT,typeSort);
-        outState.putBoolean(SELECT_MODE, mAdapter.isSelectable);
+        outState.putBoolean(KEY_SELECT_MODE, mAdapter.isSelectable);
 
         selectArray.clear();
 
@@ -171,10 +163,10 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
             }
         }
         Log.i(TAG, "onSaveInstanceState: " + selectArray.size());
-        outState.putStringArrayList(SELECT_LIST, selectArray);
+        outState.putStringArrayList(KEY_SELECT_LIST, selectArray);
 
-        outState.putInt(SELECT_COUNT,selectCount);
-        outState.putBoolean(SELECT_ALL,selectAll);
+        outState.putInt(KEY_SELECT_COUNT,selectCount);
+        outState.putBoolean(KEY_SELECT_ALL,selectAll);
         outState.putBoolean(DATA_IS_CHANGED, isChanged);
         outState.putStringArrayList(NAMES_ALL_GROUPS, allGroupsNames);
 
@@ -212,12 +204,12 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
             colors = savedInstanceState.getIntArray(GRADIENT);
             isCreated = savedInstanceState.getBoolean(IS_CREATED);
             typeSort = savedInstanceState.getBoolean(TYPE_SORT);
-            selectable = savedInstanceState.getBoolean(SELECT_MODE);
+            selectable = savedInstanceState.getBoolean(KEY_SELECT_MODE);
             allGroupsNames = savedInstanceState.getStringArrayList(NAMES_ALL_GROUPS);
             isChanged = savedInstanceState.getBoolean(DATA_IS_CHANGED);
-            selectArray = savedInstanceState.getStringArrayList(SELECT_LIST);
-            selectCount = savedInstanceState.getInt(SELECT_COUNT);
-            selectAll = savedInstanceState.getBoolean(SELECT_ALL);
+            selectArray = savedInstanceState.getStringArrayList(KEY_SELECT_LIST);
+            selectCount = savedInstanceState.getInt(KEY_SELECT_COUNT);
+            selectAll = savedInstanceState.getBoolean(KEY_SELECT_ALL);
 //            mySubtitleVisible = savedInstanceState.getBoolean(SUBTITLE);
         } else {
             mWords = new ArrayList<>();
@@ -277,12 +269,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new WordItemHelperCallBack(mAdapter));
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
-
-        mLabelEmptyList = new LabelEmptyList(
-                getContext(),
-                frameLayout,
-                mWords);
-
         countWords = view.findViewById(R.id.count_text);
 
         return view;
@@ -291,11 +277,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1){
-            addTransitionListener();
-        }else {
-            mAdapter.addList(mWords);
-        }
+        addTransitionListener();
     }
 
     @TargetApi(21)
@@ -370,9 +352,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
             inflater.inflate(R.menu.menu_group_selected_list,menu);
             MenuItem select = menu.findItem(R.id.menu_select_all);
 
-            MenuItem merge = menu.findItem(R.id.menu_merge);
-            merge.setVisible(false);
-
             MenuItem remove = menu.findItem(R.id.menu_remove);
             remove.setVisible(mGroupsForMerge == null);
 
@@ -444,6 +423,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
 
     @Override
     public boolean onBackPressed() {
+        Log.i(TAG, "onBackPressed: Fragment");
         switch (mode){
             /*case MODE_SEARCH:
                 mode = MODE_NORMAL;
@@ -456,7 +436,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                 mAdapter.mSelectionsArray.clear();
                 for (int i = 0; i < mAdapter.getList().size(); i++) {
                     Word word = mAdapter.getList().get(i);
-                    mAdapter.mSelectionsArray.put(word.getIdString(),false);
+                    mAdapter.mSelectionsArray.put(word.getIdString(), false);
                 }
                 selectCount = 0;
                 return true;
@@ -504,17 +484,14 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
     }
 
     public void updateUI() {
-        mLabelEmptyList.update();
         updateWordCount();
         AppCompatActivity activity = (AppCompatActivity)getActivity();
         activity.invalidateOptionsMenu();
     }
 
     public Intent dataIsChanged(){
-        Intent intent = new Intent();
-        intent.putExtra(IS_CHANGED,isChanged);
-        intent.putExtra(CHANGED_ITEM,mGroup);
-        return intent;
+        int tableItem = mGroup.getTableId();
+        return new Intent().putExtra(CHANGED_ITEM, tableItem);
     }
 
     private void addNewWord() {
@@ -833,7 +810,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
             Collections.sort(list);
             mList = list;
             notifyDataSetChanged();
-            mLabelEmptyList.update();
             setSelectionsArray(selectArray);
         }
 
@@ -949,25 +925,16 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
 //                System.out.println("NAME " + mGroup.getName());
                 switch (command) {
                     case SAVE_GROUP:
-                        cursor = queryTable(db,
-                                GROUPS,
-                                null,
-                                Cols.UUID + " = ?",
-                                new String[]{mGroup.getIdString()});
+                        ContentValues values = CreatorValues.createGroupValues(mGroup.getUUID(), mGroup.getName(), colors[0], colors[1],colors[2]);
 
-                        ContentValues values = createGroupValue(mGroup.getId(), mGroup.getName().trim(), colors[0], colors[1],colors[2]);
-                        if (cursor.getCount() != 0) {
-                            db.update(GROUPS,
-                                    values,
-                                    Cols.UUID + " = ?",
-                                    new String[]{mGroup.getIdString()});
-                        } else {
-                            db.insert(
-                                    GROUPS,
-                                    null,
-                                    values
-                            );
-                        }
+                        getActivity().getContentResolver().update(
+                                ContentUris.withAppendedId(Groups.CONTENT_URI, mGroup.getTableId()),
+                                values,
+                                null, null);
+                        /*db.update(GROUPS,
+                                values,
+                                Cols.UUID + " = ?",
+                                new String[]{mGroup.getIdString()})*/;
                         return true;
 
                     case GET_GROUPS_NAME:
@@ -1016,12 +983,13 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                             comment = mWords.get(i).getComment().toLowerCase().trim();
                             isMultiTrans = mWords.get(i).hasMultiTrans();
 
-                            System.out.println(trans);
+/*
                             cursor = queryTable(db,
                                     WORDS,
                                     null,
                                     Cols.UUID + " = ?",
                                     new String[]{id.toString()});
+
                             if (cursor.getCount() != 0) {
                                 db.update(WORDS,
                                         createWordsValue(id, mGroup.getName(), orig, trans, transcript,comment, isMultiTrans),
@@ -1034,12 +1002,18 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                                         createWordsValue(id, mGroup.getName(), orig, trans, transcript,comment, isMultiTrans)
                                 );
                             }
+*/
+                            // Update Code
+                            db.update(WORDS,
+                                    CreatorValues.createWordsValues(id, mGroup.getName(), orig, trans, transcript,comment, isMultiTrans),
+                                    Cols.UUID + " = ?",
+                                    new String[]{id.toString()});
                         }
                         if (mGroupsForMerge != null){// Removing before merge
                             for (Group g : mGroupsForMerge) {
                                 db.delete(GROUPS,
                                         DbSchema.Tables.Cols.UUID + " = ?",
-                                        new String[]{g.getId().toString()});
+                                        new String[]{g.getUUID().toString()});
                             }
                         }
                         return true;
@@ -1143,11 +1117,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed{
                         Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
                     }else {
                         Toast.makeText(getActivity(), getString(R.string.saved_succes_toast), Toast.LENGTH_SHORT).show();
-                    }
-                    isChanged = true;
-                    if (isCreated || mGroupsForMerge != null){
-                        getActivity().setResult(RESULT_OK, new Intent().putExtra(CHANGED_ITEM, mGroup));
-                        activity.finish();
                     }
 
                     break;

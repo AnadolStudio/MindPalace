@@ -19,7 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.myList.Word;
+import com.anadol.rememberwords.model.Word;
 
 import java.util.ArrayList;
 
@@ -27,7 +27,6 @@ import static com.anadol.rememberwords.activities.LearnDetailActivity.*;
 import static com.anadol.rememberwords.fragments.DialogResult.RESULT;
 import static com.anadol.rememberwords.fragments.LearnStartFragment.OBJECT;
 import static com.anadol.rememberwords.fragments.LearnStartFragment.ORIGINAL;
-import static com.anadol.rememberwords.fragments.LearnStartFragment.TRANSCRIPT;
 import static com.anadol.rememberwords.fragments.LearnStartFragment.TRANSLATE;
 import static com.anadol.rememberwords.fragments.LearnStartFragment.USE;
 import static com.anadol.rememberwords.fragments.LearnStartFragment.WORDS;

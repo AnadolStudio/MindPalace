@@ -3,12 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_merge"
-        android:title="@string/merge"
-        android:icon="@drawable/ic_menu_merge"
-        app:showAsAction="ifRoom|withText"/>
-
-    <item
         android:id="@+id/menu_remove"
         android:title="@string/remove"
         android:icon="@drawable/ic_menu_delete"

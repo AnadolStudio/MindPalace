@@ -1,45 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/card_view"
-    style="@style/MyCardView"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
-    android:layout_margin="10dp"
-    card_view:layout_constraintBottom_toBottomOf="parent"
-    card_view:layout_constraintEnd_toEndOf="parent"
-    card_view:layout_constraintTop_toTopOf="parent">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:cardCornerRadius="6dp"
+    android:layout_margin="8dp"
+    app:cardElevation="4dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:stateListAnimator="@animator/item_group_list"
+    >
+    <!--        android:layout_marginStart="8dp"-->
+    <!--        android:layout_marginEnd="8dp"-->
+    <!--        android:layout_marginTop="4dp"-->
+    <!--        android:layout_marginBottom="4dp"-->
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="?selectableItemBackgroundBorderless">
-
-        <TextView
-            android:id="@+id/text_group"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="5dp"
-            android:singleLine="true"
-            android:text="@string/create_group"
-            android:textColor="@color/cardview_dark_background"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:typeface="serif" />
+        >
 
         <ImageView
             android:id="@+id/image_group"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_launcher_background"
-            android:transitionName="@string/color_image_translation" />
+            android:layout_height="128dp"
+            android:src="@drawable/gradient"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            >
+
+
+
+            <TextView
+                android:id="@+id/text_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name Group"
+                android:fontFamily="serif"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:includeFontPadding="false"
+                android:singleLine="true"
+                android:ellipsize="end"
+                />
+<!--
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:scrollHorizontally="true"-->
+
+        </LinearLayout>
+
 
 
     </LinearLayout>
-
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

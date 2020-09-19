@@ -2,15 +2,14 @@ package com.anadol.rememberwords.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import androidx.annotation.Nullable;
+
 import androidx.fragment.app.Fragment;
 
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.fragments.IOnBackPressed;
 import com.anadol.rememberwords.fragments.LearnStartFragment;
-import com.anadol.rememberwords.myList.Group;
-import com.anadol.rememberwords.myList.Word;
+import com.anadol.rememberwords.model.Group;
+import com.anadol.rememberwords.model.Word;
 
 import java.util.ArrayList;
 

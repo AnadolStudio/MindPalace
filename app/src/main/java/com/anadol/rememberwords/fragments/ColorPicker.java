@@ -32,7 +32,7 @@ import com.anadol.rememberwords.R;
 
 import java.util.ArrayList;
 
-import static com.anadol.rememberwords.myList.Group.NON_COLOR;
+import static com.anadol.rememberwords.model.Group.NON_COLOR;
 //TODO: потенциальный апгрейд - возможность выбирать в качестве фона
 // не только цвет, но и картинку
 public class ColorPicker extends AppCompatDialogFragment implements SeekBar.OnSeekBarChangeListener {

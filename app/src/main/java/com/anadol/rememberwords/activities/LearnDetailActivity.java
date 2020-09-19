@@ -3,15 +3,14 @@ package com.anadol.rememberwords.activities;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.fragments.LearnAnswerFragment;
 import com.anadol.rememberwords.fragments.LearnQuizFragment;
 import com.anadol.rememberwords.fragments.LearnTrueFalseFragment;
-import com.anadol.rememberwords.myList.Group;
-import com.anadol.rememberwords.myList.Word;
+import com.anadol.rememberwords.model.Group;
+import com.anadol.rememberwords.model.Word;
 
 import java.util.ArrayList;
 import java.util.Random;

@@ -9,10 +9,4 @@
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always"/>
 
-    <item
-        android:id="@+id/menu_list"
-        android:title="@string/view_list"
-        android:icon="@drawable/ic_menu_view_linear"
-        app:showAsAction="always"/>
-
 </menu>

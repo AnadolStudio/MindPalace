@@ -22,7 +22,6 @@ import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.ArrayMap;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,30 +31,22 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.activities.LearnDetailActivity;
-import com.anadol.rememberwords.myList.Group;
-import com.anadol.rememberwords.myList.MyRecyclerAdapter;
-import com.anadol.rememberwords.myList.MyViewHolder;
-import com.anadol.rememberwords.myList.Word;
-import com.google.android.material.snackbar.Snackbar;
+import com.anadol.rememberwords.model.Group;
+import com.anadol.rememberwords.model.Word;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 
-import static com.anadol.rememberwords.activities.LearnDetailActivity.getNonRepRandomInts;
-import static com.anadol.rememberwords.fragments.GroupListFragment.SELECT_LIST;
-import static com.anadol.rememberwords.fragments.GroupListFragment.SELECT_MODE;
+import static com.anadol.rememberwords.view.Fragments.GroupListFragment.KEY_SELECT_MODE;
 
 
 /**
@@ -123,7 +114,7 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
         super.onSaveInstanceState(outState);
         outState.putInt(TYPE,type);
         outState.putInt(OBJECT,object);
-        outState.putBoolean(SELECT_MODE, mAdapter.isSelectable);
+        outState.putBoolean(KEY_SELECT_MODE, mAdapter.isSelectable);
 
         selectArray.clear();
 
@@ -133,10 +124,10 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
             }
         }
         Log.i(TAG, "onSaveInstanceState: " + selectArray.size());
-        outState.putStringArrayList(SELECT_LIST, selectArray);
+        outState.putStringArrayList(KEY_SELECT_LIST, selectArray);
 
-        outState.putInt(SELECT_COUNT,selectCount);
-        outState.putBoolean(SELECT_ALL,selectAll);
+        outState.putInt(KEY_SELECT_COUNT,selectCount);
+        outState.putBoolean(KEY_SELECT_ALL,selectAll);
     }
 
     @Override
@@ -157,10 +148,10 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
         if (savedInstanceState != null){
             /*type = savedInstanceState.getInt(TYPE);*/
             object = savedInstanceState.getInt(OBJECT);
-            selectable = savedInstanceState.getBoolean(SELECT_MODE);
-            selectArray = savedInstanceState.getStringArrayList(SELECT_LIST);
-            selectCount = savedInstanceState.getInt(SELECT_COUNT);
-            selectAll = savedInstanceState.getBoolean(SELECT_ALL);
+            selectable = savedInstanceState.getBoolean(KEY_SELECT_MODE);
+            selectArray = savedInstanceState.getStringArrayList(KEY_SELECT_LIST);
+            selectCount = savedInstanceState.getInt(KEY_SELECT_COUNT);
+            selectAll = savedInstanceState.getBoolean(KEY_SELECT_ALL);
 
         }else {
             type = TRUE_FALSE;
@@ -285,8 +276,6 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
             inflater.inflate(R.menu.menu_group_selected_list,menu);
             MenuItem item = menu.findItem(R.id.menu_select_all);
 
-            MenuItem merge = menu.findItem(R.id.menu_merge);
-            merge.setVisible(false);
             MenuItem remove = menu.findItem(R.id.menu_remove);
             remove.setVisible(false);
 

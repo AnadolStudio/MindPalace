@@ -4,12 +4,13 @@
         <item name="android:windowBackground">@drawable/splash_activity</item>
     </style>
 
-    <style name="AppThemeDefault" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppThemeDefault" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorError">@color/colorError</item>
+        <item name="bottomNavigationStyle">@style/BottomNavigationView</item>
 
         <item name="android:windowBackground">@color/colorDefaultBackground</item>
         <item name="android:fontFamily">serif</item>
@@ -18,7 +19,7 @@
         <item name="editTextStyle">@style/EditTextStyle</item>
         <item name="switchStyle">@style/SwitchStyle</item>
     </style>
-    
+
     <style name="AppTheme" parent="AppThemeDefault"/>
 
     <style name="LightTheme" parent="Theme.AppCompat.Light">
@@ -26,7 +27,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
 
+    <style name="BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
     </style>
 
     <style name="ProgressBar" parent="Widget.AppCompat.ProgressBar">

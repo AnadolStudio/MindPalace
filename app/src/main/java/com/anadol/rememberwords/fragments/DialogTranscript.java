@@ -32,7 +32,7 @@ import android.widget.FrameLayout;
 
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.myList.Word;
+import com.anadol.rememberwords.model.Word;
 
 import static com.anadol.rememberwords.fragments.GroupDetailFragment.POSITION;
 

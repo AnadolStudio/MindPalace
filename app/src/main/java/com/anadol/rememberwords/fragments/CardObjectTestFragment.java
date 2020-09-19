@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.myList.Word;
+import com.anadol.rememberwords.model.Word;
 
 import java.util.ArrayList;
 

@@ -10,6 +10,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <provider
+            android:name="com.anadol.rememberwords.model.MyContentProvider"
+            android:authorities="ru.anadolstudio.mindplace"
+            android:exported="false"/>
+
         <activity android:name=".activities.StartActivity"
             android:theme="@style/SplashActivity">
             <intent-filter>
@@ -18,10 +23,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".activities.GroupListActivity"
-        android:windowSoftInputMode="adjustPan">
-            <!--            android:screenOrientation="portrait">-->
+            android:name=".view.Activities.MainActivity"
+            android:windowSoftInputMode="adjustPan">
         </activity>
 
         <activity
@@ -31,13 +36,10 @@
         </activity>
 
         <activity
-            android:name=".activities.CreateGroupActivity"
-            android:parentActivityName=".activities.GroupListActivity"
-            android:windowSoftInputMode="stateHidden|adjustPan"></activity>
-        <activity
             android:name=".activities.LearnStartActivity"
             android:parentActivityName=".activities.GroupDetailActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan"></activity>
+
         <activity
             android:name=".activities.LearnDetailActivity"
             android:windowSoftInputMode="stateHidden|adjustResize">

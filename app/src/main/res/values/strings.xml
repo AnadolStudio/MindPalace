@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Remember Words</string>
+    <string name="app_name">Mind Place</string>
 
     <string name="replace">Replace</string>
     <string name="remove">Delete</string>
@@ -70,7 +70,6 @@
 <!--    TODO: Тут должун быть правильный английский текст-->
 <!--    <string name="enabled_type">Тут должен быть правильный английский текст 1</string>-->
 <!--    <string name="enabled_object">Тут должен быть правильный английский текст 2</string>-->
-    <string name="settings">Settings</string>
     <string name="linear_layout">Linear Layout</string>
     <string name="grid_layout">Grid Layout</string>
     <string name="echelon_layout">Echelon Layout</string>
@@ -91,6 +90,12 @@
     <string name="view_list">View list</string>
     <string name="association">Association</string>
     <string name="duplicate_error">Duplicate error</string>
+
+    <string name="home">Home</string>
+    <string name="statistic">Statistic</string>
+    <string name="settings">Settings</string>
+    <string name="new_group">New Group</string>
+    <string name="deleting_was_successful">Deleting was successful</string>
 
 
     <plurals name="word_items">

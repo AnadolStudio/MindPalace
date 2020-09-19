@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,7 +31,7 @@ import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.myList.MyItemTranslate;
 import com.anadol.rememberwords.myList.MyRecyclerAdapter;
 import com.anadol.rememberwords.myList.MyViewHolder;
-import com.anadol.rememberwords.myList.Word;
+import com.anadol.rememberwords.model.Word;
 
 import java.util.ArrayList;
 import java.util.HashSet;
