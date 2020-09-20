@@ -5,5 +5,5 @@ public abstract class SimpleParent {
 
     public abstract int getTableId();
 
-    public abstract String getIdString();
+    public abstract String getUUIDString();
 }

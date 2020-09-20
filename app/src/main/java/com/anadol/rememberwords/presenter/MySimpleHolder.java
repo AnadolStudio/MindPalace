@@ -14,4 +14,6 @@ abstract class MySimpleHolder extends RecyclerView.ViewHolder {
     }
 
     public abstract <T extends SimpleParent> void onBind(T item, boolean isSelected);
+
+    public abstract void itemTouch(int flag);
 }

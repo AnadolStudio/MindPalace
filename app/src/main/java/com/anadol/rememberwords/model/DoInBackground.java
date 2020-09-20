@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import com.anadol.rememberwords.model.MyCursorWrapper;
 
 public abstract class DoInBackground extends AsyncTask<String, Void, Boolean> {
-
+// TODO: extends AsyncTask<String, Void, Boolean>, заменить Boolean на SimpleParent
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -29,15 +29,4 @@ public abstract class DoInBackground extends AsyncTask<String, Void, Boolean> {
 
     public abstract void onPost(boolean b);
 
-
-    protected MyCursorWrapper queryTable(@NonNull SQLiteDatabase db, String table,String[] columns,String whereClause, String[] whereArgs){
-        Cursor cursor = db.query(
-                table,
-                columns,
-                whereClause,
-                whereArgs,
-                null,null,null
-        );
-        return new MyCursorWrapper(cursor);
-    }
 }

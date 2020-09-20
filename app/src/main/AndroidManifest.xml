@@ -32,13 +32,15 @@
         <activity
             android:name=".activities.GroupDetailActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:parentActivityName=".view.Activities.MainActivity">
         </activity>
 
         <activity
             android:name=".activities.LearnStartActivity"
             android:parentActivityName=".activities.GroupDetailActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustPan"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
+        </activity>
 
         <activity
             android:name=".activities.LearnDetailActivity"

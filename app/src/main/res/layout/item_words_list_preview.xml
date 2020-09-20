@@ -8,7 +8,7 @@
     android:showDividers="middle">
 
     <TextView
-        android:id="@+id/text_question"
+        android:id="@+id/original_textView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
@@ -20,7 +20,7 @@
         tools:text="Original" />
 
     <TextView
-        android:id="@+id/text_transcription"
+        android:id="@+id/association_textView"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_margin="4dp"
@@ -33,7 +33,7 @@
 
 
     <TextView
-        android:id="@+id/text_answer"
+        android:id="@+id/translate_textView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"

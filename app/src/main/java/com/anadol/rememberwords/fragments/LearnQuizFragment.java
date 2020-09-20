@@ -239,13 +239,13 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
         switch (usedObject){
             case ORIGINAL:
                 builder.append(word.getOriginal());
-//                if (!word.getTranscript().equals("")){
-//                    builder.append("\n").append(word.getTranscript());
+//                if (!word.getAssociation().equals("")){
+//                    builder.append("\n").append(word.getAssociation());
 //                }
                 break;
             case TRANSLATE:
-                if (word.hasMultiTrans() == Word.TRUE) {
-                    builder.append(word.getOneTranslate(r.nextInt(word.getCountTranslates())));
+                if (word.isMultiTranslate()) {
+                    builder.append(word.getOneOfMultiTranslates(r.nextInt(word.getCountTranslates())));
                 }else {
                     builder.append(word.getTranslate());
                 }

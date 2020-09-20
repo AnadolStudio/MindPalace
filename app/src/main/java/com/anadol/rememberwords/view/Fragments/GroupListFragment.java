@@ -6,28 +6,9 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import com.anadol.rememberwords.fragments.IOnBackPressed;
-import com.anadol.rememberwords.fragments.MyFragment;
-import com.anadol.rememberwords.model.CreatorValues;
-import com.anadol.rememberwords.model.DataBaseSchema;
-import com.anadol.rememberwords.presenter.MyListAdapter;
-import com.anadol.rememberwords.presenter.SlowGridLayoutManager;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -39,43 +20,49 @@ import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.anadol.rememberwords.model.DatabaseHelper;
-import com.anadol.rememberwords.model.MyCursorWrapper;
+import com.anadol.rememberwords.R;
+import com.anadol.rememberwords.fragments.IOnBackPressed;
+import com.anadol.rememberwords.fragments.MyFragment;
+import com.anadol.rememberwords.model.CreatorValues;
+import com.anadol.rememberwords.model.DataBaseSchema;
+import com.anadol.rememberwords.model.DataBaseSchema.Groups;
 import com.anadol.rememberwords.model.DoInBackground;
 import com.anadol.rememberwords.model.Group;
-import com.anadol.rememberwords.R;
+import com.anadol.rememberwords.model.MyCursorWrapper;
+import com.anadol.rememberwords.presenter.MyListAdapter;
+import com.anadol.rememberwords.presenter.SlowGridLayoutManager;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
+import static com.anadol.rememberwords.presenter.MyListAdapter.GROUP_HOLDER;
+import static com.anadol.rememberwords.view.Fragments.GroupListFragment.GroupBackground.DELETE_GROUP;
 import static com.anadol.rememberwords.view.Fragments.GroupListFragment.GroupBackground.GET_GROUPS;
 import static com.anadol.rememberwords.view.Fragments.GroupListFragment.GroupBackground.GET_GROUP_ITEM;
-import static com.anadol.rememberwords.view.Fragments.GroupListFragment.GroupBackground.DELETE_GROUP;
-import static com.anadol.rememberwords.presenter.MyListAdapter.GROUP_HOLDER;
 
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class GroupListFragment extends MyFragment implements IOnBackPressed {
+    public static final String KEY_SELECT_MODE = "select_mode";
+    public static final String CHANGED_ITEM = "changed_item";
+    public static final int REQUIRED_CHANGE = 1;
+    public static final String KEY_GROUP_SAVE = "group_save";
     //TODO: на чем я остановился:
     // 1) Сделай подробный Commit
     // 2) "На конспект"
     private static final String TAG = "GroupListFragment";
-
-    public static final String KEY_SELECT_MODE = "select_mode";
-    public static final String CHANGED_ITEM = "changed_item";
-    public static final int REQUIRED_CHANGE = 1;
-    private static final int REQUEST_SETTINGS = 2;
-    private static final int REQUIRED_MERGE = 3;
-    private static final int REQUIRED_CREATE = 4;
-
-    public static final String KEY_GROUP_SAVE = "group_save";
     private static final String KEY_QUERY = "query";
-    public static final String NEW_GROUP = "new_group";
-
     private RecyclerView mRecyclerView;
     private SearchView searchView;
     private FloatingActionButton fab;
@@ -107,7 +94,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         outState.putParcelableArrayList(KEY_GROUP_SAVE, mGroupsList);
         selectedStringArray = mAdapter.getSelectedStringArray();
         outState.putStringArrayList(KEY_SELECT_LIST, selectedStringArray);
-        outState.putString(KEY_QUERY,searchQuery);
+        outState.putString(KEY_QUERY, searchQuery);
     }
 
     @Override
@@ -145,7 +132,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
             searchQuery = savedInstanceState.getString(KEY_QUERY);
             selectedStringArray = savedInstanceState.getStringArrayList(KEY_SELECT_LIST);
             selectable = savedInstanceState.getBoolean(KEY_SELECT_MODE);
-        }else {
+        } else {
             mGroupsList = new ArrayList<>();
             doInBackground = new GroupBackground();
             doInBackground.execute(GET_GROUPS);
@@ -155,26 +142,26 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     }
 
     private void setListeners() {
-        fab.setOnClickListener(v->createGroup());
+        fab.setOnClickListener(v -> createGroup());
     }
 
-    private GridLayoutManager createGridLayoutManager(){
+    private SlowGridLayoutManager createGridLayoutManager() {
 
         Configuration configuration = getResources().getConfiguration();
         int width = configuration.screenWidthDp;
-        Log.i(TAG,"Configuration.screenWidthDp: "+ width);
+        Log.i(TAG, "Configuration.screenWidthDp: " + width);
 
         int countColumn;
 
-        if (width < 599){
+        if (width < 599) {
             countColumn = 2;
-        }else if(width < 839){
+        } else if (width < 839) {
             countColumn = 4;
         } else {
             countColumn = 6;
         }
 
-        return new SlowGridLayoutManager(getActivity(),countColumn);
+        return new SlowGridLayoutManager(getActivity(), countColumn);
     }
 
     @Override
@@ -189,24 +176,24 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        switch (mode){
+        switch (mode) {
             case MODE_NORMAL:
             case MODE_SEARCH:
-                inflater.inflate(R.menu.fragment_group_list,menu);
+                inflater.inflate(R.menu.fragment_group_list, menu);
                 MenuItem menuSearch = menu.findItem(R.id.menu_search);
 
                 searchView = (SearchView) menuSearch.getActionView();
                 searchView.setQueryHint(getResources().getString(R.string.search));
                 setMenuItemsListeners();
 
-                if (!searchQuery.equals("")){
+                if (!searchQuery.equals("")) {
                     searchView.setIconified(false); // не помню зачем нужен этот метод
-                    searchView.setQuery(searchQuery,true);
+                    searchView.setQuery(searchQuery, true);
                 }
                 break;
 
             case MODE_SELECT:
-                inflater.inflate(R.menu.menu_group_selected_list,menu);
+                inflater.inflate(R.menu.menu_group_selected_list, menu);
                 MenuItem select = menu.findItem(R.id.menu_select_all);
 
                 if (mAdapter != null && mAdapter.isAllItemSelected()) {
@@ -244,7 +231,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
 
 
     private void setMenuItemsListeners() {
-        searchView.setOnSearchClickListener(v ->{
+        searchView.setOnSearchClickListener(v -> {
             mode = MODE_SEARCH;
             setActionBarTitle("");
         });
@@ -271,7 +258,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
 
     @Override
     public boolean onBackPressed() {
-        switch (mode){
+        switch (mode) {
             case MODE_SEARCH:
                 mode = MODE_NORMAL;
                 getActivity().invalidateOptionsMenu();
@@ -290,7 +277,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(string);
     }
 
-    public void changeSelectableMode (boolean selectable) {
+    public void changeSelectableMode(boolean selectable) {
         if (selectable) {
             mode = MODE_SELECT;
             if (searchView != null && searchView.isShown()) {
@@ -306,13 +293,13 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     }
 
     // Необходим для показа количества выбранных объектов (тут групп)
-    public void updateActionBarTitle(){
-        AppCompatActivity activity = (AppCompatActivity)getActivity();
+    public void updateActionBarTitle() {
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.invalidateOptionsMenu();
         if (mode == MODE_SELECT) {
             int selectCount = mAdapter.getCountSelectedItems();
             activity.getSupportActionBar().setTitle(String.valueOf(selectCount));
-        }else {
+        } else {
             activity.getSupportActionBar().setTitle(getString(R.string.app_name));
         }
     }
@@ -321,14 +308,14 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         Log.i(TAG, "Result code: " + resultCode + " RequestCode: " + requestCode);
-        if (resultCode != RESULT_OK){
+        if (resultCode != RESULT_OK) {
             return;
         }
 
-        switch (requestCode){
+        switch (requestCode) {
             case REQUIRED_CHANGE:
                 //  Возможно группа будет обновлятся всегда, даже если изменения не происходили
-                int id = data.getIntExtra(CHANGED_ITEM,0);
+                int id = data.getIntExtra(CHANGED_ITEM, 0);
                 Log.i(TAG, "CHANGED_ITEM equal " + id);
                 if (id == 0) {
                     return;
@@ -348,7 +335,8 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     }
 
     @Override
-    public void updateUI(){}
+    public void updateUI() {
+    }
 
 
     // TODO почему я использую addTranslationAnim в адаптере а не в onCreate/onPost
@@ -401,7 +389,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                 });
     }
 
-    public  class GroupBackground extends DoInBackground{
+    public class GroupBackground extends DoInBackground {
         static final String GET_GROUPS = "groups";
         static final String GET_GROUP_ITEM = "group_item";
         static final String DELETE_GROUP = "remove_group";
@@ -422,13 +410,13 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
             this.command = command;
             MyCursorWrapper cursor = null;
             try {
-                SQLiteDatabase db = new DatabaseHelper(getContext()).getWritableDatabase();
-                ContentResolver  contentResolver = getContext().getContentResolver();
+
+                ContentResolver contentResolver = getContext().getContentResolver();
                 switch (command) {
                     case GET_GROUPS:
                         cursor = new MyCursorWrapper(
                                 contentResolver.query(
-                                        DataBaseSchema.Groups.CONTENT_URI,
+                                        Groups.CONTENT_URI,
                                         null, null, null, null));
 
                         if (cursor.getCount() == 0) {
@@ -436,7 +424,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                         }
                         cursor.moveToFirst();
 
-                        if (!mGroupsList.isEmpty())mGroupsList.clear();
+                        if (!mGroupsList.isEmpty()) mGroupsList.clear();
 
                         while (!cursor.isAfterLast()) {
                             mGroupsList.add(cursor.getGroup());
@@ -448,9 +436,9 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                         cursor = new MyCursorWrapper(
                                 contentResolver.query(
                                         ContentUris.withAppendedId(
-                                                DataBaseSchema.Groups.CONTENT_URI,
+                                                Groups.CONTENT_URI,
                                                 itemId),
-                                        null,null,null,null));
+                                        null, null, null, null));
                         if (cursor.getCount() == 0) {
                             return false;
                         }
@@ -467,17 +455,18 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                                 Color.BLUE,
                                 Color.BLACK};
 
+                        String colors = Group.getColorsStringFromInts(ints);
                         ContentValues values = CreatorValues.createGroupValues(
                                 uuid,
                                 name,
-                                ints[0], ints[1],ints[2]);
-                        Uri uri = contentResolver.insert(DataBaseSchema.Groups.CONTENT_URI, values);
+                                colors);
+                        Uri uri = contentResolver.insert(Groups.CONTENT_URI, values);
 
                         // Это более правильный метод конвертации long в int
                         Long l = (ContentUris.parseId(uri));
                         int idNewGroup = Integer.valueOf(l.intValue());
-                        Log.i(TAG,"_ID new group : " + idNewGroup);
-                        mGroupTemp = new Group(idNewGroup,uuid,ints,name);
+                        Log.i(TAG, "_ID new group : " + idNewGroup);
+                        mGroupTemp = new Group(idNewGroup, uuid, colors, name);
                         return true;
 
                     case DELETE_GROUP:
@@ -485,24 +474,23 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                         String uuidString;
                         String nameGroup;
                         for (Group g : groupsListToRemove) {
-                            uuidString = g.getIdString();
+                            uuidString = g.getUUIDString();
                             nameGroup = g.getName();
                             // Удаляю Группу и слова этой группы
                             contentResolver.delete(
-                                    DataBaseSchema.Groups.CONTENT_URI,
-                                    DataBaseSchema.Groups.UUID + " = ?",
+                                    Groups.CONTENT_URI,
+                                    Groups.UUID + " = ?",
                                     new String[]{uuidString});
                             contentResolver.delete(
                                     DataBaseSchema.Words.CONTENT_URI,
-                                    DataBaseSchema.Groups.UUID + " = ?",
-                                    new String[]{nameGroup});;
+                                    Groups.UUID + " = ?",
+                                    new String[]{nameGroup});
                         }
                         return true;
                 }
 
-                if (cursor != null ) cursor.close();
-                db.close();
-            }catch (Exception ex){
+                if (cursor != null) cursor.close();
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
             return false;
@@ -511,11 +499,11 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         @Override
         public void onPost(boolean b) {
             int i;
-            switch (command){
+            switch (command) {
                 case DELETE_GROUP:
                     // Обновленный код
                     mAdapter.remove(groupsListToRemove);
-                    Toast.makeText(getContext(),getString(R.string.deleting_was_successful), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.deleting_was_successful), Toast.LENGTH_SHORT).show();
                     changeSelectableMode(false);
                     break;
                 case INSERT_GROUP:
@@ -532,12 +520,14 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                     break;
                 case GET_GROUP_ITEM:
                     i = mAdapter.getIndexGroup(mGroupTemp.getTableId());
-                    if (i != -1){mAdapter.updateItem(i, mGroupTemp);}
+                    if (i != -1) {
+                        mAdapter.updateItem(i, mGroupTemp);
+                    }
                     mAdapter.notifyDataSetChanged();
                     CharSequence q = searchView.getQuery();
                     // Чтобы обновить Filter в GroupListAdapter
-                    searchView.setQuery("",true);
-                    searchView.setQuery(q,true);
+                    searchView.setQuery("", true);
+                    searchView.setQuery(q, true);
                     break;
             }
         }

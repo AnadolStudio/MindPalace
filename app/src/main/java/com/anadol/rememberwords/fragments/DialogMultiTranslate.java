@@ -6,13 +6,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatDialogFragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -26,12 +19,18 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.anadol.rememberwords.R;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.anadol.rememberwords.R;
+import com.anadol.rememberwords.model.Word;
 import com.anadol.rememberwords.myList.MyItemTranslate;
 import com.anadol.rememberwords.myList.MyRecyclerAdapter;
 import com.anadol.rememberwords.myList.MyViewHolder;
-import com.anadol.rememberwords.model.Word;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,8 +39,8 @@ import static com.anadol.rememberwords.fragments.GroupDetailFragment.POSITION;
 
 public class DialogMultiTranslate extends AppCompatDialogFragment implements InputFilter {
 
-    public static final String  MULTI_TEXT = "multi_text";
-    public static final String  USED = "used";
+    public static final String MULTI_TEXT = "multi_text";
+    public static final String USED = "used";
     private static final String TAG = "dialog_translate";
 
     private RecyclerView mRecyclerView;
@@ -53,7 +52,7 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
     private String[] res;
     private boolean[] isUsed;
 
-    public static DialogMultiTranslate newInstance(Word word,int position) {
+    public static DialogMultiTranslate newInstance(Word word, int position) {
 
         Bundle args = new Bundle();
         args.putParcelable(MULTI_TEXT, word);
@@ -65,15 +64,15 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putParcelable(MULTI_TEXT,mWord);
-        outState.putBooleanArray(USED,isUsed);
+        outState.putParcelable(MULTI_TEXT, mWord);
+        outState.putBooleanArray(USED, isUsed);
         super.onSaveInstanceState(outState);
     }
 
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_translate,null);
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_translate, null);
         res = getResources().getStringArray(R.array.words_type);
         if (savedInstanceState != null) {
             mWord = savedInstanceState.getParcelable(MULTI_TEXT);
@@ -81,40 +80,42 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
         } else {
             mWord = getArguments().getParcelable(MULTI_TEXT);
             isUsed = new boolean[res.length];
-            for (boolean b : isUsed){
+            for (boolean b : isUsed) {
                 b = false;
             }
         }
 
         mList = new ArrayList<>();
+/*
         if (mWord.hasMultiTrans() == Word.TRUE) {
             String[][] allTranslates = mWord.getMultiTranslateFormat();
-            for (String[] s: allTranslates) {
-                mList.add(new MyItemTranslate(s[0]+":",s[1]));
-                isUsed[getSelectedItemFromResArray(s[0]+":")] = true;//Это подразумевает то, что Диалогу передается уже правильно отформатированный текст
+            for (String[] s : allTranslates) {
+                mList.add(new MyItemTranslate(s[0] + ":", s[1]));
+                isUsed[getSelectedItemFromResArray(s[0] + ":")] = true;//Это подразумевает то, что Диалогу передается уже правильно отформатированный текст
             }
-        }else {
-            mList.add(new MyItemTranslate(res[0],mWord.getTranslate()));
+        } else {
+            mList.add(new MyItemTranslate(res[0], mWord.getTranslate()));
             isUsed[getSelectedItemFromResArray(res[0])] = true;
         }
+*/
 
         mAddButton = view.findViewById(R.id.add_words);
         mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mList.size() < res.length) {
-                    mList.add(new MyItemTranslate(res[newSelectedItemFromResArray()],""));
-                    mAdapter.notifyItemChanged(mList.size()-1);
+                    mList.add(new MyItemTranslate(res[newSelectedItemFromResArray()], ""));
+                    mAdapter.notifyItemChanged(mList.size() - 1);
                 }
-                if (mList.size() >= res.length){
+                if (mList.size() >= res.length) {
                     v.setEnabled(false);
-                }else {
+                } else {
                     v.setEnabled(true);
                 }
-                if (mList.size() <= 1){
-                    mWord.setHasMultiTrans(Word.FALSE);
-                }else {
-                    mWord.setHasMultiTrans(Word.TRUE);
+                if (mList.size() <= 1) {
+//                    mWord.setHasMultiTrans(Word.FALSE);
+                } else {
+//                    mWord.setHasMultiTrans(Word.TRUE);
                 }
             }
         });
@@ -127,7 +128,7 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
         mRecyclerView.setAdapter(mAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SimpleItemHelperCallback(mAdapter));
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(),DividerItemDecoration.VERTICAL));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
         commentText = view.findViewById(R.id.edit_comment);
         commentText.setText(mWord.getComment());
@@ -148,7 +149,7 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
                 mWord.setComment(s.toString());
             }
         });
-        return new AlertDialog.Builder(getActivity(),R.style.DialogKeyboard)
+        return new AlertDialog.Builder(getActivity(), R.style.DialogKeyboard)
                 .setView(view)
                 .create();
     }
@@ -195,6 +196,8 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
                         mList.get(holder.getAdapterPosition()).setWords(s.toString().trim());
                     }
                 });
+
+                // TODO: Это будет в WordListHolder'е, вместе с самим фильром
                 words.setFilters(new InputFilter[]{DialogMultiTranslate.this});
 
                 holder.setViews(new View[]{type, words});
@@ -215,16 +218,16 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
 
             @Override
             public void myOnItemDismiss(int position, int flag) {
-                if (flag == ItemTouchHelper.START){
+                if (flag == ItemTouchHelper.START) {
                     mList.remove(position);
                     updateArrayIsUsed();
                     mAdapter.notifyItemRemoved(position);
 
-                    if (mList.size() <= 1){
-                        mWord.setHasMultiTrans(Word.FALSE);
+                    if (mList.size() <= 1) {
+//                        mWord.setHasMultiTrans(Word.FALSE);
                     }
                     mAddButton.setEnabled(true);
-                } else if (flag == ItemTouchHelper.END){
+                } else if (flag == ItemTouchHelper.END) {
                     mAdapter.notifyItemChanged(position);
                     Toast.makeText(getContext(), "If you want to remove this word(s), swipe left", Toast.LENGTH_LONG).show();
                 }
@@ -243,39 +246,40 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
         mWord.setTranslate(getAllWords());
     }
 
-    private String getAllWords(){
+    private String getAllWords() {
         StringBuilder stringBuilder = new StringBuilder();
+        // TODO: в рот ебал это дерьмо!
         if (mList.size() > 1) {
-            for (MyItemTranslate item : mList){
-                if (!item.getWords().replaceAll("\n","").replaceAll(";","").equals("")) {// Если EditText не пуст
-                    if (stringBuilder.length() != 0){
+            for (MyItemTranslate item : mList) {
+                if (!item.getWords().replaceAll("\n", "").replaceAll(";", "").equals("")) {// Если EditText не пуст
+                    if (stringBuilder.length() != 0) {
                         stringBuilder.append("/");
                     }
                     stringBuilder.append(item.getTypeName());
-                    String[] itemsWords = item.getWords().replaceAll("\n","").split(";");
-                    for (String s : itemsWords){
+                    String[] itemsWords = item.getWords().replaceAll("\n", "").split(";");
+                    for (String s : itemsWords) {
 //                        System.out.println(s);
                         stringBuilder.append(s.trim()).append(";").append("\n");
                     }
                 }
             }
-            stringBuilder.replace(stringBuilder.length()-1,stringBuilder.length(),"");// Удаляет последний символ абзаца
-        }else {
+            stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "");// Удаляет последний символ абзаца
+        } else {
             MyItemTranslate item = mList.get(0);
-            String[] itemsWords = item.getWords().replaceAll("\n","").split(";");
+            String[] itemsWords = item.getWords().replaceAll("\n", "").split(";");
             if (itemsWords.length <= 1) {
-                mWord.setHasMultiTrans(Word.FALSE);
+//                mWord.setHasMultiTrans(Word.FALSE);
                 stringBuilder.append(mList.get(0).getWords()
                         .replaceAll("\n", "")
                         .replaceAll(";", ""));
-            }else {
-                mWord.setHasMultiTrans(Word.TRUE);
+            } else {
+//                mWord.setHasMultiTrans(Word.TRUE);
 
                 stringBuilder.append(item.getTypeName());
-                for (String s : itemsWords){
+                for (String s : itemsWords) {
                     stringBuilder.append(s.trim()).append(";").append("\n");
                 }
-                stringBuilder.replace(stringBuilder.length()-1,stringBuilder.length(),"");// Удаляет последний символ абзаца
+                stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "");// Удаляет последний символ абзаца
             }
         }
         return stringBuilder.toString();
@@ -287,42 +291,42 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
         mWord.setTranslate(getAllWords());
         // Я передаю только позицию которую нужно обновить
         // ссылка на тот Word менялась здесь
-        sendResult(Activity.RESULT_OK,getArguments().getInt(POSITION));
+        sendResult(Activity.RESULT_OK, getArguments().getInt(POSITION));
 
     }
 
-    private void sendResult(int resultCode, int position){
+    private void sendResult(int resultCode, int position) {
         if (getTargetFragment() == null) {
             return;
         }
 
         Intent intent = new Intent();
 //        intent.putExtra(MULTI_TEXT,word);
-        intent.putExtra(POSITION,position);
-        getTargetFragment().onActivityResult(getTargetRequestCode(),resultCode,intent);
+        intent.putExtra(POSITION, position);
+        getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, intent);
     }
 
-    private int getSelectedItemFromResArray(String s){
+    private int getSelectedItemFromResArray(String s) {
         int rtn = 0;
         for (int i = 0; i < res.length; i++) {
-            if ((s).equals(res[i])){
+            if ((s).equals(res[i])) {
                 rtn = i;
             }
         }
         return rtn;
     }
 
-    private void updateArrayIsUsed(){
+    private void updateArrayIsUsed() {
         isUsed = new boolean[res.length];
         /*for (boolean b :isUsed){
             b = false;
         }*/
         String[] cloneRes = res.clone();
-        for (int i = 0; i < mList.size(); i++){
-            //foreach не меняет свои дочерние обьекты, скорее всего там используется object.clone
+        for (int i = 0; i < mList.size(); i++) {
+            //TODO fori() { fori() {} }
             for (int j = 0; j < cloneRes.length; j++) {
                 if (mList.get(i).getTypeName().equals(cloneRes[j])) {
-                    Log.d(TAG,"equals " +mList.get(i).getTypeName()+ " == "+ cloneRes[j]);
+                    Log.d(TAG, "equals " + mList.get(i).getTypeName() + " == " + cloneRes[j]);
                     isUsed[i] = true;
                     cloneRes[j] = "";
                 }
@@ -330,35 +334,35 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
 
         }
         int i = 0;
-        for (boolean b :isUsed){
-            Log.d(TAG,"updateArrayIsUSed " +i+ " "+ b);
+        for (boolean b : isUsed) {
+            Log.d(TAG, "updateArrayIsUSed " + i + " " + b);
             i++;
         }
     }
 
-    private boolean hasDuplicate(){
+    private boolean hasDuplicate() {
         HashSet<String> hashSet = new HashSet<>();
-        for (MyItemTranslate itemTranslate : mList){
+        for (MyItemTranslate itemTranslate : mList) {
             hashSet.add(itemTranslate.getTypeName());
         }
         System.out.println(
                 "Size hashSet " + hashSet.size() + "\n" +
-                "Size mList " + mList.size());
+                        "Size mList " + mList.size());
         return hashSet.size() != mList.size();
     }
 
-    private int newSelectedItemFromResArray(){
+    private int newSelectedItemFromResArray() {
         int rtn = 0;
         boolean b = false;
-        while (!b){
-            if (isUsed[rtn]){//если уже существует то попробовать следующий
+        while (!b) {
+            if (isUsed[rtn]) {//если уже существует то попробовать следующий
                 rtn++;
-            }else {
+            } else {
                 b = true;
                 isUsed[rtn] = true;
 //                System.out.println("is not used " + rtn);
             }
-            if (rtn >= isUsed.length){
+            if (rtn >= isUsed.length) {
                 Log.e(TAG, "infinite loop");
                 break;
             }
@@ -368,23 +372,22 @@ public class DialogMultiTranslate extends AppCompatDialogFragment implements Inp
     }
 
 
-
     @Override
     public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
         //source - это новые символы, а dest - все остальные
 
-        if (end-start > 1){
+        if (end - start > 1) {
             String string = source.toString();
 
             if (string.contains("/")) {
                 Toast.makeText(getContext(), " \"/\" is the service symbol", Toast.LENGTH_SHORT).show();
-                return  string.replaceAll("/","");
+                return string.replaceAll("/", "");
             }
             return null;
-        }else if (end-start == 1){
+        } else if (end - start == 1) {
             if (source.charAt(start) == '\n'
                     && dest.length() >= 1
-                    && (dest.charAt(dend-1) != ';' )) {
+                    && (dest.charAt(dend - 1) != ';')) {
                 return ";" + source;
             } else if (source.charAt(start) == '\n'
                     && dest.length() < 1) {

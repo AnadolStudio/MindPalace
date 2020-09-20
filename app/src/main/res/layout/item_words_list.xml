@@ -1,87 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@android:color/white"
     android:divider="?android:attr/dividerHorizontal"
     android:gravity="center"
-    android:showDividers="middle"
-    android:background="@android:color/white">
+    android:orientation="vertical"
+    android:showDividers="middle">
 
     <LinearLayout
-        android:id="@+id/linearLayout6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:divider="?android:attr/dividerHorizontal"
         android:gravity="center"
         android:showDividers="middle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+
+        >
 
         <EditText
-            android:id="@+id/text_original"
+            android:id="@+id/original_editText"
+            style="@style/EditTextStyle.GroupDetailWords"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="@string/original"
-            style="@style/EditTextStyle.GroupDetailWords"/>
+            android:hint="@string/original" />
 
 
         <EditText
-            android:id="@+id/text_transcription"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:hint="@string/association"
-            style="@style/EditTextStyle.GroupDetailWords"/>
-
-
-        <EditText
-            android:id="@+id/text_translate"
+            android:id="@+id/association_editText"
+            style="@style/EditTextStyle.GroupDetailWords"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="@string/translate"
-            style="@style/EditTextStyle.GroupDetailWords"/>
+            android:hint="@string/association" />
 
+
+        <EditText
+            android:id="@+id/translate_editText"
+            style="@style/EditTextStyle.GroupDetailWords"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/translate" />
 
     </LinearLayout>
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toTopOf="@+id/edit_comment"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
+    <!--
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="@string/comment"
-        app:layout_constraintBottom_toBottomOf="@+id/edit_comment"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/edit_comment" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/comment" />
 
-    <EditText
-        android:id="@+id/edit_comment"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:minHeight="32dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_weight="1"
-        tools:text="Translate"
-        android:gravity="start|center_vertical"
-        style="@style/EditTextStyle.GroupDetailWords"
+            <EditText
+                android:id="@+id/comment_editText"
+                style="@style/EditTextStyle.GroupDetailWords"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:gravity="start|center_vertical"
+                android:minHeight="32dp"
+                tools:text="Translate" />
 
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toBottomOf="@id/divider" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+    -->
+
+</LinearLayout>
 

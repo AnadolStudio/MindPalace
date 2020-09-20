@@ -110,15 +110,15 @@ public class LearnDetailActivity extends SimpleFragmentActivity {
         switch (object){
             case ORIGINAL:
                 builder.append(word.getOriginal());
-                if (!word.getTranscript().equals("")){
-                    builder.append("\n").append(word.getTranscript());
+                if (!word.getAssociation().equals("")){
+                    builder.append("\n").append(word.getAssociation());
                 }
                 break;
 
             case TRANSLATE:
-                if (word.hasMultiTrans() == Word.TRUE) {
+                if (word.isMultiTranslate()) {
                     int bound = word.getCountTranslates();
-                    builder.append(word.getOneTranslate(new Random().nextInt(bound)));
+                    builder.append(word.getOneOfMultiTranslates(new Random().nextInt(bound)));
                 }else {
                     builder.append(word.getTranslate());
                 }

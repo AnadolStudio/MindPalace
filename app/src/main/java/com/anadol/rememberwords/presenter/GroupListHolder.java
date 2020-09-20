@@ -11,12 +11,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.util.Pair;
+import androidx.recyclerview.widget.ItemTouchHelper;
 
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.activities.GroupDetailActivity;
-import com.anadol.rememberwords.view.Fragments.GroupListFragment;
 import com.anadol.rememberwords.model.Group;
 import com.anadol.rememberwords.model.SimpleParent;
+import com.anadol.rememberwords.view.Fragments.GroupListFragment;
 
 import static com.anadol.rememberwords.view.Fragments.GroupListFragment.REQUIRED_CHANGE;
 
@@ -41,18 +42,18 @@ public class GroupListHolder extends MySimpleHolder implements View.OnClickListe
         mGroup = (Group) group;
         mTextView.setText(mGroup.getName());
         this.isSelected = isSelected;
-        setDrawable();
+        setDrawable(isSelected);
     }
 
     @Override
     public void onClick(View v) {
         int position = getAdapterPosition();
         if (position == -1) return;
-        if (sAdapter.isSelectableMode()){
+        if (sAdapter.isSelectableMode()) {
             isSelected = !isSelected;
-            sAdapter.putSelectedItem(mGroup.getIdString(), isSelected);
-            setDrawable();
-        }else {
+            sAdapter.putSelectedItem(mGroup.getUUIDString(), isSelected);
+            setDrawable(isSelected);
+        } else {
             startActivity();
         }
     }
@@ -61,29 +62,42 @@ public class GroupListHolder extends MySimpleHolder implements View.OnClickListe
     public boolean onLongClick(View v) {
         if (!sAdapter.isSelectableMode()) {
             sAdapter.setSelectableMode(true);
-//                Тут описана логика смены значка в ActionBar, если выделенны все группы
             isSelected = true;
-            sAdapter.putSelectedItem(mGroup.getIdString(), true);
-            setDrawable();
+            sAdapter.putSelectedItem(mGroup.getUUIDString(), true);
+            setDrawable(isSelected);
             return true;
         }
         return false;
     }
 
-    private void setDrawable() {
-        if (isSelected){
+    private void setDrawable(boolean selected) {
+        if (selected) {
             Resources resources = sAdapter.getFragment().getResources();
 //                mImageView.setImageDrawable(resources.getDrawable(R.drawable.ic_check));
             // TODO temp
             mImageView.setImageDrawable(new ColorDrawable(resources.getColor(R.color.colorAccent)));
-        }else {
+        } else {
             mImageView.setImageDrawable(mGroup.getGroupDrawable());
         }
-        if (sAdapter.isSelectableMode()) sAdapter.getFragment().changeSelectableMode(true);
+        if (sAdapter.isSelectableMode())
+            ((GroupListFragment) sAdapter.getFragment()).changeSelectableMode(true);
+    }
+
+    @Override
+    public void itemTouch(int flag) {
+        switch (flag){
+            case ItemTouchHelper.START:
+
+                break;
+
+            case ItemTouchHelper.END:
+
+                break;
+        }
     }
 
     private void startActivity() {
-        GroupListFragment mFragment = sAdapter.getFragment();
+        GroupListFragment mFragment = (GroupListFragment) sAdapter.getFragment();
 
         Activity activity = mFragment.getActivity();
         Intent intent = GroupDetailActivity.newIntent(activity, mGroup);

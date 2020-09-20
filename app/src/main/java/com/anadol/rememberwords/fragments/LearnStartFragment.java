@@ -250,7 +250,7 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
                 mAdapter.mSelectionsArray.clear();
                 for (int i = 0; i < mAdapter.getList().size(); i++) {
                     Word word = mAdapter.getList().get(i);
-                    mAdapter.mSelectionsArray.put(word.getIdString(),false);
+                    mAdapter.mSelectionsArray.put(word.getUUIDString(),false);
                 }
                 return true;
             default:
@@ -300,13 +300,13 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
                 if (selectAll){
                     for (int i = 0; i < mAdapter.getList().size(); i++) {
                         Word word = mAdapter.getList().get(i);
-                        mAdapter.mSelectionsArray.put(word.getIdString(),true);
+                        mAdapter.mSelectionsArray.put(word.getUUIDString(),true);
                     }
                     selectCount = mAdapter.getList().size();
                 }else {
                     for (int i = 0; i < mAdapter.getList().size(); i++) {
                         Word word = mAdapter.getList().get(i);
-                        mAdapter.mSelectionsArray.put(word.getIdString(),false);
+                        mAdapter.mSelectionsArray.put(word.getUUIDString(),false);
                     }
                     selectCount = 0;
                 }
@@ -489,7 +489,7 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
     public class WordHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener, View.OnLongClickListener{
         TextView original;
-        TextView transcription;
+        TextView association;
         TextView translate;
 
         private boolean isSelectableMode = false; //default
@@ -499,9 +499,9 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
         public WordHolder(@NonNull View itemView, WordAdapter parentAdapter) {
             super(itemView);
 
-            original = itemView.findViewById(R.id.text_question);
-            translate = itemView.findViewById(R.id.text_answer);
-            transcription = itemView.findViewById(R.id.text_transcription);
+            original = itemView.findViewById(R.id.original_textView);
+            association = itemView.findViewById(R.id.association_textView);
+            translate = itemView.findViewById(R.id.translate_textView);
 
             myParentAdapter = parentAdapter;
 
@@ -514,14 +514,14 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
             int position = getAdapterPosition();
 
             String origStr = word.getOriginal();
-            String transcriptStr = word.getTranscript();
+            String transcriptStr = word.getAssociation();
             String tranStr = word.getTranslate();
 
             isSelectableMode = myParentAdapter.isSelectable;
-            isSelectableItem = myParentAdapter.isItemSelectable(mAdapter.getList().get(position).getIdString());
+            isSelectableItem = myParentAdapter.isItemSelectable(mAdapter.getList().get(position).getUUIDString());
 
             original.setText(origStr);
-            transcription.setText(transcriptStr);
+            association.setText(transcriptStr);
             translate.setText(tranStr);
 
             if (isSelectableMode && isSelectableItem) {
@@ -541,7 +541,7 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
             isSelectableMode = myParentAdapter.isSelectable;
             if (isSelectableMode){
                 isSelectableItem = !isSelectableItem;
-                myParentAdapter.setItemChecked((mAdapter.getList().get(i).getIdString()),isSelectableItem);
+                myParentAdapter.setItemChecked((mAdapter.getList().get(i).getUUIDString()),isSelectableItem);
                 updateActionBarTitle(true);
 
                 Resources resources = getResources();
@@ -563,14 +563,14 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
                 myParentAdapter.setSelectable(true);
 //                myParentAdapter.notifyDataSetChanged();
 
-                myParentAdapter.setItemChecked((mAdapter.getList().get(position).getIdString()), true);
+                myParentAdapter.setItemChecked((mAdapter.getList().get(position).getUUIDString()), true);
 
                 updateActionBarTitle(true);
 //                    wordHolder.setEnabledAll(false);
             }else {
                 isSelectableItem = !isSelectableItem;
 
-                myParentAdapter.setItemChecked((mAdapter.getList().get(position).getIdString()), isSelectableItem);
+                myParentAdapter.setItemChecked((mAdapter.getList().get(position).getUUIDString()), isSelectableItem);
                 if (isSelectableItem) {
                     Resources resources = getResources();
                     itemView.setBackground(new ColorDrawable(resources.getColor(R.color.colorAccent)));
@@ -689,8 +689,8 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
             }
             for (int i = 0; i < mList.size(); i++) {
                 Word word = mList.get(i);
-                if (mSelectionsArray.get(word.getIdString()) == null) {
-                    mSelectionsArray.put(word.getIdString(), false);
+                if (mSelectionsArray.get(word.getUUIDString()) == null) {
+                    mSelectionsArray.put(word.getUUIDString(), false);
                 }
 
             }
@@ -785,7 +785,7 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
                     for (int i = 0; i < mAdapter.mSelectionsArray.size(); i++) {
                         if (mAdapter.mSelectionsArray.valueAt(i)) {
                             for (Word w : mWords) {
-                                if (w.getIdString().equals(mAdapter.mSelectionsArray.keyAt(i))){
+                                if (w.getUUIDString().equals(mAdapter.mSelectionsArray.keyAt(i))){
                                     learnList.add(w);
                                 }
                             }

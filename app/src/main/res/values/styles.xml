@@ -74,7 +74,7 @@
         <item name="android:textSize">14sp</item>
         <item name="android:inputType">textMultiLine|textNoSuggestions</item>
         <item name="android:imeOptions">actionDone</item>
-        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:background">@android:color/transparent</item>
     </style>
 
@@ -88,7 +88,7 @@
         <item name="android:longClickable">false</item>
     </style>
 
-
+<!--TODO на удаление-->
     <style name="DialogKeyboard" parent="Base.Theme.AppCompat.Light.Dialog">
         <item name="android:windowMinWidthMajor">100%</item>
         <item name="android:windowMinWidthMinor">100%</item>
@@ -109,7 +109,7 @@
     </style>
 
 
-
+    <!--TODO на удаление-->
     <style name="AppTheme.Skid_1" parent="AppTheme">
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>

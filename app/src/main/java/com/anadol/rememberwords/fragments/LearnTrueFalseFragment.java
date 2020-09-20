@@ -3,11 +3,6 @@ package com.anadol.rememberwords.fragments;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,13 +11,27 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.model.Word;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.anadol.rememberwords.activities.LearnDetailActivity.*;
+import static com.anadol.rememberwords.activities.LearnDetailActivity.ANSWER;
+import static com.anadol.rememberwords.activities.LearnDetailActivity.ANSWER_LIST;
+import static com.anadol.rememberwords.activities.LearnDetailActivity.CORRECT_WRONG;
+import static com.anadol.rememberwords.activities.LearnDetailActivity.COUNT;
+import static com.anadol.rememberwords.activities.LearnDetailActivity.QUESTION;
+import static com.anadol.rememberwords.activities.LearnDetailActivity.QUESTION_LIST;
+import static com.anadol.rememberwords.activities.LearnDetailActivity.RANDOM;
+import static com.anadol.rememberwords.activities.LearnDetailActivity.REQUEST_RESULT;
+import static com.anadol.rememberwords.activities.LearnDetailActivity.addTextQuestion;
+import static com.anadol.rememberwords.activities.LearnDetailActivity.getNonRepRandomInts;
 import static com.anadol.rememberwords.fragments.DialogResult.RESULT;
 import static com.anadol.rememberwords.fragments.LearnStartFragment.OBJECT;
 import static com.anadol.rememberwords.fragments.LearnStartFragment.ORIGINAL;
@@ -30,7 +39,7 @@ import static com.anadol.rememberwords.fragments.LearnStartFragment.TRANSLATE;
 import static com.anadol.rememberwords.fragments.LearnStartFragment.USE;
 import static com.anadol.rememberwords.fragments.LearnStartFragment.WORDS;
 
-public class LearnTrueFalseFragment extends Fragment implements View.OnClickListener{
+public class LearnTrueFalseFragment extends Fragment implements View.OnClickListener {
 
     private static final String TRUE_FALSE = "true_false";
     private static final String TAG = "learnTrueFalseFragment";
@@ -52,13 +61,13 @@ public class LearnTrueFalseFragment extends Fragment implements View.OnClickList
     private TextView answer;
     private ProgressBar mProgressBar;
 
-    public static LearnTrueFalseFragment newInstance(ArrayList<Word> words, int object,int used) {
+    public static LearnTrueFalseFragment newInstance(ArrayList<Word> words, int object, int used) {
 
         Bundle args = new Bundle();
-        args.putParcelableArrayList(WORDS,words);
-        args.putInt(OBJECT,object);
-        args.putInt(USE,used);
-        
+        args.putParcelableArrayList(WORDS, words);
+        args.putInt(OBJECT, object);
+        args.putInt(USE, used);
+
         LearnTrueFalseFragment fragment = new LearnTrueFalseFragment();
         fragment.setArguments(args);
         return fragment;
@@ -67,21 +76,21 @@ public class LearnTrueFalseFragment extends Fragment implements View.OnClickList
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBooleanArray(CORRECT_WRONG,correctWrong);
-        outState.putStringArray(ANSWER_LIST,myAnswersList);
-        outState.putStringArray(QUESTION_LIST,myQuestionList);
-        outState.putIntegerArrayList(RANDOM,random);
-        outState.putInt(COUNT,count);
+        outState.putBooleanArray(CORRECT_WRONG, correctWrong);
+        outState.putStringArray(ANSWER_LIST, myAnswersList);
+        outState.putStringArray(QUESTION_LIST, myQuestionList);
+        outState.putIntegerArrayList(RANDOM, random);
+        outState.putInt(COUNT, count);
 
-        outState.putBoolean(TRUE_FALSE,trueAnswer);
-        outState.putString(QUESTION,question.getText().toString());
-        outState.putString(ANSWER,answer.getText().toString());
+        outState.putBoolean(TRUE_FALSE, trueAnswer);
+        outState.putString(QUESTION, question.getText().toString());
+        outState.putString(ANSWER, answer.getText().toString());
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_learn_true_false,container,false);
+        View v = inflater.inflate(R.layout.fragment_learn_true_false, container, false);
 
         mWords = getArguments().getParcelableArrayList(WORDS);
         object = getArguments().getInt(OBJECT);
@@ -98,7 +107,7 @@ public class LearnTrueFalseFragment extends Fragment implements View.OnClickList
         String a;
         String q;
 
-        if (savedInstanceState!=null){
+        if (savedInstanceState != null) {
             random = savedInstanceState.getIntegerArrayList(RANDOM);
             correctWrong = savedInstanceState.getBooleanArray(CORRECT_WRONG);
             myAnswersList = savedInstanceState.getStringArray(ANSWER_LIST);
@@ -107,28 +116,28 @@ public class LearnTrueFalseFragment extends Fragment implements View.OnClickList
             trueAnswer = savedInstanceState.getBoolean(TRUE_FALSE);
             q = savedInstanceState.getString(QUESTION);
             a = savedInstanceState.getString(ANSWER);
-        }else {
+        } else {
             random = getNonRepRandomInts(mWords.size());
             correctWrong = new boolean[mWords.size()];
             count = 0;
             myAnswersList = new String[mWords.size()];
-            q = addTextQuestion(mWords,object,random.get(count));
+            q = addTextQuestion(mWords, object, random.get(count));
             a = addTextAnswer();
             myQuestionList = new String[mWords.size()];
         }
         question.setText(q);
         answer.setText(a);
         if (count < myQuestionList.length) {
-            myQuestionList[count]=getQuestion();
+            myQuestionList[count] = getQuestion();
         }
 
 
         return v;
     }
 
-    private String getQuestion(){
+    private String getQuestion() {
         String sb;
-        sb = (question.getText()+" = "+answer.getText());
+        sb = (question.getText() + " = " + answer.getText());
         return sb;
     }
 
@@ -149,13 +158,13 @@ public class LearnTrueFalseFragment extends Fragment implements View.OnClickList
         Word word = mWords.get(random.get(count));
 
         String a;
-        switch (usedObject){
+        switch (usedObject) {
             case TRANSLATE:
                 a = answer.getText().toString().toLowerCase();
-                Log.i(TAG, "Has multiTrans: "+word.hasMultiTrans());
-                if (word.hasMultiTrans() == Word.TRUE) {
+                Log.i(TAG, "onClick: word has multiTranslate: " + word.isMultiTranslate());
+                if (word.isMultiTranslate()) {
                     correctWrong[count] = myAnswer == word.isExistTranslate(a);
-                }else {
+                } else {
                     correctWrong[count] = myAnswer == trueAnswer;
                 }
                 break;
@@ -172,13 +181,13 @@ public class LearnTrueFalseFragment extends Fragment implements View.OnClickList
             question.setText(addTextQuestion(mWords, object, random.get(count)));
             answer.setText(addTextAnswer());
             myQuestionList[count] = getQuestion();
-        } else{
+        } else {
             trueButton.setEnabled(false);
             falseButton.setEnabled(false);
-            DialogResult dialogResult = DialogResult.newInstance(myQuestionList,myAnswersList,correctWrong);
-            dialogResult.setTargetFragment(this,REQUEST_RESULT);
+            DialogResult dialogResult = DialogResult.newInstance(myQuestionList, myAnswersList, correctWrong);
+            dialogResult.setTargetFragment(this, REQUEST_RESULT);
             FragmentManager fragmentManager = getFragmentManager();
-            dialogResult.show(fragmentManager,RESULT);
+            dialogResult.show(fragmentManager, RESULT);
         }
 
     }
@@ -188,7 +197,7 @@ public class LearnTrueFalseFragment extends Fragment implements View.OnClickList
             return;
         }
 
-        switch (requestCode){// так мы понимаем что именно для этой активности предназначаются данные из интента
+        switch (requestCode) {// так мы понимаем что именно для этой активности предназначаются данные из интента
 
             case REQUEST_RESULT:
                 getActivity().finish();
@@ -198,37 +207,37 @@ public class LearnTrueFalseFragment extends Fragment implements View.OnClickList
     }
 
 
-    private String addTextAnswer(){
+    private String addTextAnswer() {
         StringBuilder builder = new StringBuilder();
 
         Random r = new Random();
         trueAnswer = r.nextBoolean();
         Word word;
 
-        if (trueAnswer){
+        if (trueAnswer) {
             word = mWords.get(random.get(count));
-        }else {
+        } else {
             int i = r.nextInt(mWords.size());
 
             //Это сделано для того чтобы случай не выдал слово,
             // которое нужно проверять
-            while (i == random.get(count)){
+            while (i == random.get(count)) {
                 i = r.nextInt(mWords.size());
             }
             word = mWords.get(i);
         }
 
-        switch (usedObject){
+        switch (usedObject) {
             case ORIGINAL:
                 builder.append(word.getOriginal());
-                /*if (!word.getTranscript().equals("")){
-                    builder.append("\n").append(word.getTranscript());
+                /*if (!word.getAssociation().equals("")){
+                    builder.append("\n").append(word.getAssociation());
                 }*/
                 break;
             case TRANSLATE:
-                if (word.hasMultiTrans() == Word.TRUE) {
-                    builder.append(word.getOneTranslate(r.nextInt(word.getCountTranslates())));
-                }else {
+                if (word.isMultiTranslate()) {
+                    builder.append(word.getOneOfMultiTranslates(r.nextInt(word.getCountTranslates())));
+                } else {
                     builder.append(word.getTranslate());
                 }
                 break;

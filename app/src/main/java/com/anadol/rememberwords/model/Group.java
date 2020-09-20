@@ -6,19 +6,28 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
 import java.util.UUID;
 
 public class Group extends SimpleParent implements Parcelable, Comparable<Group> {
     public static final int NON_COLOR = 0;
+    public static final Parcelable.Creator<Group> CREATOR = new Parcelable.Creator<Group>() {
+        @Override
+        public Group createFromParcel(Parcel source) {
+            return new Group(source);
+        }
 
+        @Override
+        public Group[] newArray(int size) {
+            return new Group[size];
+        }
+    };
     private int tableId;
     private UUID mId;
     private int[] mColors; //всегда содержит 3 обькта, если цвет отсутствует ставиться "0"
     private String mName;
-    private Drawable mDrawable;
-
 
     private Group(Parcel in) {
         String[] data = new String[2];
@@ -34,8 +43,26 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
                     Color.BLUE, Color.LTGRAY, Color.BLACK
             };
         }
-        mDrawable = createDrawable();
         tableId = in.readInt();
+    }
+
+    public Group(int tableId, UUID id, String drawable, String name) {
+        this.tableId = tableId;
+        mId = id;
+        mColors = getColorsFromString(drawable);
+        mName = name;
+    }
+
+    public static String getColorsStringFromInts(int[] colors) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < colors.length; i++) {
+
+            if (i != 0) stringBuilder.append(";");
+
+            stringBuilder.append(colors[i]);
+        }
+
+        return stringBuilder.toString();
     }
 
     private Drawable createDrawable() {
@@ -75,29 +102,9 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
         dest.writeInt(tableId);
     }
 
-    public static final Parcelable.Creator<Group> CREATOR = new Parcelable.Creator<Group>() {
-        @Override
-        public Group createFromParcel(Parcel source) {
-            return new Group(source);
-        }
-
-        @Override
-        public Group[] newArray(int size) {
-            return new Group[size];
-        }
-    };
-
     @Override
     public int compareTo(@NonNull Group o) {
         return mName.compareTo(o.getName());
-    }
-
-    public Group(int tableId, UUID id, int[] colors, String name) {
-        this.tableId = tableId;
-        mId = id;
-        mColors = colors;
-        mName = name;
-        mDrawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, mColors);
     }
 
     public String getName() {
@@ -116,7 +123,7 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
         return tableId;
     }
 
-    public String getIdString() {
+    public String getUUIDString() {
         return mId.toString();
     }
 
@@ -128,10 +135,18 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
         mColors = colors;
     }
 
+    private int[] getColorsFromString(String colors) {
+        String[] strings = colors.split(";");
+        int[] ints = new int[strings.length];
+        for (int i = 0; i < strings.length; i++) {
+            ints[i] = Integer.parseInt(strings[i]);
+        }
+        return ints;
+    }
+
     public Drawable getGroupDrawable() {
         return createDrawable();
     }
-
 
     @Override
     public String toString() {
