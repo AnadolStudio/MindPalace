@@ -10,8 +10,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.view.Fragments.GroupListFragment;
 import com.anadol.rememberwords.fragments.IOnBackPressed;
+import com.anadol.rememberwords.view.Fragments.GroupListFragment;
 import com.anadol.rememberwords.view.Fragments.SettingsFragment;
 import com.anadol.rememberwords.view.Fragments.StatisticFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
         FragmentManager fm = getSupportFragmentManager();
 
-        if (fm.findFragmentById(R.id.fragment_container) == null){
+        if (fm.findFragmentById(R.id.fragment_container) == null) {
             fm.beginTransaction()
                     .add(R.id.fragment_container, GroupListFragment.newInstance())
                     .commit();
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-        if (!(fragment instanceof IOnBackPressed) || !((IOnBackPressed)fragment).onBackPressed()) {
+        if (!(fragment instanceof IOnBackPressed) || !((IOnBackPressed) fragment).onBackPressed()) {
             super.onBackPressed();
         }
     }
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 int id = menuItem.getItemId();
 
-                switch (id){
+                switch (id) {
                     case R.id.navigation_home:
                         return addFragment(GroupListFragment.newInstance());
                     case R.id.navigation_statistic:
@@ -67,10 +67,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private boolean addFragment(Fragment f){
-        if(f == null) return false;
+    private boolean addFragment(Fragment f) {
+        if (f == null) return false;
         FragmentManager fm = getSupportFragmentManager();
-        if(fm.findFragmentById(R.id.fragment_container) == null) {
+        if (fm.findFragmentById(R.id.fragment_container) == null) {
             fm.beginTransaction()
                     .add(R.id.fragment_container, f)
                     .commit();
@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
-
 
 
 }

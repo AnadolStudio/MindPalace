@@ -15,7 +15,7 @@
             android:authorities="ru.anadolstudio.mindplace"
             android:exported="false"/>
 
-        <activity android:name=".activities.StartActivity"
+        <activity android:name=".view.Activities.StartActivity"
             android:theme="@style/SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,7 +30,7 @@
         </activity>
 
         <activity
-            android:name=".activities.GroupDetailActivity"
+            android:name=".view.Activities.GroupDetailActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"
             android:launchMode="singleTop"
             android:parentActivityName=".view.Activities.MainActivity">
@@ -38,7 +38,7 @@
 
         <activity
             android:name=".activities.LearnStartActivity"
-            android:parentActivityName=".activities.GroupDetailActivity"
+            android:parentActivityName=".view.Activities.GroupDetailActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
         </activity>
 

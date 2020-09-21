@@ -1,4 +1,4 @@
-package com.anadol.rememberwords.fragments;
+package com.anadol.rememberwords.presenter;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 public class SimpleItemHelperCallback extends ItemTouchHelper.Callback {
     private final ItemTouchHelperAdapter mAdapter;
 
-    SimpleItemHelperCallback(ItemTouchHelperAdapter adapter) {
+    public SimpleItemHelperCallback(ItemTouchHelperAdapter adapter) {
         mAdapter = adapter;
     }
 

@@ -1,4 +1,4 @@
-package com.anadol.rememberwords.fragments;
+package com.anadol.rememberwords.view.Fragments;
 
 
 import android.content.ContentResolver;
@@ -34,7 +34,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.activities.LearnStartActivity;
-import com.anadol.rememberwords.database.DbSchema.Tables.Cols;
+import com.anadol.rememberwords.fragments.ColorPicker;
+import com.anadol.rememberwords.fragments.IOnBackPressed;
 import com.anadol.rememberwords.model.CreatorValues;
 import com.anadol.rememberwords.model.DataBaseSchema.Groups;
 import com.anadol.rememberwords.model.DataBaseSchema.Words;
@@ -51,12 +52,11 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
-import static com.anadol.rememberwords.fragments.DialogResult.RESULT;
-import static com.anadol.rememberwords.fragments.GroupDetailFragment.WordBackground.DELETE_WORDS;
-import static com.anadol.rememberwords.fragments.GroupDetailFragment.WordBackground.GET_WORDS;
-import static com.anadol.rememberwords.fragments.GroupDetailFragment.WordBackground.INSERT_WORD;
-import static com.anadol.rememberwords.fragments.GroupDetailFragment.WordBackground.UPDATE_GROUP;
 import static com.anadol.rememberwords.model.Group.NON_COLOR;
+import static com.anadol.rememberwords.view.Fragments.GroupDetailFragment.WordBackground.DELETE_WORDS;
+import static com.anadol.rememberwords.view.Fragments.GroupDetailFragment.WordBackground.GET_WORDS;
+import static com.anadol.rememberwords.view.Fragments.GroupDetailFragment.WordBackground.INSERT_WORD;
+import static com.anadol.rememberwords.view.Fragments.GroupDetailFragment.WordBackground.UPDATE_GROUP;
 import static com.anadol.rememberwords.view.Fragments.GroupListFragment.CHANGED_ITEM;
 import static com.anadol.rememberwords.view.Fragments.GroupListFragment.KEY_SELECT_MODE;
 
@@ -88,12 +88,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     private boolean selectable = false;
     private TextView countWordsTextView;
     private WordBackground doInBackground;
-
-    // TODO: Для MERGE необходимо добавить Dialog с цветами объединенных групп,
-    //  возможно стоит создать новый фрагмент, либо добавить это возможность
-    //  для всех GroupDetailFragment
-    //  Идеи: добавить в ColorPicker подобие actionbar как в DialogMultiTranslate,
-    //  перенести туда кнопку AddNewCase и добавить новую для выбора из уже существующих вариантов
 
     public static GroupDetailFragment newInstance(Group group) {
 
@@ -133,12 +127,18 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         setListeners();
 
         if (savedInstanceState != null) {
-            mAdapter = new MyListAdapter<>(this, mWords, MyListAdapter.WORD_HOLDER, selectStringArray, selectable);
-            mRecyclerView.setAdapter(mAdapter);
+            setupAdapter();
         }// в противном случае адаптер инициализируется в background.post()
         bindDataWithView();
 
         return view;
+    }
+
+    private void setupAdapter() {
+        mAdapter = new MyListAdapter<>(this, mWords, MyListAdapter.WORD_HOLDER, selectStringArray, selectable);
+        mRecyclerView.setAdapter(mAdapter);
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new WordItemHelperCallBack(mAdapter));
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     private void setListeners() {
@@ -158,9 +158,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         SlowLinearLayoutManager manager = new SlowLinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new WordItemHelperCallBack(mAdapter));
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     private void bind(View view) {
@@ -235,8 +232,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     @Override
     public void onResume() {
         super.onResume();
-        // TODO Почему именно здесь?
-        updateActionBarTitle();//При поворотах
+//        updateActionBarTitle();//При поворотах
     }
 
     @Override
@@ -460,255 +456,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         }
     }
 
-/*
-    public class WordAdapter extends RecyclerView.Adapter<WordHolder>
-            implements ItemTouchHelperAdapter {
-
-        private ArrayList<Word> mList;
-        private ArrayMap<String, Boolean> mSelectionsArray = new ArrayMap<>();
-        private boolean isSelectable = false;
-
-        public WordAdapter(ArrayList<Word> list) {
-            Collections.sort(list);
-            mList = list;
-        }
-
-        public WordAdapter() {
-            mList = new ArrayList<>();
-        }
-
-        public void addList(ArrayList<Word> list) {
-            if (mList.isEmpty()) {
-                addAnimation();
-            }
-            setList(list);
-        }
-
-        public ArrayList<Word> getList() {
-            return mList;
-        }
-
-        public void setList(ArrayList<Word> list) {
-            Collections.sort(list);
-            mList = list;
-            notifyDataSetChanged();
-            setSelectionsArray(selectStringArray);
-        }
-
-        @NonNull
-        @Override
-        public WordHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-            View view = LayoutInflater.from(getContext()).inflate(R.layout.item_words_list, viewGroup, false);
-            return new WordHolder(view, this);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull WordHolder wordHolder, int i) {
-            wordHolder.bind(mList.get(i));
-        }
-
-        @Override
-        public int getItemCount() {
-            return mList.size();
-        }
-
-        @Override
-        public void onItemDismiss(RecyclerView.ViewHolder viewHolder, int flag) {
-            int position = viewHolder.getAdapterPosition();
-            WordHolder wordHolder = (WordHolder) viewHolder;
-            switch (flag) {
-                case ItemTouchHelper.START://Выделить
-                    wordHolder.onLongClick(wordHolder.itemView);
-                    break;
-                case ItemTouchHelper.END://DialogTranslate
-                    if (!isSelectable) {
-//                        createDialogMultiTranslate(position);
-                    } else {
-                        Toast.makeText(getActivity(), getString(R.string.close_select_mode), Toast.LENGTH_SHORT).show();
-                        notifyItemChanged(position);
-                    }
-                    break;
-            }
-        }
-
-        private void setItemChecked(String id, boolean isChecked) {
-            mSelectionsArray.put(id, isChecked);
-            int j = 0;
-            for (int i = 0; i < mSelectionsArray.size(); i++) {
-                if (mSelectionsArray.valueAt(i)) j++;
-            }
-            selectAll = (j == mSelectionsArray.size());
-            getActivity().invalidateOptionsMenu();
-        }
-
-        private boolean isItemSelectable(String id) {
-            return mSelectionsArray.get(id) == null ? false : mSelectionsArray.get(id);
-        }
-
-        public boolean isSelectable() {
-            return isSelectable;
-        }
-
-        public void setSelectable(boolean selectable) {
-            isSelectable = selectable;
-            if (isSelectable) {
-                mode = MODE_SELECT;
-            } else {
-                mode = MODE_NORMAL;
-            }
-
-            getActivity().invalidateOptionsMenu();
-//            addAlphaAnim();
-        }
-
-        public void setSelectionsArray(ArrayList<String> selectionsArray) {
-            if (selectionsArray == null) return;
-
-            if (!selectionsArray.isEmpty()) {
-                for (int i = 0; i < selectionsArray.size(); i++) {
-                    mSelectionsArray.put(selectionsArray.get(i), true);
-                }
-                Log.i(TAG, "StringArray.size(): " + selectionsArray.size());
-            }
-            for (int i = 0; i < mList.size(); i++) {
-                Word word = mList.get(i);
-                if (mSelectionsArray.get(word.getUUIDString()) == null) {
-                    mSelectionsArray.put(word.getUUIDString(), false);
-                }
-
-            }
-            Log.i(TAG, "mSelectionsArray.size(): " + mSelectionsArray.size());
-
-        }
-    }
-*/
-
-/*
-    public class WordHolder extends RecyclerView.ViewHolder
-            implements View.OnClickListener, View.OnLongClickListener {
-        EditText original;
-        EditText transcription;
-        EditText translate;
-        EditText comment;
-
-        private boolean isSelectableMode = false; //default
-        private boolean isSelectableItem = false; //default
-        private WordAdapter myParentAdapter;
-
-        public WordHolder(@NonNull View itemView, WordAdapter parentAdapter) {
-            super(itemView);
-
-            original = itemView.findViewById(R.id.original_editText);
-            transcription = itemView.findViewById(R.id.transcription_editText);
-            translate = itemView.findViewById(R.id.text_translate);
-            comment = itemView.findViewById(R.id.edit_comment);
-
-            original.addTextChangedListener(new MyTextWatch(this, MyTextWatch.ORIGINAL));
-            translate.addTextChangedListener(new MyTextWatch(this, MyTextWatch.TRANSLATE));
-            transcription.addTextChangedListener(new MyTextWatch(this, MyTextWatch.TRANSCRIPT));
-            comment.addTextChangedListener(new MyTextWatch(this, MyTextWatch.COMMENT));
-
-            myParentAdapter = parentAdapter;
-
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
-        }
-
-
-        public void bind(Word word) {
-            int position = getAdapterPosition();
-
-            String origStr = word.getOriginal();
-            String transcriptStr = word.getAssociation();
-            String tranStr = word.getTranslate();
-            String commentStr = word.getComment();
-
-            isSelectableMode = myParentAdapter.isSelectable;
-            isSelectableItem = myParentAdapter.isItemSelectable(mAdapter.getList().get(position).getUUIDString());
-
-            original.setText(origStr);
-            transcription.setText(transcriptStr);
-            translate.setText(tranStr);
-            comment.setText(commentStr);
-
-            original.setSelection(original.length());
-            translate.setSelection(translate.length());
-            comment.setSelection(comment.length());
-
-            setEnabledEditTexts(!isSelectableMode);
-
-            Resources resources = getResources();
-            if (isSelectableMode && isSelectableItem) {
-                itemView.setBackground(new ColorDrawable(resources.getColor(R.color.colorAccent)));
-            } else {
-                itemView.setBackground(new ColorDrawable(resources.getColor(R.color.colorWhite)));
-            }
-        }
-
-        private void setEnabledEditTexts(boolean b) {
-            original.setEnabled(b);
-            transcription.setEnabled(b);
-            translate.setEnabled(b);
-            comment.setEnabled(b);
-        }
-
-        @Override
-        public void onClick(View view) {
-            int i = getAdapterPosition();
-            if (i == RecyclerView.NO_POSITION) return;
-
-            if (isSelectableMode) {
-                isSelectableItem = !isSelectableItem;
-                myParentAdapter.setItemChecked((mAdapter.getList().get(i).getUUIDString()), isSelectableItem);
-                Resources resources = getResources();
-                if (isSelectableItem) {
-                    // Here will be some Drawable
-                    itemView.setBackground(new ColorDrawable(resources.getColor(R.color.colorAccent)));
-                    selectCount++;
-                } else {
-                    itemView.setBackground(null);
-                    selectCount--;
-                }
-                updateActionBarTitle();
-            }
-
-        }
-
-        @Override
-        public boolean onLongClick(View v) {
-            int position = getAdapterPosition();
-
-            if (!isSelectableMode) {
-                myParentAdapter.setSelectable(true);
-//                myParentAdapter.notifyItemChanged(position);
-                myParentAdapter.notifyDataSetChanged();
-
-                myParentAdapter.setItemChecked((mAdapter.getList().get(position).getUUIDString()), true);
-
-                selectCount++;
-                updateActionBarTitle();
-//                    wordHolder.setEnabledEditTexts(false);
-            } else {
-                isSelectableItem = !isSelectableItem;
-
-                myParentAdapter.setItemChecked((mAdapter.getList().get(position).getUUIDString()), isSelectableItem);
-                if (isSelectableItem) {
-                    Resources resources = getResources();
-                    itemView.setBackground(new ColorDrawable(resources.getColor(R.color.colorAccent)));
-                    selectCount++;
-                } else {
-                    itemView.setBackground(null);
-                    selectCount--;
-                }
-                myParentAdapter.notifyItemChanged(position);
-            }
-            Log.i(TAG, "onLongClick: true");
-//                    notifyItemChanged(position);
-            return true;
-        }
-    }
-*/
-
     public class WordBackground extends DoInBackground {
         static final String GET_WORDS = "words";
         static final String UPDATE_GROUP = "update_group";
@@ -735,7 +482,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
             try {
                 switch (command) {
                     case UPDATE_GROUP:
-                        ContentValues values = CreatorValues.createGroupValues(mGroup.getUUID(), mGroup.getName(), Group.getColorsStringFromInts(mGroup.getColors()));
+                        ContentValues values = CreatorValues.createGroupValues(mGroup.getUUID(), mGroup.getName(), mGroup.getColorsString(), mGroup.getColors());
 
                         contentResolver.update(
                                 ContentUris.withAppendedId(Groups.CONTENT_URI, mGroup.getTableId()),
@@ -746,8 +493,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                         for (Word word : mWords) {
                             contentResolver.update(Words.CONTENT_URI,
                                     CreatorValues.createWordsValues(word),
-                                    Cols.UUID + " = ?",
-                                    new String[]{word.toString()});
+                                    Groups.UUID + " = ?",
+                                    new String[]{word.getUUIDString()});
                         }
                         return true;
 
@@ -766,7 +513,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                         int idNewWord = Integer.valueOf(l.intValue());
                         Log.i(TAG, "_ID new word : " + idNewWord);
 
-                        mWordTemp = new Word(idNewWord, uuid, original, translate, association, mGroup.getUUID(), comment);
+                        mWordTemp = new Word(idNewWord, uuid, original, translate, association, mGroup.getUUIDString(), comment);
 
                         return true;
 
@@ -774,9 +521,10 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                         cursor = new MyCursorWrapper(contentResolver.query(
                                 Words.CONTENT_URI,
                                 null,
-                                Words.UUID_GROUP,
+                                Words.UUID_GROUP + " = ?",
                                 new String[]{mGroup.getUUIDString()}, null));
 
+                        Log.i(TAG, "doIn: cursor.getCount() " + cursor.getCount());
                         if (cursor.getCount() != 0) {
                             cursor.moveToFirst();
                             //TODO: реализовать порционную прогрузку
@@ -799,7 +547,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                             uuidString = w.getUUIDString();
 
                             contentResolver.delete(Words.CONTENT_URI,
-                                    Cols.UUID + " = ?",
+                                    Groups.UUID + " = ?",
                                     new String[]{uuidString});
                         }
                         return true;
@@ -816,13 +564,16 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
 
         @Override
         public void onPost(boolean b) {
-            Intent intent;
 
+            if (!b) {
+                Log.i(TAG, "onPost: что-то пошло не так");
+                return;
+            }
             switch (cmd) {
                 case INSERT_WORD:
+                    mRecyclerView.smoothScrollToPosition(0);
                     mAdapter.add(0, mWordTemp);
                     mAdapter.notifyItemInserted(0);//Добавит ввод в начало листа
-                    mRecyclerView.getLayoutManager().scrollToPosition(0);
                     updateActionBarTitle();
                     break;
 
@@ -834,6 +585,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                     break;
 
                 case GET_WORDS:
+                    setupAdapter();
                     updateActionBarTitle();
                     break;
 

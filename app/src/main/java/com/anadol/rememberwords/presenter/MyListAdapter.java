@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.fragments.ItemTouchHelperAdapter;
+import com.anadol.rememberwords.view.Fragments.MyFragment;
 import com.anadol.rememberwords.model.SimpleParent;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     public static final String TAG = "MyListAdapter";
     public static final int GROUP_HOLDER = 1;
     public static final int WORD_HOLDER = 2;
-    private Fragment mFragment;
+    private MyFragment mFragment;
     private ArrayList<T> mList;
     private ArrayList<T> mFilterList;
     private ArrayMap<String, Boolean> mSelectionsArray;
@@ -31,7 +31,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     private boolean isSelectableMode;
     private int countSelectedGroups;
 
-    public MyListAdapter(Fragment fragment, ArrayList<T> arrayList, int typeHolder, @Nullable ArrayList<String> selectedItems, boolean isSelectableMode) {
+    public MyListAdapter(MyFragment fragment, ArrayList<T> arrayList, int typeHolder, @Nullable ArrayList<String> selectedItems, boolean isSelectableMode) {
 //        Collections.sort(arrayList);
         mList = arrayList;
         mFilterList = mList;
@@ -43,28 +43,13 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
 
     @Override
     public void onItemDismiss(RecyclerView.ViewHolder viewHolder, int flag) {
-        MySimpleHolder holder = (GroupListHolder) viewHolder;
+        MySimpleHolder holder = (MySimpleHolder) viewHolder;
         holder.itemTouch(flag);
-/*
-        switch (flag) {
-            case ItemTouchHelper.START://Выделить
-
-                break;
-            case ItemTouchHelper.END://DialogTranslate
-                if (!isSelectable) {
-//                        createDialogMultiTranslate(position);
-                } else {
-                    Toast.makeText(getActivity(), getString(R.string.close_select_mode), Toast.LENGTH_SHORT).show();
-                    notifyItemChanged(position);
-                }
-                break;
-        }
-*/
-
+        // TODO: резкая анимация для первого holder'a
+        notifyItemChanged(holder.getAdapterPosition());
     }
 
     public void setList(ArrayList<T> list) {
-//        Collections.sort(list);
         mList = list;
         mFilterList = mList;
     }
@@ -103,13 +88,15 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     @NonNull
     @Override
     public MySimpleHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group_list, parent, false);
+        View view;
         MySimpleHolder holder;
         switch (typeHolder) {
             case GROUP_HOLDER:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group_list, parent, false);
                 holder = new GroupListHolder(view, this);
                 break;
             case WORD_HOLDER:
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_words_list, parent, false);
                 holder = new WordListHolder(view, this);
                 break;
             default:
@@ -243,8 +230,10 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         isSelectableMode = selectableMode;
         if (!selectableMode) {
             setSelectionsArray(null);
-            notifyDataSetChanged();
+        } else {
+            mFragment.changeSelectableMode(true);
         }
+        notifyDataSetChanged();
     }
 
 

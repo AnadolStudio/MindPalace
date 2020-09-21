@@ -95,6 +95,8 @@
     <string name="settings">Settings</string>
     <string name="new_group">New Group</string>
     <string name="deleting_was_successful">Deleting was successful</string>
+    <string name="sort_by_alpha">Sort by alpha</string>
+    <string name="sort_by_date">Sort by date</string>
 
 
     <plurals name="word_items">

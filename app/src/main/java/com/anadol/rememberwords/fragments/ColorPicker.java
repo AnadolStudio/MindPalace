@@ -10,14 +10,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.Build;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDialogFragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.ItemTouchHelper;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,16 +20,33 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.anadol.rememberwords.R;
+import com.anadol.rememberwords.presenter.ItemTouchHelperAdapter;
+import com.anadol.rememberwords.presenter.SimpleItemHelperCallback;
 
 import java.util.ArrayList;
 
 import static com.anadol.rememberwords.model.Group.NON_COLOR;
+
 //TODO: потенциальный апгрейд - возможность выбирать в качестве фона
 // не только цвет, но и картинку
 public class ColorPicker extends AppCompatDialogFragment implements SeekBar.OnSeekBarChangeListener {
+    public static final String GRADIENT = "gradient";
+    public static final String EXTRA_GRADIENT = "create_group_fragment";
     private static final String TAG = "ColorPicker";
     private static final String CURRENT = "current";
+    private static final String LIST = "list";
+    private static final String MAX_COUNT = "max";
+    private static final String TYPE_ITEM = "type_item";
+    private final int maxCountItems = 3;
     private ImageView gradient;
     private SeekBar red;
     private SeekBar green;
@@ -52,27 +61,13 @@ public class ColorPicker extends AppCompatDialogFragment implements SeekBar.OnSe
     private RecyclerView mRecyclerView;
     private ColorAdapter mAdapter;
     private ImageButton addItemButton;
-
     private ArrayList<Integer> mList;
-    private final int maxCountItems = 3;
-
-    public static final String GRADIENT = "gradient";
-    public static final String EXTRA_GRADIENT = "create_group_fragment";
-    private static final String LIST = "list";
-    private static final String MAX_COUNT = "max";
-    private static final String TYPE_ITEM = "type_item";
-
-    public static final int COLOR_START = Color.BLACK;
-    public static final int COLOR_END = Color.WHITE;
-
-
-
 
     public static ColorPicker newInstance(int[] colors) {
 
         Bundle args = new Bundle();
 
-        args.putIntArray(GRADIENT,colors);
+        args.putIntArray(GRADIENT, colors);
         ColorPicker fragment = new ColorPicker();
         fragment.setArguments(args);
         return fragment;
@@ -83,22 +78,21 @@ public class ColorPicker extends AppCompatDialogFragment implements SeekBar.OnSe
         super.onSaveInstanceState(outState);
 
         outState.putIntegerArrayList(LIST, mList);
-        outState.putInt(CURRENT,currentItem);
+        outState.putInt(CURRENT, currentItem);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-
         colors = getArguments().getIntArray(GRADIENT);
-        if (savedInstanceState !=null){
+        if (savedInstanceState != null) {
             mList = savedInstanceState.getIntegerArrayList(LIST);
             currentItem = savedInstanceState.getInt(CURRENT);
-        }else {
+        } else {
             mList = new ArrayList<>();
             currentItem = 0;
         }
-        View v = LayoutInflater.from(getContext()).inflate(R.layout.color_picker,null);
+        View v = LayoutInflater.from(getContext()).inflate(R.layout.color_picker, null);
 
 
         gradient = v.findViewById(R.id.group_color);
@@ -116,10 +110,10 @@ public class ColorPicker extends AppCompatDialogFragment implements SeekBar.OnSe
 
         addItemButton = v.findViewById(R.id.add_button);
         for (int i = 0; i < colors.length; i++) { // Должен работать только при первом создании, но на данный момент это не так. Оставить как Фичу?
-            if (colors[i] != NON_COLOR && mList.size()<3) {
+            if (colors[i] != NON_COLOR && mList.size() < 3) {
                 mList.add(colors[i]);
             }
-            if (mList.size() == maxCountItems){
+            if (mList.size() == maxCountItems) {
                 addItemButton.setEnabled(false);
             }
 
@@ -136,35 +130,32 @@ public class ColorPicker extends AppCompatDialogFragment implements SeekBar.OnSe
         mTextBlue.setText(textB);
 
 
-        addItemButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (maxCountItems > mList.size()){
-                    mList.add(Color.BLACK);
-                    mAdapter.notifyDataSetChanged();
-                    setDrawable();
-                    currentItem = mList.size()-1;
-                }
-                if (maxCountItems == mList.size()) v.setEnabled(false);
+        addItemButton.setOnClickListener(v1 -> {
+            if (maxCountItems > mList.size()) {
+                mList.add(Color.BLACK);
+                mAdapter.notifyDataSetChanged();
                 setDrawable();
-                if (!red.isEnabled()){// достаточно провить только один seekBar
-                    seekBarsEnabled(true);
-                    currentItem = 0;
-                }
-                setValueSeekBars(mList.get(currentItem));
+                currentItem = mList.size() - 1;
             }
+            if (maxCountItems == mList.size()) v1.setEnabled(false);
+            setDrawable();
+            if (!red.isEnabled()) {// достаточно провить только один seekBar
+                seekBarsEnabled(true);
+                currentItem = 0;
+            }
+            setValueSeekBars(mList.get(currentItem));
         });
 
         mRecyclerView = v.findViewById(R.id.recycler_view);
 
         mAdapter = new ColorAdapter(mList);
-        GridLayoutManager manager = new GridLayoutManager(getContext(),3);
+        GridLayoutManager manager = new GridLayoutManager(getContext(), 3);
 //        LinearLayoutManager manager = new LinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.setAdapter(mAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SimpleItemHelperCallback(mAdapter));
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(),DividerItemDecoration.HORIZONTAL));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.HORIZONTAL));
 
         Dialog dialog = new AlertDialog.Builder(getActivity()/*,R.style.DialogStyle*/)
                 .setView(v)
@@ -187,7 +178,7 @@ public class ColorPicker extends AppCompatDialogFragment implements SeekBar.OnSe
         int iGreen = Color.green(color);
         int iBlue = Color.blue(color);
 
-        switch (seekBar.getId()){
+        switch (seekBar.getId()) {
             case R.id.red:
                 iRed = progress;
                 mTextRed.setText(Integer.toString(iRed));
@@ -197,12 +188,12 @@ public class ColorPicker extends AppCompatDialogFragment implements SeekBar.OnSe
                 mTextGreen.setText(Integer.toString(iGreen));
                 break;
             case R.id.blue:
-                iBlue= progress;
+                iBlue = progress;
                 mTextBlue.setText(Integer.toString(iBlue));
                 break;
         }
-        color = Color.rgb(iRed,iGreen,iBlue);
-        mList.set(currentItem,color);
+        color = Color.rgb(iRed, iGreen, iBlue);
+        mList.set(currentItem, color);
 //        System.out.println(iRed+" "+iGreen+" "+iBlue);
         setDrawable();
     }
@@ -218,26 +209,21 @@ public class ColorPicker extends AppCompatDialogFragment implements SeekBar.OnSe
     }
 
 
-    private void settingSeekBars(){
+    private void settingSeekBars() {
         red.setOnSeekBarChangeListener(this);
         green.setOnSeekBarChangeListener(this);
         blue.setOnSeekBarChangeListener(this);
     }
 
-    private void setValueSeekBars(int c){
+    private void setValueSeekBars(int c) {
 
         red.setProgress(Color.red(c));
         green.setProgress(Color.green(c));
         blue.setProgress(Color.blue(c));
     }
 
-    private GradientDrawable createGradient(){
+    private GradientDrawable createGradient() {
 
-        /*if (!mToggleColor.isChecked()){//Start color
-            colors[0] = Color.rgb(iRed,iGreen,iBlue);
-        }else {//End color
-            colors[1] = Color.rgb(iRed,iGreen,iBlue);
-        }*/
         updateColors();
         mGradientDrawable.setColors(colors);
         mGradientDrawable.setOrientation(Orientation.LEFT_RIGHT);
@@ -249,30 +235,30 @@ public class ColorPicker extends AppCompatDialogFragment implements SeekBar.OnSe
         for (int i = 0; i < mList.size(); i++) {
             colors[i] = mList.get(i);
         }
-        if (mList.size() == 0){
+        if (mList.size() == 0) {
             colors = new int[]{-1};
         }
     }
 
-    private ColorDrawable createColor(){
+    private ColorDrawable createColor() {
         mColorDrawable.setColor(mList.get(0));
         return mColorDrawable;
     }
 
-    private void sendResult(int resultCode, int[] colors){
-        if (getTargetFragment() == null){
+    private void sendResult(int resultCode, int[] colors) {
+        if (getTargetFragment() == null) {
             return;
         }
 
         Intent intent = new Intent();
-        intent.putExtra(EXTRA_GRADIENT,colors);
-        getTargetFragment().onActivityResult(getTargetRequestCode(),resultCode,intent);
+        intent.putExtra(EXTRA_GRADIENT, colors);
+        getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, intent);
     }
 
     private void setDrawable() {
         if (mList.size() > 1) {
             gradient.setImageDrawable(createGradient());
-        } else if (mList.size()==0){
+        } else if (mList.size() == 0) {
             gradient.setImageDrawable(null);
             seekBarsEnabled(false);
         } else {
@@ -313,65 +299,8 @@ public class ColorPicker extends AppCompatDialogFragment implements SeekBar.OnSe
                 });
     }
 
-/*
-    private void createAdapter() {
-
-        mAdapter = new MyRecyclerAdapter(mList, R.layout.item_color_list);
-        mAdapter.setCreatorAdapter(new MyRecyclerAdapter.CreatorAdapter() {// ДЛЯ БОЛЬШЕЙ ГИБКОСТИ ТУТ Я РЕАЛИЗУЮ СЛУШАТЕЛЯ И МЕТОДЫ АДАПТЕРА
-            @Override
-            public void createHolderItems(final MyViewHolder holder) {
-                ImageView imageView = holder.itemView.findViewById(R.id.image_item);
-
-
-                holder.setViews(new View[]{imageView});
-            }
-
-            @Override
-            public void bindHolderItems(final MyViewHolder holder) {
-                View[] views = holder.getViews();
-                int position = holder.getAdapterPosition();
-
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        currentItem = holder.getAdapterPosition();
-                        setValueSeekBars(mList.get(currentItem));
-                    }
-                });
-
-                int color = mList.get(position);
-                ImageView imageView = (ImageView) views[0];
-                imageView.setImageDrawable(new ColorDrawable(color));
-            }
-            @Override
-            public void myOnItemDismiss(int position, int flag) {
-                int size = mList.size()-1;// это для того чтобы при удалении последнего итема фокус прередавлся нынешнему последнему итему
-                mList.remove(position);
-
-                // Если фокус был на последнем item
-                if (currentItem == position && currentItem == size) {
-                    currentItem = mList.size()-1;
-                }
-                mAdapter.notifyItemRemoved(position);
-//                mAdapter.notifyDataSetChanged();
-                if (!addItemButton.isEnabled()){
-                    addItemButton.setEnabled(true);
-                }
-                setDrawable();
-
-                if (!mList.isEmpty() ) {
-                    if (currentItem >= mList.size()) {
-                        currentItem = mList.size()-1;
-                    }
-                    setValueSeekBars(mList.get(currentItem));
-                }
-            }
-        });
-    }
-*/
-
     public class ColorAdapter extends RecyclerView.Adapter<ColorHolder>
-            implements ItemTouchHelperAdapter{
+            implements ItemTouchHelperAdapter {
 
         private ArrayList<Integer> list;
 
@@ -395,7 +324,7 @@ public class ColorPicker extends AppCompatDialogFragment implements SeekBar.OnSe
         @NonNull
         @Override
         public ColorHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-            View view = LayoutInflater.from(getContext()).inflate(R.layout.item_color_list,viewGroup,false);
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.item_color_list, viewGroup, false);
             return new ColorHolder(view);
         }
 
@@ -411,24 +340,24 @@ public class ColorPicker extends AppCompatDialogFragment implements SeekBar.OnSe
 
         @Override
         public void onItemDismiss(RecyclerView.ViewHolder viewHolder, int flag) {
-            int size = list.size()-1;// это для того чтобы при удалении последнего итема фокус прередавлся нынешнему последнему итему
+            int size = list.size() - 1;// это для того чтобы при удалении последнего итема фокус прередавлся нынешнему последнему итему
             int position = viewHolder.getAdapterPosition();
             list.remove(position);
 
             // Если фокус был на последнем item
             if (currentItem == position && currentItem == size) {
-                currentItem = list.size()-1;
+                currentItem = list.size() - 1;
             }
             mAdapter.notifyItemRemoved(position);
 //                mAdapter.notifyDataSetChanged();
-            if (!addItemButton.isEnabled()){
+            if (!addItemButton.isEnabled()) {
                 addItemButton.setEnabled(true);
             }
             setDrawable();
 
-            if (!list.isEmpty() ) {
+            if (!list.isEmpty()) {
                 if (currentItem >= list.size()) {
-                    currentItem = list.size()-1;
+                    currentItem = list.size() - 1;
                 }
                 setValueSeekBars(list.get(currentItem));
             }
@@ -450,7 +379,7 @@ public class ColorPicker extends AppCompatDialogFragment implements SeekBar.OnSe
         }
 
 
-        public void bind(int color){
+        public void bind(int color) {
             imageColor.setImageDrawable(new ColorDrawable(color));
         }
 

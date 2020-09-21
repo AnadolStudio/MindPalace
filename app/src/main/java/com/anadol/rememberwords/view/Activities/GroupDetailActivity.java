@@ -1,4 +1,4 @@
-package com.anadol.rememberwords.activities;
+package com.anadol.rememberwords.view.Activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,9 +7,9 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.fragments.GroupDetailFragment;
 import com.anadol.rememberwords.fragments.IOnBackPressed;
 import com.anadol.rememberwords.model.Group;
+import com.anadol.rememberwords.view.Fragments.GroupDetailFragment;
 
 
 public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pager
@@ -21,7 +21,7 @@ public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pa
     private Group mGroup;
 
 
-    public static Intent newIntent(Context context, Group mGroup){
+    public static Intent newIntent(Context context, Group mGroup) {
         Intent intent = new Intent(context, GroupDetailActivity.class);
         intent.putExtra(CURRENT_GROUP, mGroup);
         return intent;
@@ -38,7 +38,7 @@ public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pa
     public void onBackPressed() {
 
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-        if (!(fragment instanceof IOnBackPressed) || !((IOnBackPressed)fragment).onBackPressed()) {
+        if (!(fragment instanceof IOnBackPressed) || !((IOnBackPressed) fragment).onBackPressed()) {
             Intent intent = ((GroupDetailFragment) fragment).dataIsChanged();
             setResult(RESULT_OK, intent);
             super.onBackPressed();
@@ -49,7 +49,7 @@ public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pa
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelable(CURRENT_GROUP,mGroup);
+        outState.putParcelable(CURRENT_GROUP, mGroup);
     }
 
 }

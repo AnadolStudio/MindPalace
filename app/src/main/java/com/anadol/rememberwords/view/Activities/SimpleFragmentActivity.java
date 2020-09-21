@@ -1,4 +1,4 @@
-package com.anadol.rememberwords.activities;
+package com.anadol.rememberwords.view.Activities;
 
 import android.os.Bundle;
 import androidx.annotation.Nullable;

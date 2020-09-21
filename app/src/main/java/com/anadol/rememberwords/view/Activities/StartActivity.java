@@ -1,4 +1,4 @@
-package com.anadol.rememberwords.activities;
+package com.anadol.rememberwords.view.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;

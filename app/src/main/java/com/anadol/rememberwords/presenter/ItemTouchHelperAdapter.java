@@ -1,4 +1,4 @@
-package com.anadol.rememberwords.fragments;
+package com.anadol.rememberwords.presenter;
 
 import androidx.recyclerview.widget.RecyclerView;
 

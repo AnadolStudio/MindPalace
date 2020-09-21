@@ -3,6 +3,7 @@ package com.anadol.rememberwords.presenter;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
@@ -39,6 +40,8 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
         original.addTextChangedListener(new MyTextWatch(MyTextWatch.ORIGINAL));
         association.addTextChangedListener(new MyTextWatch(MyTextWatch.ASSOCIATION));
         translate.addTextChangedListener(new MyTextWatch(MyTextWatch.TRANSLATE));
+        translate.setFilters(new InputFilter[]{new TranslateFilter()});
+
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
     }
@@ -52,7 +55,7 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
 //        comment.setText(mWord.getComment());
         this.isSelected = isSelected;
 
-        setEnabledEditTexts(!isSelected);
+        setEnabledEditTexts(!sAdapter.isSelectableMode());
         setDrawable(isSelected);
     }
 
@@ -60,7 +63,7 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
         original.setEnabled(b);
         association.setEnabled(b);
         translate.setEnabled(b);
-        comment.setEnabled(b);
+//        comment.setEnabled(b);
     }
 
     @Override
@@ -79,11 +82,12 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
     public void itemTouch(int flag) {
         switch (flag){
             case ItemTouchHelper.START:
-
-                break;
-
             case ItemTouchHelper.END:
-
+                if (!sAdapter.isSelectableMode()){
+                    onLongClick(itemView);
+                }else {
+                    onClick(itemView);
+                }
                 break;
         }
     }
@@ -91,10 +95,10 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
     @Override
     public boolean onLongClick(View v) {
         if (!sAdapter.isSelectableMode()) {
-            sAdapter.setSelectableMode(true);
             isSelected = true;
-            sAdapter.putSelectedItem(mWord.getUUIDString(), true);
             setDrawable(isSelected);
+            sAdapter.setSelectableMode(true);
+            sAdapter.putSelectedItem(mWord.getUUIDString(), true);
             return true;
         }
         return false;

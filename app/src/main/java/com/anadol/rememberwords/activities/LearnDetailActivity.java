@@ -11,6 +11,7 @@ import com.anadol.rememberwords.fragments.LearnQuizFragment;
 import com.anadol.rememberwords.fragments.LearnTrueFalseFragment;
 import com.anadol.rememberwords.model.Group;
 import com.anadol.rememberwords.model.Word;
+import com.anadol.rememberwords.view.Activities.SimpleFragmentActivity;
 
 import java.util.ArrayList;
 import java.util.Random;

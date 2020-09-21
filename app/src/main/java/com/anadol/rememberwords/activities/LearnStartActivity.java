@@ -10,6 +10,7 @@ import com.anadol.rememberwords.fragments.IOnBackPressed;
 import com.anadol.rememberwords.fragments.LearnStartFragment;
 import com.anadol.rememberwords.model.Group;
 import com.anadol.rememberwords.model.Word;
+import com.anadol.rememberwords.view.Activities.SimpleFragmentActivity;
 
 import java.util.ArrayList;
 

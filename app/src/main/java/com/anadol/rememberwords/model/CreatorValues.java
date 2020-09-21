@@ -4,7 +4,6 @@ import android.content.ContentValues;
 
 import androidx.annotation.NonNull;
 
-import com.anadol.rememberwords.database.DbSchema;
 import com.anadol.rememberwords.model.DataBaseSchema.Groups;
 import com.anadol.rememberwords.model.DataBaseSchema.Words;
 
@@ -14,12 +13,17 @@ public class CreatorValues {
 
     public static ContentValues createGroupValues(@NonNull UUID uuid,
                                                   @NonNull String name,
-                                                  @NonNull String drawable) {
+                                                  @NonNull String drawable,
+                                                  @NonNull int[] colors) {
 
         ContentValues values = new ContentValues();
         values.put(Groups.UUID, uuid.toString());
         values.put(Groups.NAME_GROUP, name);
         values.put(Groups.DRAWABLE, drawable);
+        //TODO удалить, когда версия DB будет равна 7 (Сейчас 5 (21.09.2020))
+        values.put(Groups.COLOR_ONE, colors[0]);
+        values.put(Groups.COLOR_TWO, colors[1]);
+        values.put(Groups.COLOR_THREE, colors[2]);
         return values;
     }
 

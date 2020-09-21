@@ -2,14 +2,13 @@ package com.anadol.rememberwords.myList;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.SortedList;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.anadol.rememberwords.fragments.ItemTouchHelperAdapter;
+import com.anadol.rememberwords.presenter.ItemTouchHelperAdapter;
 
 import java.util.ArrayList;
 

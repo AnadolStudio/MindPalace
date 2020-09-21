@@ -9,8 +9,7 @@ import java.util.Comparator;
 import java.util.UUID;
 
 public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
-    public static final int TRUE = 1;
-    public static final int FALSE = 0;
+
     public static final Parcelable.Creator<Word> CREATOR = new Parcelable.Creator<Word>() {
         @Override
         public Word createFromParcel(Parcel source) {
@@ -30,6 +29,8 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
     private String association;
     private String translate;
     private String comment;
+    //TODO удалить, когда версия DB будет равна 7 (Сейчас 5 (21.09.2020))
+    private String nameGroup;
 
     public Word(Parcel in) {
         String[] dataStrings = new String[6];
@@ -42,7 +43,7 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
         this.groupUUID = UUID.fromString(dataStrings[4]);
         setComment(dataStrings[5]);
 
-        int[] dataInts = new int[2];
+        int[] dataInts = new int[1];
         in.readIntArray(dataInts);
 
         this.tableId = dataInts[0];
@@ -53,16 +54,37 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
                 @NonNull String original,
                 @NonNull String translate,
                 @NonNull String association,
-                @NonNull UUID groupUUID,
+                String groupUUID,
                 @NonNull String comment) {
 
         this.tableId = tableId;
         this.uuid = uuid;
         this.original = original;
-        this.translate = translate;
+        translate = deleteWordTypes(translate);
+        setTranslate(translate);
         this.association = association;
-        this.groupUUID = groupUUID;
+
+        //TODO удалить, когда версия DB будет равна 7 (Сейчас 5 (21.09.2020))
+        if (groupUUID != null && !groupUUID.equals("")) {
+            this.groupUUID = UUID.fromString(groupUUID);
+        } else {
+            this.groupUUID = null;
+        }
         this.comment = comment;
+    }
+
+    public Word(int tableId,
+                @NonNull UUID uuid,
+                @NonNull String original,
+                @NonNull String translate,
+                @NonNull String association,
+                @NonNull String nameGroup,
+                String groupUUID,
+                @NonNull String comment) {
+
+        //TODO удалить, когда версия DB будет равна 7 (Сейчас 5 (21.09.2020))
+        this(tableId, uuid, original, translate, association, groupUUID, comment);
+        this.nameGroup = nameGroup;
     }
 
     @Override
@@ -86,6 +108,10 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
 
     public boolean isMultiTranslate() {
         return translate.contains(";"); // Возможно будет другой знак
+    }
+
+    public String getNameGroup() {
+        return nameGroup;
     }
 
     public UUID getUUID() {
@@ -124,18 +150,48 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
     @NonNull
     public String getTranslate() {
         translate = isNull(translate);
+        translate = deleteSpace(translate);
         return translate;
     }
 
     public void setTranslate(String translate) {
         // Удаляю \n и последний ";", если он есть
         translate = translate.toLowerCase().trim().replaceAll("\n", "");
-        int lastIndex = translate.indexOf(translate.length() - 1);
+        int lastIndex = translate.length() - 1;
+
+        if (lastIndex < 0) lastIndex = 0;
 
         if (translate.lastIndexOf(';') == lastIndex) {
             translate = translate.substring(0, lastIndex);
         }
         this.translate = translate;
+    }
+
+    private String deleteSpace(String s) {
+        if (!s.contains(";")) return s;
+
+        StringBuilder builder = new StringBuilder();
+        String[] strings = s.split(";");
+
+        for (int i = 0; i < strings.length; i++) {
+
+            if (i != 0) builder.append(";");
+            builder.append(strings[i].trim());
+        }
+        return builder.toString();
+    }
+
+    private String deleteWordTypes(String string) {
+        String[] wordsTypes = new String[]{"n:", "prn:", "v:", "adj:", "adv:", "prep:", "conj:", "inter:"};
+        for (String s : wordsTypes) {
+            if (string.contains("/" + s)) {
+                string = string.replace("/" + s, "");
+            }
+            if (string.contains(s)) {
+                string = string.replace(s, "");
+            }
+        }
+        return string;
     }
 
     public String getMultiTranslateFormat() {

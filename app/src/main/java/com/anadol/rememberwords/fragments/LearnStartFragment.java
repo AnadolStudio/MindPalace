@@ -42,6 +42,8 @@ import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.activities.LearnDetailActivity;
 import com.anadol.rememberwords.model.Group;
 import com.anadol.rememberwords.model.Word;
+import com.anadol.rememberwords.presenter.ItemTouchHelperAdapter;
+import com.anadol.rememberwords.view.Fragments.MyFragment;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -587,7 +589,7 @@ public class LearnStartFragment extends MyFragment implements View.OnClickListen
     }
 
     public class WordAdapter extends RecyclerView.Adapter<WordHolder>
-            implements ItemTouchHelperAdapter{
+            implements ItemTouchHelperAdapter {
 
         private ArrayList<Word> mList;
         private ArrayMap<String,Boolean> mSelectionsArray = new ArrayMap<>();
