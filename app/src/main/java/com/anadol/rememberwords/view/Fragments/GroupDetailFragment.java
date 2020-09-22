@@ -16,6 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -137,8 +138,10 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     private void setupAdapter() {
         mAdapter = new MyListAdapter<>(this, mWords, MyListAdapter.WORD_HOLDER, selectStringArray, selectable);
         mRecyclerView.setAdapter(mAdapter);
+        addAnimation();
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new WordItemHelperCallBack(mAdapter));
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
+
     }
 
     private void setListeners() {
@@ -183,6 +186,33 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
             doInBackground.execute(GET_WORDS);
             selectable = false;
         }
+    }
+
+    private void addAnimation() {
+        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+
+                    @Override
+                    public boolean onPreDraw() {
+
+                        int parent = mRecyclerView.getRight();
+
+                        for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+                            View v = mRecyclerView.getChildAt(i);
+//                                v.setAlpha(0.0f);
+                            v.setX(-parent);
+                            v.animate().translationX(1.0f)
+                                    .setDuration(200)
+                                    .setStartDelay(i * 50)
+                                    .start();
+                            v.animate().setStartDelay(0);//возвращаю дефолтное значение
+                        }
+
+                        mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        Log.i(TAG, "Remove OnPreDrawListener");
+                        return true;
+                    }
+                });
     }
 
     @Override
@@ -397,7 +427,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         startActivity(intent);
     }
 
-
     private void saveGroup() {
         String name = nameGroup.getText().toString().trim();
         // Групп с именем "" быть не должно
@@ -431,7 +460,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     private void updateCountSelectedItems() {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         int selectCount = mAdapter.getCountSelectedItems();
-        Log.i(TAG, "updateCountSelectedItems: "+ selectCount);
+        Log.i(TAG, "updateCountSelectedItems: " + selectCount);
         activity.getSupportActionBar().setTitle(String.valueOf(selectCount));
     }
 
