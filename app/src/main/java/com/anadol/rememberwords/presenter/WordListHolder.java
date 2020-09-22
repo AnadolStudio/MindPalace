@@ -97,8 +97,8 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
         if (!sAdapter.isSelectableMode()) {
             isSelected = true;
             setDrawable(isSelected);
-            sAdapter.setSelectableMode(true);
             sAdapter.putSelectedItem(mWord.getUUIDString(), true);
+            sAdapter.setSelectableMode(true);
             return true;
         }
         return false;

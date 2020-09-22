@@ -196,6 +196,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     public void putSelectedItem(String key, boolean value) {
         mSelectionsArray.put(key, value);
         counter(value);
+        mFragment.updateUI();
     }
 
     private void setValueAt(int index, boolean value) {

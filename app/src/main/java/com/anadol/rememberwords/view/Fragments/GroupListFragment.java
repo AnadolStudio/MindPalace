@@ -212,6 +212,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                 } else {
                     select.setIcon(R.drawable.ic_menu_select_all_off);
                 }
+                updateCountSelectedItems();
                 break;
         }
     }
@@ -301,15 +302,21 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     }
 
     // Необходим для показа количества выбранных объектов (тут групп)
-    public void updateActionBarTitle() {
+    private void updateActionBarTitle() {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.invalidateOptionsMenu();
         if (mode == MODE_SELECT) {
-            int selectCount = mAdapter.getCountSelectedItems();
-            activity.getSupportActionBar().setTitle(String.valueOf(selectCount));
+            updateCountSelectedItems();
         } else {
             activity.getSupportActionBar().setTitle(getString(R.string.app_name));
         }
+    }
+
+
+    public void updateCountSelectedItems() {
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        int selectCount = mAdapter.getCountSelectedItems();
+        activity.getSupportActionBar().setTitle(String.valueOf(selectCount));
     }
 
     @Override
@@ -344,6 +351,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
 
     @Override
     public void updateUI() {
+        updateActionBarTitle();
     }
 
     // TODO почему я использую addTranslationAnim в адаптере а не в onCreate/onPost

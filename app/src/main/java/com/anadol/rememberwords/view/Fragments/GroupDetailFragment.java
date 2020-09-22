@@ -230,12 +230,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-//        updateActionBarTitle();//При поворотах
-    }
-
-    @Override
     public void onStop() {
         if (doInBackground != null && !doInBackground.isCancelled()) {
             doInBackground.cancel(false);
@@ -271,6 +265,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                 } else {
                     select.setIcon(R.drawable.ic_menu_select_all_off);
                 }
+                updateCountSelectedItems();
                 break;
 
             case MODE_SEARCH:
@@ -320,7 +315,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         updateActionBarTitle();
         mAdapter.notifyDataSetChanged();
     }
-
 
     @Override
     public boolean onBackPressed() {
@@ -428,15 +422,22 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.invalidateOptionsMenu();
         if (mode == MODE_SELECT) {
-            int selectCount = mAdapter.getCountSelectedItems();
-            activity.getSupportActionBar().setTitle(String.valueOf(selectCount));
+            updateCountSelectedItems();
         } else {
             activity.getSupportActionBar().setTitle(getString(R.string.app_name));
         }
     }
 
+    private void updateCountSelectedItems() {
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        int selectCount = mAdapter.getCountSelectedItems();
+        Log.i(TAG, "updateCountSelectedItems: "+ selectCount);
+        activity.getSupportActionBar().setTitle(String.valueOf(selectCount));
+    }
+
     @Override
     public void updateUI() {
+        updateActionBarTitle();
     }
 
     private void removeEmptyWords(ArrayList<Word> words) {

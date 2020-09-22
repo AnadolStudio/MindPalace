@@ -61,9 +61,9 @@ public class GroupListHolder extends MySimpleHolder implements View.OnClickListe
     @Override
     public boolean onLongClick(View v) {
         if (!sAdapter.isSelectableMode()) {
-            sAdapter.setSelectableMode(true);
             isSelected = true;
             sAdapter.putSelectedItem(mGroup.getUUIDString(), true);
+            sAdapter.setSelectableMode(true);
             setDrawable(isSelected);
             return true;
         }
