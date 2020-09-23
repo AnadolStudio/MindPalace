@@ -39,8 +39,8 @@ public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pa
 
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         if (!(fragment instanceof IOnBackPressed) || !((IOnBackPressed) fragment).onBackPressed()) {
-            Intent intent = ((GroupDetailFragment) fragment).dataIsChanged();
-            setResult(RESULT_OK, intent);
+//            Intent intent = ((GroupDetailFragment) fragment).dataIsChanged();
+//            setResult(RESULT_OK, intent);
             super.onBackPressed();
         }
     }

@@ -35,7 +35,6 @@ import com.anadol.rememberwords.model.DataBaseSchema.Words;
 import com.anadol.rememberwords.model.DoInBackground;
 import com.anadol.rememberwords.model.Group;
 import com.anadol.rememberwords.model.MyCursorWrapper;
-import com.anadol.rememberwords.model.SettingsPreference;
 import com.anadol.rememberwords.presenter.MyListAdapter;
 import com.anadol.rememberwords.presenter.SlowGridLayoutManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -48,7 +47,7 @@ import static com.anadol.rememberwords.presenter.MyListAdapter.GROUP_HOLDER;
 import static com.anadol.rememberwords.view.Fragments.GroupListFragment.GroupBackground.DELETE_GROUP;
 import static com.anadol.rememberwords.view.Fragments.GroupListFragment.GroupBackground.GET_GROUPS;
 import static com.anadol.rememberwords.view.Fragments.GroupListFragment.GroupBackground.GET_GROUP_ITEM;
-import static com.anadol.rememberwords.view.Fragments.GroupListFragment.GroupBackground.UPDATE_DATABASE;
+import static com.anadol.rememberwords.view.Fragments.GroupListFragment.GroupBackground.INSERT_GROUP;
 
 
 /**
@@ -68,7 +67,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     private ArrayList<Group> mGroupsList;
     private MyListAdapter<Group> mAdapter;
     private ArrayList<String> selectedStringArray;
-    private GroupBackground doInBackground;
+    private GroupBackground background;
 
     private String searchQuery;
     private boolean selectable;
@@ -108,6 +107,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         getData(savedInstanceState);
         setListeners();
 
+/*
         boolean b = SettingsPreference.isUpdated(getContext());
         Log.i(TAG, "onCreateView: isUpdated " + b);
         if (!b) {
@@ -118,6 +118,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
             GroupBackground background = new GroupBackground();
             background.execute(UPDATE_DATABASE);
         }
+*/
 
         if (savedInstanceState != null) {
             // TODO при работе с сетью необходимо будет обновлять каждый раз через background
@@ -143,11 +144,15 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
             selectable = savedInstanceState.getBoolean(KEY_SELECT_MODE);
         } else {
             mGroupsList = new ArrayList<>();
-            doInBackground = new GroupBackground();
-            doInBackground.execute(GET_GROUPS);
+            doInBackground(GET_GROUPS);
             searchQuery = "";
             selectable = false;
         }
+    }
+
+    private void doInBackground(String insertWord) {
+        background = new GroupBackground();
+        background.execute(insertWord);
     }
 
     private void setListeners() {
@@ -175,8 +180,8 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
 
     @Override
     public void onStop() {
-        if (doInBackground != null && !doInBackground.isCancelled()) {
-            doInBackground.cancel(false);
+        if (background != null && !background.isCancelled()) {
+            background.cancel(false);
             Log.i(TAG, "onStop: doInBackground was canceled");
         }
         super.onStop();
@@ -221,8 +226,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_remove:
-                doInBackground = new GroupBackground();
-                doInBackground.execute(DELETE_GROUP);
+                doInBackground(DELETE_GROUP);
                 return true;
             case R.id.menu_select_all:
                 boolean selectAllItems = !mAdapter.isAllItemSelected();
@@ -336,17 +340,16 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                     return;
                 }
 
-                doInBackground = new GroupBackground();
-                doInBackground.setGroupId(id);
-                doInBackground.execute(GET_GROUP_ITEM);
+                background = new GroupBackground();
+                background.setGroupId(id);
+                background.execute(GET_GROUP_ITEM);
 
                 break;
         }
     }
 
     private void createGroup() {
-        doInBackground = new GroupBackground();
-        doInBackground.execute(GroupBackground.INSERT_GROUP);
+        doInBackground(INSERT_GROUP);
     }
 
     @Override
@@ -436,7 +439,8 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                                         null, null, null, null));
 
                         if (cursor.getCount() == 0) {
-                            return false;
+                            Log.i(TAG, "doIn: нет Объектов");
+                            return true;
                         }
                         cursor.moveToFirst();
 
@@ -449,6 +453,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
 
                         return true;
 
+/*
                     case UPDATE_DATABASE:
                         // Вызывается 1 раз для объединения {COLOR_ONE, COLOR_TWO, COLOR_TWO} => Drawable
                         // Конролируется SettingsPreference
@@ -471,6 +476,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                         }
 
                         return true;
+*/
                     case GET_GROUP_ITEM:
                         cursor = new MyCursorWrapper(
                                 contentResolver.query(
@@ -479,7 +485,8 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                                                 itemId),
                                         null, null, null, null));
                         if (cursor.getCount() == 0) {
-                            return false;
+                            Log.i(TAG, "doIn: нет Объектов");
+                            return true;
                         }
                         cursor.moveToFirst();
                         mGroupTemp = cursor.getGroup();
@@ -510,7 +517,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                         return true;
 
                     case DELETE_GROUP:
-                        groupsListToRemove = mAdapter.getSelectedItem();
+                        groupsListToRemove = mAdapter.getSelectedItems();
                         String uuidString;
                         String nameGroup;
                         for (Group g : groupsListToRemove) {
@@ -563,11 +570,13 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                     mRecyclerView.setAdapter(mAdapter);
                     mAdapter.notifyDataSetChanged();
                     break;
+/*
                 case UPDATE_DATABASE:
                     SettingsPreference.setUpdate(getContext(), true);
                     Log.i(TAG, "onPost: UPDATE_DATABASE was successful");
                     Toast.makeText(getContext(), "Database was updated", Toast.LENGTH_LONG).show();
                     break;
+*/
                 case GET_GROUP_ITEM:
                     i = mAdapter.getIndexGroup(mGroupTemp.getTableId());
                     if (i != -1) {

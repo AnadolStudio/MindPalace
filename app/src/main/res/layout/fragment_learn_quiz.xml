@@ -41,27 +41,29 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center"
+        >
 
         <Button
             android:id="@+id/first_button"
             android:layout_width="1dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="fill"
             android:layout_weight="1"
             android:minHeight="70dp"
             android:text="Button"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:layout_margin="4dp" />
 
         <Button
             android:id="@+id/second_button"
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:layout_gravity="fill"
             android:layout_weight="1"
             android:minHeight="70dp"
             android:text="Button"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:layout_margin="4dp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -71,27 +73,29 @@
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        android:gravity="center"
+        >
 
         <Button
             android:id="@+id/fourth_button"
             android:layout_width="1dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="fill"
             android:layout_weight="1"
             android:minHeight="70dp"
             android:text="Button"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:layout_margin="4dp"/>
 
         <Button
             android:id="@+id/third_button"
             android:layout_width="1dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="fill"
             android:layout_weight="1"
             android:minHeight="70dp"
             android:text="Button"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:layout_margin="4dp"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,8 +14,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.view.Fragments.MyFragment;
 import com.anadol.rememberwords.model.SimpleParent;
+import com.anadol.rememberwords.view.Fragments.MyFragment;
 
 import java.util.ArrayList;
 
@@ -57,8 +57,6 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     private void setSelectionsArray(@Nullable ArrayList<String> selectedItems) {
         if (mSelectionsArray == null) {
             mSelectionsArray = new ArrayMap<>();
-        } else {
-            mSelectionsArray.clear();
         }
 
         countSelectedGroups = 0;
@@ -71,6 +69,12 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
                 countSelectedGroups++;
             } else mSelectionsArray.put(item.getUUIDString(), false);
             Log.i(TAG, "mSelectionsArray.size(): " + mSelectionsArray.size() + " mList.size(): " + mList.size());
+        }
+    }
+
+    private void setSelectedValueToAllItems(boolean value) {
+        for (int i = 0; i < mSelectionsArray.size(); i++) {
+            mSelectionsArray.setValueAt(i, value);
         }
     }
 
@@ -153,7 +157,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         return position;
     }
 
-    public ArrayList<T> getSelectedItem() {
+    public ArrayList<T> getSelectedItems() {
         ArrayList<T> selectedItems = new ArrayList<>();
         for (T item : mList) {
             String id = item.getUUIDString();
@@ -230,6 +234,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     public void setSelectableMode(boolean selectableMode) {
         isSelectableMode = selectableMode;
         if (!selectableMode) {
+//            setSelectedValueToAllItems(selectableMode);
             setSelectionsArray(null);
         } else {
             mFragment.changeSelectableMode(true);

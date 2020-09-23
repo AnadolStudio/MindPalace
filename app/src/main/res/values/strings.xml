@@ -97,6 +97,7 @@
     <string name="deleting_was_successful">Deleting was successful</string>
     <string name="sort_by_alpha">Sort by alpha</string>
     <string name="sort_by_date">Sort by date</string>
+    <string name="answer_save">Save changes?</string>
 
 
     <plurals name="word_items">
@@ -124,17 +125,6 @@
         <item>Selected:</item>
         <item>Diapason:</item>
         <item>Random:</item>
-    </string-array>
-
-    <string-array name="words_type">
-        <item>n:</item>
-        <item>prn:</item>
-        <item>v:</item>
-        <item>adj:</item>
-        <item>adv:</item>
-        <item>prep:</item>
-        <item>conj:</item>
-        <item>inter:</item>
     </string-array>
 
 </resources>

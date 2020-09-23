@@ -4,6 +4,7 @@
         <item name="android:windowBackground">@drawable/splash_activity</item>
     </style>
 
+    <!--TODO: Theme.MaterialComponents.Light.DarkActionBar-->
     <style name="AppThemeDefault" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -20,7 +21,23 @@
         <item name="switchStyle">@style/SwitchStyle</item>
     </style>
 
-    <style name="AppTheme" parent="AppThemeDefault"/>
+    <style name="ThemeNoActionBar" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorError">@color/colorError</item>
+        <item name="bottomNavigationStyle">@style/BottomNavigationView</item>
+
+        <item name="android:windowBackground">@color/colorDefaultBackground</item>
+        <item name="android:fontFamily">serif</item>
+        <item name="android:textViewStyle">@style/TextViewStyle</item>
+        <item name="android:buttonStyle">@style/ButtonStyle</item>
+        <item name="editTextStyle">@style/EditTextStyle</item>
+        <item name="switchStyle">@style/SwitchStyle</item>
+    </style>
+
+    <style name="AppTheme" parent="AppThemeDefault" />
 
     <style name="LightTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
@@ -29,8 +46,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
-    </style>
+    <style name="BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored"></style>
 
     <style name="ProgressBar" parent="Widget.AppCompat.ProgressBar">
         <item name="colorAccent">@color/colorDarkWhite</item>
@@ -51,7 +67,7 @@
 
     <style name="ButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:fontFamily">serif</item>
-<!--        <item name="android:background">@color/colorAccent</item>-->
+        <!--        <item name="android:background">@color/colorAccent</item>-->
     </style>
 
     <style name="EditTextStyle" parent="Widget.AppCompat.EditText">
@@ -76,6 +92,13 @@
         <item name="android:imeOptions">actionDone</item>
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="CollapsingTextAppearance" parent="Base.TextAppearance.AppCompat.Widget.ActionBar.Title" />
+
+    <style name="CollapsingTextAppearance.Inverse">
+        <item name="android:textSize">20sp</item>
+        <item name="fontFamily">sans-serif-black</item>
     </style>
 
     <style name="EditTextStyle.EditTextNumber">
@@ -107,9 +130,13 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
-        <item name="android:windowAllowReturnTransitionOverlap" tools:targetApi="lollipop">false</item>
-        <item name="android:windowAllowEnterTransitionOverlap" tools:targetApi="lollipop">false</item>
-        <item name="android:windowSharedElementEnterTransition" tools:targetApi="lollipop">@transition/enter_share_element_transfrom_skid_2</item>
+        <item name="android:windowAllowReturnTransitionOverlap" tools:targetApi="lollipop">false
+        </item>
+        <item name="android:windowAllowEnterTransitionOverlap" tools:targetApi="lollipop">false
+        </item>
+        <item name="android:windowSharedElementEnterTransition" tools:targetApi="lollipop">
+            @transition/enter_share_element_transfrom_skid_2
+        </item>
     </style>
 
 </resources>
