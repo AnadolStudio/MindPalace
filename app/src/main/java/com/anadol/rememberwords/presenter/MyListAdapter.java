@@ -30,6 +30,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     private int typeHolder;
     private boolean isSelectableMode;
     private int countSelectedGroups;
+    private int temp;
 
     public MyListAdapter(MyFragment fragment, ArrayList<T> arrayList, int typeHolder, @Nullable ArrayList<String> selectedItems, boolean isSelectableMode) {
 //        Collections.sort(arrayList);
@@ -39,6 +40,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         setSelectionsArray(selectedItems);
         this.isSelectableMode = isSelectableMode;
         this.typeHolder = typeHolder;
+        temp = 0;
     }
 
     @Override
@@ -94,6 +96,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     public MySimpleHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         MySimpleHolder holder;
+        Log.i(TAG, "onCreateViewHolder: was created " + temp++);
         switch (typeHolder) {
             case GROUP_HOLDER:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group_list, parent, false);
