@@ -5,7 +5,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
-import java.util.Comparator;
 import java.util.UUID;
 
 public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
@@ -248,20 +247,6 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
     @NonNull
     @Override
     public String toString() {
-        return original;
-    }
-
-    public static class OriginalCompare implements Comparator<Word> {
-        @Override
-        public int compare(Word o1, Word o2) {
-            return o1.getOriginal().compareTo(o2.getOriginal());
-        }
-    }
-
-    public static class TranslateCompare implements Comparator<Word> {
-        @Override
-        public int compare(Word o1, Word o2) {
-            return o1.getTranslate().compareTo(o2.getTranslate());
-        }
+        return original + " " + association + " " + translate;
     }
 }

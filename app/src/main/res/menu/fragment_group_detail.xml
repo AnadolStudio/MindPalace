@@ -3,11 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_search_list"
+        android:id="@+id/menu_search_detail"
         android:icon="@android:drawable/ic_menu_search"
         android:title="@string/search"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_add_item"
+        android:title="@string/add_association"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_learn"
+        android:title="@string/learn"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/menu_sort_alphabetically"

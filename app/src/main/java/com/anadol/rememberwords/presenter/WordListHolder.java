@@ -5,19 +5,21 @@ import android.graphics.drawable.ColorDrawable;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.model.SimpleParent;
 import com.anadol.rememberwords.model.Word;
+import com.anadol.rememberwords.view.Fragments.GroupDetailFragment;
 
-public class WordListHolder extends MySimpleHolder implements View.OnClickListener, View.OnLongClickListener {
+public class WordListHolder extends MySimpleHolder implements View.OnClickListener, View.OnLongClickListener, View.OnFocusChangeListener {
     private static MyListAdapter<? extends SimpleParent> sAdapter;
+
     private Word mWord;
     private EditText original;
     private EditText association;
@@ -41,6 +43,10 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
         association.addTextChangedListener(new MyTextWatch(MyTextWatch.ASSOCIATION));
         translate.addTextChangedListener(new MyTextWatch(MyTextWatch.TRANSLATE));
         translate.setFilters(new InputFilter[]{new TranslateFilter()});
+
+        original.setOnFocusChangeListener(this);
+        association.setOnFocusChangeListener(this);
+        translate.setOnFocusChangeListener(this);
 
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
@@ -67,28 +73,37 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
     }
 
     @Override
-    public void onClick(View v) {
-        int position = getAdapterPosition();
-        if (position == -1) return;
-
-        if (sAdapter.isSelectableMode()) {
-            isSelected = !isSelected;
-            sAdapter.putSelectedItem(mWord.getUUIDString(), isSelected);
-            setDrawable(isSelected);
+    public void itemTouch(int flag) {
+        switch (flag) {
+            case ItemTouchHelper.START:
+            case ItemTouchHelper.END:
+                if (!sAdapter.isSelectableMode()) {
+                    onLongClick(itemView);
+                } else {
+                    onClick(itemView);
+                }
+                break;
         }
     }
 
     @Override
-    public void itemTouch(int flag) {
-        switch (flag){
-            case ItemTouchHelper.START:
-            case ItemTouchHelper.END:
-                if (!sAdapter.isSelectableMode()){
-                    onLongClick(itemView);
-                }else {
-                    onClick(itemView);
-                }
-                break;
+    public void onClick(View v) {
+        Log.i(TAG, "onClick: ");
+        if (sAdapter.isSelectableMode()) {
+            isSelected = !isSelected;
+            sAdapter.putSelectedItem(mWord.getUUIDString(), isSelected);
+            setDrawable(isSelected);
+        } else {
+            GroupDetailFragment fragment = (GroupDetailFragment) sAdapter.getFragment();
+            fragment.editTextOnClick();
+        }
+    }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (hasFocus){
+            GroupDetailFragment fragment = (GroupDetailFragment) sAdapter.getFragment();
+            fragment.editTextOnClick();
         }
     }
 
@@ -98,7 +113,7 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
             isSelected = true;
             setDrawable(isSelected);
             sAdapter.putSelectedItem(mWord.getUUIDString(), true);
-            sAdapter.setSelectableMode(true);
+            sAdapter.setSelectableMode(true, getAdapterPosition());
             return true;
         }
         return false;
@@ -119,7 +134,6 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
         static final int ASSOCIATION = 2;
         static final int COMMENT = 3;
 
-        private RecyclerView.ViewHolder holder;
         private int type;
 
         public MyTextWatch(int type) {
@@ -139,28 +153,39 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
         @Override
         public void afterTextChanged(Editable s) {
             String string = s.toString();
+            boolean b = false;
             switch (type) {
                 case ORIGINAL:
                     if (!mWord.getOriginal().equals(string)) {
                         mWord.setOriginal(string);
+                        b = true;
                     }
                     break;
                 case TRANSLATE:
                     if (!mWord.getTranslate().equals(string)) {
                         mWord.setTranslate(string);
+                        b = true;
                     }
                     break;
                 case ASSOCIATION:
                     if (!mWord.getAssociation().equals(string)) {
                         mWord.setAssociation(string);
+                        b = true;
                     }
                     break;
                 case COMMENT:
                     if (!mWord.getComment().equals(string)) {
                         mWord.setComment(string);
+                        b = true;
                     }
                     break;
             }
+            if (b) updateWordCount();
+        }
+
+        private void updateWordCount() {
+            GroupDetailFragment fragment = (GroupDetailFragment) sAdapter.getFragment();
+            fragment.updateWordCount();
         }
     }
 

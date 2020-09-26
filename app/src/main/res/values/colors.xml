@@ -9,11 +9,11 @@
     <color name="colorPrimaryText">#212121</color>
     <color name="colorSecondaryText">#757575</color>
     <color name="colorDivider">#ECECEC</color>
-    <color name="colorShadowBackground">#59212121</color>
+    <color name="colorShadowBackground">#4D000000</color>
 
 
     <color name="colorChecked">#B2B4001E</color>
-<!--    <color name="colorAccent">#707070</color>-->
+    <!--    <color name="colorAccent">#707070</color>-->
     <color name="colorError">#777777</color>
 
     <color name="colorDarkWhite">#DDDDDD</color>
@@ -22,11 +22,6 @@
     <color name="colorProgressBarBackground">#667E7E7E</color>
     <color name="colorLightBlack">#6B6B6B</color>
     <color name="textColorPrimary">#2C2C2C</color>
-
-    <color name="keyboardBackground">#DDDEE2</color>
-    <color name="keyBackground">#fafafa</color>
-    <color name="keyPressBackground">#b8b9be</color>
-    <color name="keyText">#252525</color>
 
     <color name="colorBoundsCardTypeTest">@color/colorPrimaryDark</color>
     <color name="colorBackgroundCardTypeTest">@color/colorAccent</color>

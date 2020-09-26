@@ -2,11 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/menu_remove"
-        android:title="@string/remove"
-        android:icon="@drawable/ic_menu_delete"
-        app:showAsAction="ifRoom|withText"/>
 
     <item
       android:id="@+id/menu_select_all"
@@ -14,11 +9,17 @@
       android:icon="@drawable/ic_menu_select_all_off"
       app:showAsAction="ifRoom|withText"/>
 
-  <!--<item
-      android:id="@+id/menu_cancel"
-      android:title="@android:string/cancel"
-      android:icon="@drawable/ic_menu_cancel"
-      app:showAsAction="always"/>-->
+    <item
+        android:id="@+id/menu_remove"
+        android:title="@string/remove"
+        android:icon="@drawable/ic_menu_delete"
+        app:showAsAction="ifRoom|withText"/>
+
+    <item
+      android:id="@+id/menu_migrate"
+      android:title="@string/migrate"
+      android:icon="@drawable/ic_menu_migrate"
+      app:showAsAction="ifRoom|withText"/>
 
 
 </menu>

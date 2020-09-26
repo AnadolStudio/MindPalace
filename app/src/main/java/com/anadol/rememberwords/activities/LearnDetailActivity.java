@@ -30,10 +30,9 @@ public class LearnDetailActivity extends SimpleFragmentActivity {
 
     public static final int REQUEST_RESULT = 1;
 
-    public static Intent newIntent(Context context, ArrayList<Word> words, Group group, int type, int object){
+    public static Intent newIntent(Context context, ArrayList<Word> words, int type, int object){
         Intent intent = new Intent(context, LearnDetailActivity.class);
         intent.putExtra(WORDS, words);
-        intent.putExtra(GROUP,group);
         intent.putExtra(TYPE,type);
         intent.putExtra(OBJECT,object);
         return intent;

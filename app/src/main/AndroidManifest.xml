@@ -26,13 +26,14 @@
 
         <activity
             android:name=".view.Activities.MainActivity"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            >
         </activity>
 
         <activity
             android:name=".view.Activities.GroupDetailActivity"
             android:theme="@style/ThemeNoActionBar"
-            android:windowSoftInputMode="stateHidden|adjustResize"
+            android:windowSoftInputMode="adjustResize|stateHidden"
             android:launchMode="singleTop"
             >
             <!--android:parentActivityName=".view.Activities.MainActivity"-->

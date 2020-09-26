@@ -18,34 +18,43 @@ public class LearnStartActivity extends SimpleFragmentActivity {
 
     private static final String GROUP = "group";
     private static final String WORDS = "words";
-    private static final String TYPE = "type";
+    private static CallBack mCallback;
 
     private Group mGroup;
 
-    public static Intent newIntent(Context context,  Group group , ArrayList<Word> mWords){
+    public static Intent newIntent(Context context, Group group, ArrayList<Word> mWords) {
         Intent intent = new Intent(context, LearnStartActivity.class);
         intent.putExtra(GROUP, group);
-        intent.putExtra(WORDS,mWords);
+        intent.putExtra(WORDS, mWords);
         return intent;
     }
 
+    public static Intent newIntent(Context context, Group group, ArrayList<Word> mWords, CallBack callBack) {
+        mCallback = callBack;
+        return newIntent(context, group, mWords);
+    }
 
     @Override
     protected Fragment createFragment() {
         mGroup = getIntent().getParcelableExtra(GROUP);
         ArrayList<Word> words = getIntent().getParcelableArrayListExtra(WORDS);
 
-        return LearnStartFragment.newInstance(mGroup ,words);
+        return LearnStartFragment.newInstance(mGroup, words);
     }
 
     @Override
     public void onBackPressed() {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-        if (!(fragment instanceof IOnBackPressed) || !((IOnBackPressed)fragment).onBackPressed()) {
+        if (!(fragment instanceof IOnBackPressed) || !((IOnBackPressed) fragment).onBackPressed()) {
             super.onBackPressed();
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mCallback != null) mCallback.callBack();
+    }
     /*@Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         mGroup = getIntent().getParcelableExtra(GROUP);
@@ -76,8 +85,6 @@ public class LearnStartActivity extends SimpleFragmentActivity {
         outState.putParcelable(GROUP,mGroup);
     }*/
 
-
-
    /* @Override
     protected void onResume() {
         super.onResume();
@@ -88,8 +95,9 @@ public class LearnStartActivity extends SimpleFragmentActivity {
             updateActionBar();
         }
     }*/
-    private void updateActionBar(){
-        if (mGroup != null){
+
+    private void updateActionBar() {
+        if (mGroup != null) {
             getSupportActionBar().setTitle(mGroup.getName());
 //            getSupportActionBar().setBackgroundDrawable( mGroup.getGroupDrawable());
         }

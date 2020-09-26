@@ -1,7 +1,5 @@
 package com.anadol.rememberwords.presenter;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
@@ -9,17 +7,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.util.Pair;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.view.Activities.GroupDetailActivity;
 import com.anadol.rememberwords.model.Group;
 import com.anadol.rememberwords.model.SimpleParent;
 import com.anadol.rememberwords.view.Fragments.GroupListFragment;
-
-import static com.anadol.rememberwords.view.Fragments.GroupListFragment.REQUIRED_CHANGE;
 
 public class GroupListHolder extends MySimpleHolder implements View.OnClickListener, View.OnLongClickListener {
     private static MyListAdapter<? extends SimpleParent> sAdapter;
@@ -83,7 +76,7 @@ public class GroupListHolder extends MySimpleHolder implements View.OnClickListe
 
     @Override
     public void itemTouch(int flag) {
-        switch (flag){
+        switch (flag) {
             case ItemTouchHelper.START:
 
                 break;
@@ -96,16 +89,6 @@ public class GroupListHolder extends MySimpleHolder implements View.OnClickListe
 
     private void startActivity() {
         GroupListFragment mFragment = (GroupListFragment) sAdapter.getFragment();
-
-        Activity activity = mFragment.getActivity();
-        Intent intent = GroupDetailActivity.newIntent(activity, mGroup);
-        // TODO хочу другую анимацию
-        /*String nameTranslation = activity.getString(R.string.color_image_translation);
-        ActivityOptionsCompat activityOptions = ActivityOptionsCompat.
-                makeSceneTransitionAnimation(
-                        activity,
-                        new Pair<View, String>(mImageView, nameTranslation));
-        mFragment.startActivityForResult(intent, REQUIRED_CHANGE, activityOptions.toBundle());*/
-        mFragment.startActivityForResult(intent, REQUIRED_CHANGE);
+        mFragment.startDetailActivity(mGroup);
     }
 }

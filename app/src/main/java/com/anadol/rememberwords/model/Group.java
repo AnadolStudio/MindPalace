@@ -64,6 +64,7 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
 
         return stringBuilder.toString();
     }
+
     public String getColorsString() {
         return getColorsStringFromInts(mColors);
     }
@@ -155,5 +156,4 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
     public String toString() {
         return getName();
     }
-
 }

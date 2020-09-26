@@ -33,5 +33,8 @@ public abstract class SimpleFragmentActivity extends AppCompatActivity {
         }
     }
 
+    public interface CallBack {
+        void callBack();
+    }
 
 }

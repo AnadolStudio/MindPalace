@@ -5,12 +5,10 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.transition.Transition;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,8 +24,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -42,10 +40,10 @@ import com.anadol.rememberwords.fragments.IOnBackPressed;
 import com.anadol.rememberwords.model.CreatorValues;
 import com.anadol.rememberwords.model.DataBaseSchema.Groups;
 import com.anadol.rememberwords.model.DataBaseSchema.Words;
-import com.anadol.rememberwords.model.DoInBackground;
 import com.anadol.rememberwords.model.Group;
 import com.anadol.rememberwords.model.MyCursorWrapper;
 import com.anadol.rememberwords.model.Word;
+import com.anadol.rememberwords.presenter.IdComparator;
 import com.anadol.rememberwords.presenter.MyListAdapter;
 import com.anadol.rememberwords.presenter.SlowLinearLayoutManager;
 import com.anadol.rememberwords.presenter.WordItemHelperCallBack;
@@ -76,28 +74,26 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     public static final String POSITION = "position";
     private static final String TAG = "GroupDetailFragment";
     private static final String DIALOG_COLOR = "color";
-    private static final String GRADIENT = "gradient";
+    private static final String KEY_SEARCH_QUERY = "search_query";
     private static final int REQUEST_DRAWABLE = 1;
     private static final int REQUEST_MULTI_TRANSLATE = 2;
-    private static final String TYPE_SORT = "type_sort";
-
+    private static long backPressed;
     private RecyclerView mRecyclerView;
     private MyListAdapter<Word> mAdapter;
     private Group mGroup;
     private ArrayList<Word> mWords;
-
-    //    private ImageButton addButton;
     private ImageView imageView;
     private ArrayList<String> selectStringArray;
-    private boolean selectable = false;
+    private boolean selectable;
     private TextView countWordsTextView;
     private Toolbar toolbar;
     private Snackbar mSnackbar;
     private FloatingActionButton fabAdd;
     private MaterialButton mButtonLearnStart;
-    private WordBackground background;
-    private NestedScrollView nestedScrollView;
     private TextView titleToolbar;
+    private SearchView searchView;
+    private String searchQuery;
+    private WordBackground background;
 
     public static GroupDetailFragment newInstance(Group group) {
 
@@ -119,6 +115,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         outState.putBoolean(KEY_SELECT_MODE, mAdapter.isSelectableMode());
         selectStringArray = mAdapter.getSelectedStringArray();
         outState.putStringArrayList(KEY_SELECT_LIST, selectStringArray);
+        outState.putString(KEY_SEARCH_QUERY, searchQuery);
     }
 
     @Override
@@ -139,7 +136,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         activity.setSupportActionBar(toolbar);
 
 
-//        mAdapter = new MyListAdapter<>(this, mWords, MyListAdapter.WORD_HOLDER, selectStringArray, selectable);
         if (savedInstanceState != null) {
             setupAdapter();
         }// в противном случае адаптер инициализируется в background.post()
@@ -163,7 +159,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
 
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         fabAdd = view.findViewById(R.id.fab_add);
-        nestedScrollView = view.findViewById(R.id.nestedScrollView);
         titleToolbar = view.findViewById(R.id.name_group);
         mButtonLearnStart = view.findViewById(R.id.button_startLearn);
     }
@@ -175,10 +170,12 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
             mWords = savedInstanceState.getParcelableArrayList(WORD_SAVE);
             selectStringArray = savedInstanceState.getStringArrayList(KEY_SELECT_LIST);
             selectable = savedInstanceState.getBoolean(KEY_SELECT_MODE);
+            searchQuery = savedInstanceState.getString(KEY_SEARCH_QUERY);
         } else {
             mWords = new ArrayList<>();
             doInBackground(GET_WORDS);
             selectable = false;
+            searchQuery = "";
         }
     }
 
@@ -190,11 +187,11 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
             dialog.show(fm, DIALOG_COLOR);
         });
         fabAdd.setOnClickListener(v -> {
-            doInBackground(INSERT_WORD);
+            createAssociation();
             /*BottomSheetDialogLearnResult settings = BottomSheetDialogLearnResult.newInstance();
             settings.show(getFragmentManager(), "bottom_sheet_dialog_fragment_learn");*/
         });
-        nestedScrollView.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+        mRecyclerView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             // Движение вниз
             if (oldScrollY < scrollY) {
                 fabAdd.hide();
@@ -211,6 +208,20 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
 */
         });
 
+    }
+
+    private void setVisibleFab(boolean show) {
+        if (fabAdd == null) return;
+
+        if (show) {
+            fabAdd.show();
+        } else {
+            fabAdd.hide();
+        }
+    }
+
+    public void editTextOnClick() {
+        setVisibleFab(false);
     }
 
     private void bindDataWithView() {
@@ -270,43 +281,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
 //        addTransitionListener();
     }
 
-    private void addTransitionListener() {
-        final Transition transition = getActivity().getWindow().getSharedElementEnterTransition();
-        if (transition != null) {
-            transition.addListener(new Transition.TransitionListener() {
-                @Override
-                public void onTransitionEnd(Transition transition) {
-                    transition.removeListener(this);
-                    Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mAdapter.setList(mWords);
-                        }
-                    }, 10);//Чтобы избежать небольшого тормоза в конце анимации
-                }
-
-                @Override
-                public void onTransitionStart(Transition transition) {
-                }
-
-                @Override
-                public void onTransitionCancel(Transition transition) {
-                    transition.removeListener(this);
-                }
-
-                @Override
-                public void onTransitionPause(Transition transition) {
-                }
-
-                @Override
-                public void onTransitionResume(Transition transition) {
-
-                }
-            });
-        }
-    }
-
     @Override
     public void onStop() {
         if (background != null && !background.isCancelled()) {
@@ -323,7 +297,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
 
         switch (mode) {
             case MODE_SELECT:
-                inflater.inflate(R.menu.menu_group_selected_list, menu);
+                inflater.inflate(R.menu.menu_group_detail_selected, menu);
                 MenuItem select = menu.findItem(R.id.menu_select_all);
 
                 if (mAdapter != null && mAdapter.isAllItemSelected()) {
@@ -336,15 +310,47 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                 updateCountSelectedItems();
                 break;
 
-            case MODE_SEARCH:
-                // TODO
-                break;
             default: // MODE_NORMAL
-                inflater.inflate(R.menu.fragment_group_list, menu);
+                inflater.inflate(R.menu.fragment_group_detail, menu);
+                MenuItem menuSearch = menu.findItem(R.id.menu_search_detail);
+
+                searchView = (SearchView) menuSearch.getActionView();
+                searchView.setQueryHint(getResources().getString(R.string.search));
+                setMenuItemsListeners();
+
+                if (!searchQuery.equals("")) {
+                    searchView.setIconified(false); // не помню зачем нужен этот метод
+                    searchView.setQuery(searchQuery, true);
+                }
+                break;
 
         }
-       /* MenuItem sort = menuBottom.findItem(R.id.menu_sort);
-        sort.setVisible(!selectMode);*/
+    }
+
+    private void setMenuItemsListeners() {
+        searchView.setOnSearchClickListener(v -> {
+            mode = MODE_SEARCH;
+            titleToolbar.setVisibility(View.GONE);
+        });
+
+        searchView.setOnCloseListener(() -> {
+            mode = MODE_NORMAL;
+            titleToolbar.setVisibility(View.VISIBLE);
+            return false;
+        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                searchQuery = s;
+                mAdapter.getFilter().filter(searchQuery);
+                return true;
+            }
+        });
     }
 
     @Override
@@ -354,23 +360,53 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
             case R.id.menu_remove:
                 doInBackground(DELETE_WORDS);
                 return true;
-
-
+            case R.id.menu_add_item:
+                createAssociation();
+                return true;
+            case R.id.menu_learn:
+                createLearnStartActivity();
+                return true;
+            case R.id.menu_sort_alphabetically:
+                // TODO сортировка Integer будет проводиться только для группы Числа
+                Collections.sort(mWords);
+                updateSearchView();
+                mAdapter.notifyDataSetChanged();
+                return true;
+            case R.id.menu_sort_date:
+                Collections.sort(mWords, new IdComparator());
+                updateSearchView();
+                mAdapter.notifyDataSetChanged();
+                return true;
             case R.id.menu_select_all:
                 boolean selectAllItems = !mAdapter.isAllItemSelected();
                 selectAll(selectAllItems);
                 return true;
-
+            case R.id.menu_migrate:
+                //TODO
+                Toast.makeText(getContext(),"Migrate", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+    }
+
+    private void updateSearchView() {
+        searchView.setQuery("", false);
+        searchView.setQuery(searchQuery, false);
+    }
+
+    private void createAssociation() {
+        doInBackground(INSERT_WORD);
     }
 
     private void doInBackground(String insertWord) {
+        if (insertWord.equals(GET_WORDS)) showLoadingDialog();
+
         background = new WordBackground();
         background.execute(insertWord);
     }
 
-    private void selectAll(boolean select) {
+    void selectAll(boolean select) {
         mAdapter.setAllItemSelected(select);
         updateActionBarTitle();
         mAdapter.notifyDataSetChanged();
@@ -379,33 +415,25 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     @Override
     public boolean onBackPressed() {
         switch (mode) {
-            // TODO: добавить Search
-            /*case MODE_SEARCH:
+            case MODE_SEARCH:
                 mode = MODE_NORMAL;
                 getActivity().invalidateOptionsMenu();
+                titleToolbar.setVisibility(View.VISIBLE);
                 searchView.onActionViewCollapsed();
-                return true;*/
+                return true;
             case MODE_SELECT:
                 changeSelectableMode(false);
                 return true;
             default:
-                Resources resources = getResources();
-                if (mSnackbar == null || !mSnackbar.isShown()) {
-                    mSnackbar = Snackbar.make(getView(), resources.getText(R.string.answer_save), Snackbar.LENGTH_INDEFINITE)
-                            .setAction("Да", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    saveGroup();
-                                }
-                            })
-                            .setActionTextColor(resources.getColor(R.color.colorAccent));
-                }
-                if (mSnackbar.isShown()) { // Или не было изменений
-                    return false;
+                if ((backPressed + 2000) > System.currentTimeMillis()) {
+                    Log.i(TAG, "backPressed + 2000 = " + (backPressed + 2000));
+                    Log.i(TAG, "System.currentTimeMillis() = " + System.currentTimeMillis());
+                    saveGroup();
                 } else {
-                    mSnackbar.show();
-                    return true;
+                    Toast.makeText(getContext(), getString(R.string.double_click_for_exit), Toast.LENGTH_SHORT).show();
+                    backPressed = System.currentTimeMillis();
                 }
+                return true;
         }
     }
 
@@ -464,15 +492,15 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
 
     private void createLearnStartActivity() {
         Intent intent;
-        ArrayList<Word> words = new ArrayList<>(mWords);
-        removeEmptyWords(words);
+        ArrayList<Word> words = removeEmptyWords(mWords);
         if (words.size() < 2) {
             String s = getString(R.string.min_word_list_size, 2);
             Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
             return;
         }
+        showLoadingDialog();
 
-        intent = LearnStartActivity.newIntent(getContext(), mGroup, words);
+        intent = LearnStartActivity.newIntent(getContext(), mGroup, words, this::hideLoadingDialog);
         startActivity(intent);
     }
 
@@ -491,13 +519,14 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         doInBackground(UPDATE_GROUP);
     }
 
-    private void updateWordCount() {
-        String stringCount = getResources().getQuantityString(R.plurals.word_items, mWords.size(), mWords.size());
-        countWordsTextView.setText(getResources().getString(R.string.word_count, stringCount));
+    public void updateWordCount() {
+//        String stringCount = getResources().getQuantityString(R.plurals.association_items, mWords.size(), mWords.size());
+        int realCount = removeEmptyWords(mWords).size();
+        String stringCount = getResources().getString(R.string.associations_count, realCount, mWords.size());
+        countWordsTextView.setText(stringCount);
     }
 
     private void updateActionBarTitle() {
-        updateWordCount();
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.invalidateOptionsMenu();
         if (mode == MODE_SELECT) {
@@ -516,28 +545,24 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
 
     @Override
     public void updateUI() {
+        updateWordCount();
         updateActionBarTitle();
     }
 
-    private void removeEmptyWords(ArrayList<Word> words) {
-        // TODO: можно ли улучшить?
+    private ArrayList<Word> removeEmptyWords(ArrayList<Word> words) {
+        // TODO: можно ли улучшить? (Для других типов групп)
         ArrayList<Word> tempList = new ArrayList<>(words);
-        for (Word w : tempList) {
-            int i = 0;
-            if (w.getOriginal().equals("")) {
-                i++;
-            }
-            if (w.getTranslate().equals("")) {
-                i++;
-            }
-            if (i >= 1) {
-                words.remove(w);
+        for (Word w : words) {
+            // Если имеет пустые поля
+            if (w.getOriginal().equals("") || w.getTranslate().equals("")
+                /*|| w.getAssociation().equals("")*/) {
+                tempList.remove(w);
             }
         }
+        return tempList;
     }
 
-    //TODO: реализовать нормальный AsyncTask > PreExecute > LoadView
-    public class WordBackground extends DoInBackground {
+    public class WordBackground extends AsyncTask<String, Void, Boolean> {
         static final String GET_WORDS = "words";
         static final String UPDATE_GROUP = "update_group";
         static final String UPDATE_WORDS = "update_words";
@@ -549,19 +574,24 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         private Word mWordTemp;
 
         @Override
-        public Boolean doIn(String command) {
-            ArrayList<Word> words;
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
             MyCursorWrapper cursor = null;
-            ContentResolver contentResolver = getActivity().getContentResolver();
-            cmd = command;
+            cmd = strings[0];
 
             String original;
             String translate;
             String association;
             String comment;
 
+            ContentResolver contentResolver = getActivity().getContentResolver();
+
             try {
-                switch (command) {
+                switch (cmd) {
                     case UPDATE_GROUP:
                         ContentValues values = CreatorValues.createGroupValues(mGroup.getUUID(), mGroup.getName(), mGroup.getColorsString(), mGroup.getColors());
 
@@ -605,11 +635,11 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                                 Words.UUID_GROUP + " = ?",
                                 new String[]{mGroup.getUUIDString()}, null));
 
-                        Log.i(TAG, "doIn: cursor.getCount() " + cursor.getCount());
+                        Log.i(TAG, "doInBackground: cursor.getCount() " + cursor.getCount());
                         if (cursor.getCount() != 0) {
                             cursor.moveToFirst();
-                            //TODO: реализовать порционную прогрузку
-                            words = new ArrayList<>();
+                            //TODO: реализовать порционную (ленивую) загрузку
+                            ArrayList<Word> words = new ArrayList<>();
                             while (!cursor.isAfterLast()) {
                                 words.add(cursor.getWord());
                                 cursor.moveToNext();
@@ -644,10 +674,11 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         }
 
         @Override
-        public void onPost(boolean b) {
-
+        protected void onPostExecute(Boolean b) {
+            super.onPostExecute(b);
             if (!b) {
                 Log.i(TAG, "onPost: что-то пошло не так");
+                hideLoadingDialog();
                 return;
             }
             switch (cmd) {
@@ -655,35 +686,26 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                     dataIsChanged();
                     break;
                 case INSERT_WORD:
-                    nestedScrollView.scrollTo(0, 0);
+                    mRecyclerView.smoothScrollToPosition(0);
                     mAdapter.add(0, mWordTemp);
                     mAdapter.notifyItemInserted(0);//Добавит ввод в начало листа
-                    updateActionBarTitle();
+                    updateUI();
                     break;
 
                 case DELETE_WORDS:
                     mAdapter.remove(wordsListToRemove);
                     Toast.makeText(getContext(), getString(R.string.deleting_was_successful), Toast.LENGTH_SHORT).show();
                     changeSelectableMode(false);
-                    updateActionBarTitle();
+                    updateUI();
                     break;
 
                 case GET_WORDS:
-                    // Это костыль, сделан для того, чтобы nestedScroll не съезжал из-за добавления адаптера
-                    // пока не понял почему это происходит
-/*
-                    Handler handler = new Handler();
-                    handler.postDelayed(() -> {
-                        setupAdapter();
-                        updateActionBarTitle();
-                    }, 100);
-*/
                     setupAdapter();
-                    updateActionBarTitle();
+                    updateUI();
+                    hideLoadingDialog();
                     break;
 
             }
         }
-
     }
 }

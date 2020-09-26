@@ -15,7 +15,7 @@ public abstract class MyFragment extends Fragment {
     protected static final String KEY_SELECT_COUNT = "select_count";
     protected static final String KEY_SELECT_LIST = "select_list";
     protected int mode = MODE_NORMAL;
-
+    protected LoadingView mLoadingView;
 
     public abstract void updateUI();
 
@@ -38,5 +38,17 @@ public abstract class MyFragment extends Fragment {
         if (savedInstanceState != null) {
             mode = savedInstanceState.getInt(MODE);
         }
+    }
+
+    public void showLoadingDialog() {
+        mLoadingView = LoadingDialog.view(getFragmentManager());
+        mLoadingView.showLoadingIndicator();
+    }
+
+    void selectAll(boolean select) {
+    }
+
+    public void hideLoadingDialog() {
+        if (mLoadingView != null) mLoadingView.hideLoadingIndicator();
     }
 }

@@ -17,14 +17,19 @@ public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pa
 
     private static final String TAG = "GroupDetailActivity";
     private static final String POSITION = "position"; // При создание Activity запоминавет позицию
+    private static CallBack mCallBack;
     // группы в List, а затем возвращает ее для обновления
     private Group mGroup;
-
 
     public static Intent newIntent(Context context, Group mGroup) {
         Intent intent = new Intent(context, GroupDetailActivity.class);
         intent.putExtra(CURRENT_GROUP, mGroup);
         return intent;
+    }
+
+    public static Intent newIntent(Context context, Group mGroup, CallBack callBack) {
+        mCallBack = callBack;
+        return newIntent(context, mGroup);
     }
 
     @Override
@@ -33,23 +38,24 @@ public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pa
         return GroupDetailFragment.newInstance(mGroup);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mCallBack != null) mCallBack.callBack();
+    }
 
     @Override
     public void onBackPressed() {
 
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         if (!(fragment instanceof IOnBackPressed) || !((IOnBackPressed) fragment).onBackPressed()) {
-//            Intent intent = ((GroupDetailFragment) fragment).dataIsChanged();
-//            setResult(RESULT_OK, intent);
             super.onBackPressed();
         }
     }
-
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(CURRENT_GROUP, mGroup);
     }
-
 }

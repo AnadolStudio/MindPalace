@@ -10,7 +10,6 @@ import android.widget.Filterable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.anadol.rememberwords.R;
@@ -30,7 +29,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     private int typeHolder;
     private boolean isSelectableMode;
     private int countSelectedGroups;
-    private int temp;
+//    private int temp;
 
     public MyListAdapter(MyFragment fragment, ArrayList<T> arrayList, int typeHolder, @Nullable ArrayList<String> selectedItems, boolean isSelectableMode) {
 //        Collections.sort(arrayList);
@@ -40,14 +39,13 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         setSelectionsArray(selectedItems);
         this.isSelectableMode = isSelectableMode;
         this.typeHolder = typeHolder;
-        temp = 0;
+//        temp = 0;
     }
 
     @Override
     public void onItemDismiss(RecyclerView.ViewHolder viewHolder, int flag) {
         MySimpleHolder holder = (MySimpleHolder) viewHolder;
         holder.itemTouch(flag);
-        // TODO: резкая анимация для первого holder'a
         notifyItemChanged(holder.getAdapterPosition());
     }
 
@@ -70,7 +68,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
                 mSelectionsArray.put(item.getUUIDString(), true);
                 countSelectedGroups++;
             } else mSelectionsArray.put(item.getUUIDString(), false);
-            Log.i(TAG, "mSelectionsArray.size(): " + mSelectionsArray.size() + " mList.size(): " + mList.size());
+//            Log.i(TAG, "mSelectionsArray.size(): " + mSelectionsArray.size() + " mList.size(): " + mList.size());
         }
     }
 
@@ -96,7 +94,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     public MySimpleHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         MySimpleHolder holder;
-        Log.i(TAG, "onCreateViewHolder: was created " + temp++);
+//        Log.i(TAG, "onCreateViewHolder: was created " + temp++);
         switch (typeHolder) {
             case GROUP_HOLDER:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group_list, parent, false);
@@ -116,6 +114,10 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     @Override
     public void onBindViewHolder(@NonNull MySimpleHolder holder, int position) {
         SimpleParent item = mFilterList.get(position);
+//        Log.i(TAG, "onBindViewHolder. mSelectionsArray.size(): " + mSelectionsArray.size() + " mList.size(): " + mList.size());
+//        boolean b = mSelectionsArray.containsKey(item.getUUIDString());
+//        if (!b) mSelectionsArray.put(item.getUUIDString(), false);
+
         holder.onBind(item, mSelectionsArray.get(item.getUUIDString()));
     }
 
@@ -146,17 +148,28 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     }
 
     public void updateItem(int position, T item) {
-        mList.set(position, item);
+        if (mFilterList != mList) {
+            Log.i(TAG, "getAdapterPosition : mFilterList != mList");
+            for (int i = 0; i < mList.size(); i++) {
+                if (mList.get(i).getTableId() == item.getTableId()) {
+                    mList.set(position, item);
+                }
+            }
+        } else {
+            mList.set(position, item);
+        }
+        notifyItemChanged(position);
     }
 
-    public int getIndexGroup(int tableId) {
+    public int getAdapterPosition(int tableId) {
         int position = -1;
-        for (int i = 0; i < mList.size(); i++) {
-            if (mList.get(i).getTableId() == tableId) {
+
+        for (int i = 0; i < mFilterList.size(); i++) {
+            if (mFilterList.get(i).getTableId() == tableId) {
                 position = i;
             }
         }
-        Log.i(TAG, "getIndexGroup :" + position);
+        Log.i(TAG, "getAdapterPosition :" + position);
         return position;
     }
 
@@ -196,7 +209,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         mList.add(position, item);
     }
 
-    public Fragment getFragment() {
+    public MyFragment getFragment() {
         return mFragment;
     }
 
@@ -239,10 +252,20 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         if (!selectableMode) {
 //            setSelectedValueToAllItems(selectableMode);
             setSelectionsArray(null);
+            notifyDataSetChanged();
         } else {
             mFragment.changeSelectableMode(true);
         }
-        notifyDataSetChanged();
+    }
+
+    public void setSelectableMode(boolean selectableMode, int position) {
+        setSelectableMode(selectableMode);
+        if (selectableMode) {
+            int count = getItemCount();
+            // TODO: решение проблемы резкой анимации
+            notifyItemRangeChanged(0, position);
+            notifyItemRangeChanged(position, count);
+        }
     }
 
 

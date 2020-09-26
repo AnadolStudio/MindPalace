@@ -3,7 +3,6 @@
 
     <string name="replace">Replace</string>
     <string name="remove">Delete</string>
-    <string name="translate">Translate</string>
     <string name="reverse_translate">Reverse translate</string>
     <string name="create_group">Create group</string>
     <string name="group">Group:</string>
@@ -30,35 +29,23 @@
     <string name="quiz">Quiz</string>
     <string name="answer">Answer</string>
     <string name="saved_succes_toast">Saved Successfully</string>
-    <string name="transcription">Transcript</string>
-    <string name="view">VIew</string>
-    <string name="edit">Edit</string>
     <string name="create">Create</string>
     <string name="search">Search&#8230;</string>
-    <string name="sort">Sort</string>
-    <string name="sort_by_original">Sort by original</string>
-    <string name="sort_by_translate">Sort by translate</string>
     <string name="start">Start</string>
     <string name="type_of_test">Type of test:</string>
     <string name="true_false">True/False</string>
     <string name="answer_question">Answer/Question</string>
-    <string name="original">Original</string>
     <string name="stopwatch">Stopwatch</string>
     <string name="object_test">Object test:</string>
     <string name="true_button">True</string>
     <string name="false_button">False</string>
     <string name="question">Question</string>
-    <string name="unify">Unify</string>
-    <string name="merge">Merge</string>
     <string name="select_all">Select all</string>
-    <string name="add_word">Add word</string>
     <string name="word_count">Count: %1$s</string>
-    <string name="add_new_case">Add new case</string>
     <string name="_0">000</string>
     <string name="difficult">Difficult:</string>
     <string name="use">Used objects:</string>
     <string name="information">Information</string>
-    <string name="multitranslate">MultiTranslate</string>
     <string name="comment">Comment:</string>
     <string name="lack_of_words">Lack of words</string>
     <string name="no_used_object">No one used object is selected</string>
@@ -66,9 +53,9 @@
         choose another object or used two objects</string>
     <string name="is_empty">Is empty</string>
 
-<!--    TODO: Тут должун быть правильный английский текст-->
-<!--    <string name="enabled_type">Тут должен быть правильный английский текст 1</string>-->
-<!--    <string name="enabled_object">Тут должен быть правильный английский текст 2</string>-->
+    <!--    TODO: Тут должун быть правильный английский текст-->
+    <!--    <string name="enabled_type">Тут должен быть правильный английский текст 1</string>-->
+    <!--    <string name="enabled_object">Тут должен быть правильный английский текст 2</string>-->
     <string name="linear_layout">Linear Layout</string>
     <string name="grid_layout">Grid Layout</string>
     <string name="echelon_layout">Echelon Layout</string>
@@ -87,22 +74,31 @@
     <string name="diapason_error">Diapason Error</string>
     <string name="do_not_select">You don`t select words in this mode</string>
     <string name="view_list">View list</string>
-    <string name="association">Association</string>
     <string name="duplicate_error">Duplicate error</string>
+
 
     <string name="home">Home</string>
     <string name="statistic">Statistic</string>
     <string name="settings">Settings</string>
     <string name="new_group">New Group</string>
     <string name="deleting_was_successful">Deleting was successful</string>
-    <string name="sort_by_alpha">Sort by alpha</string>
+    <string name="sort_ascending">Sort ascending</string>
     <string name="sort_by_date">Sort by date</string>
     <string name="answer_save">Save changes?</string>
+    <string name="loading">Loading&#8230;</string>
+    <string name="original">Original</string>
+    <string name="association">Association</string>
+    <string name="translate">Translate</string>
+    <string name="associations_count">%1$d / %2$d</string> <!--"·" = &#183; / "•" = &#8226; символ-->
+    <string name="add_association">Add association</string>
+    <string name="learn">Learn</string>
+    <string name="double_click_for_exit">Double click for exit</string>
+    <string name="migrate">Migrate</string>
 
 
-    <plurals name="word_items">
-        <item quantity="one">%1$d Word</item>
-        <item quantity="other">%1$d Words</item>
+    <plurals name="association_items">
+        <item quantity="one">%1$d Association</item>
+        <item quantity="other">%1$d associations</item>
     </plurals>
     <plurals name="correct_items">
         <item quantity="one">%1$d correct answer</item>
@@ -112,13 +108,6 @@
         <item quantity="one">%1$d wrong answer</item>
         <item quantity="other">%1$d wrong answer</item>
     </plurals>
-
-    <string-array name="count_words">
-        <item>1</item>
-        <item>2</item>
-        <item>5</item>
-        <item>10</item>
-    </string-array>
 
     <string-array name="start_type">
         <item>All</item>
