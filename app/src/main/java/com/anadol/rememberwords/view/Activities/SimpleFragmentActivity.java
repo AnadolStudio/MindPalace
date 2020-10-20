@@ -9,10 +9,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.anadol.rememberwords.R;
 
 public abstract class SimpleFragmentActivity extends AppCompatActivity {
-    private Fragment fragment;
+    private Fragment mFragment;
 
     public Fragment getFragment() {
-        return fragment;
+        return mFragment;
     }
 
     protected abstract Fragment createFragment();
@@ -23,14 +23,27 @@ public abstract class SimpleFragmentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_fragment);
 
         FragmentManager fm = getSupportFragmentManager();
-        fragment = fm.findFragmentById(R.id.fragment_container);
+        mFragment = fm.findFragmentById(R.id.fragment_container);
 
-        if (fragment==null){
-            fragment = createFragment();
+        addFragment(fm);
+    }
+
+    private void addFragment(FragmentManager fm) {
+        if (mFragment == null) {
+            mFragment = createFragment();
             fm.beginTransaction()
-                    .add(R.id.fragment_container,fragment)
+                    .add(R.id.fragment_container, mFragment)
                     .commit();
         }
+    }
+
+    protected void replaceFragment(Fragment fragment) {
+        if (fragment == null) fragment = createFragment();
+
+        FragmentManager fm = getSupportFragmentManager();
+        fm.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
     }
 
     public interface CallBack {

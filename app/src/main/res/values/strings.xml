@@ -1,80 +1,30 @@
 <resources>
     <string name="app_name">Mind Place</string>
 
-    <string name="replace">Replace</string>
     <string name="remove">Delete</string>
-    <string name="reverse_translate">Reverse translate</string>
-    <string name="create_group">Create group</string>
-    <string name="group">Group:</string>
-    <string name="detail">Words:</string>
-    <string name="save">Save</string>
-    <string name="list_is_empty">List is empty</string>
-    <string name="touch_to_create">Touch to create</string>
-
-    <string name="color_picker">Color picker</string>
-    <string name="make_choice">Make your choice</string>
-    <string name="start_color">Start color</string>
-    <string name="end_color">End color</string>
     <string name="red">R</string>
     <string name="green">G</string>
     <string name="blue">B</string>
 
-
-    <string name="words">Words</string>
-    <string name="play">Play</string>
-    <string name="show_subtitle">Show Count</string>
-    <string name="hide_subtitle">Hide Count</string>
-    <string name="finish">Finish</string>
     <string name="enter_word">Enter word</string>
     <string name="quiz">Quiz</string>
     <string name="answer">Answer</string>
     <string name="saved_succes_toast">Saved Successfully</string>
     <string name="create">Create</string>
     <string name="search">Search&#8230;</string>
-    <string name="start">Start</string>
     <string name="type_of_test">Type of test:</string>
-    <string name="true_false">True/False</string>
     <string name="answer_question">Answer/Question</string>
-    <string name="stopwatch">Stopwatch</string>
-    <string name="object_test">Object test:</string>
-    <string name="true_button">True</string>
-    <string name="false_button">False</string>
-    <string name="question">Question</string>
     <string name="select_all">Select all</string>
     <string name="word_count">Count: %1$s</string>
     <string name="_0">000</string>
-    <string name="difficult">Difficult:</string>
-    <string name="use">Used objects:</string>
     <string name="information">Information</string>
     <string name="comment">Comment:</string>
-    <string name="lack_of_words">Lack of words</string>
-    <string name="no_used_object">No one used object is selected</string>
-    <string name="your_used_object_have_empty_cells">Your used object have empty cells,
-        choose another object or used two objects</string>
-    <string name="is_empty">Is empty</string>
 
-    <!--    TODO: Тут должун быть правильный английский текст-->
-    <!--    <string name="enabled_type">Тут должен быть правильный английский текст 1</string>-->
-    <!--    <string name="enabled_object">Тут должен быть правильный английский текст 2</string>-->
-    <string name="linear_layout">Linear Layout</string>
-    <string name="grid_layout">Grid Layout</string>
-    <string name="echelon_layout">Echelon Layout</string>
-    <string name="skid_layout">Skid Layout</string>
-    <string name="apply">Apply</string>
-    <string name="group_detail_edit_text_hint">Group</string>
-    <string name="color_image_translation">color_image_translation</string>
-    <string name="testing_group">Testing: %1$s</string>
+
+    <string name="is_empty">Is empty</string>
     <string name="min_word_list_size">You need at least %1$d words</string>
-    <string name="min_group_list_size">You need at least %1$d groups</string>
     <string name="override_number_words">The number of words exceeds the allowed size</string>
-    <string name="min_transcript_list_size">You need at least %1$d words with transcription</string>
-    <string name="word_without_transcription">Some words do not have transcription, so they are not used</string>
-    <string name="select_some_word_else">Please select some words else</string>
-    <string name="close_select_mode">You must close select mode for this</string>
     <string name="diapason_error">Diapason Error</string>
-    <string name="do_not_select">You don`t select words in this mode</string>
-    <string name="view_list">View list</string>
-    <string name="duplicate_error">Duplicate error</string>
 
 
     <string name="home">Home</string>
@@ -91,9 +41,31 @@
     <string name="translate">Translate</string>
     <string name="associations_count">%1$d / %2$d</string> <!--"·" = &#183; / "•" = &#8226; символ-->
     <string name="add_association">Add association</string>
+<!--    TODO подумай о синониме-->
     <string name="learn">Learn</string>
     <string name="double_click_for_exit">Double click for exit</string>
     <string name="migrate">Migrate</string>
+    <string name="forward">Forward</string>
+    <string name="inverse">Inverse</string>
+    <string name="object">Object</string>
+    <string name="route">Route</string>
+    <string name="type">Type</string>
+    <string name="name">Name</string>
+    <string name="apply">Apply</string>
+    <string name="numbers">Числа</string>
+    <string name="number">Число</string>
+    <string name="dates">Даты</string>
+    <string name="date">Дата</string>
+    <string name="event">Событие</string>
+    <string name="texts">Текст</string>
+    <string name="text">Текст</string>
+    <string name="bond">Связь</string>
+    <string name="choice_answer">Выберите ответ:</string>
+    <string name="question_result">Вопрос №%1$d: %2$s</string>
+    <string name="answer_result">Ответ: %1$s</string>
+    <string name="user_answer_result">Ваш ответ: %1$s</string>
+    <string name="start">Start</string>
+    <string name="next">Next</string>
 
 
     <plurals name="association_items">

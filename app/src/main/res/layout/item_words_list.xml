@@ -2,76 +2,39 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
+    android:descendantFocusability="beforeDescendants"
     android:divider="?android:attr/dividerHorizontal"
+    android:focusableInTouchMode="true"
     android:gravity="center"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:showDividers="middle">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <EditText
+        android:id="@+id/original_editText"
+        style="@style/EditTextStyle.GroupDetailWords"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:descendantFocusability="beforeDescendants"
-        android:divider="?android:attr/dividerHorizontal"
-        android:focusableInTouchMode="true"
-        android:gravity="center"
-        android:showDividers="middle"
-        >
-
-        <EditText
-            android:id="@+id/original_editText"
-            style="@style/EditTextStyle.GroupDetailWords"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/original" />
+        android:layout_weight="1"
+        android:hint="@string/original"
+        />
 
 
-        <EditText
-            android:id="@+id/association_editText"
-            style="@style/EditTextStyle.GroupDetailWords"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/association" />
+    <EditText
+        android:id="@+id/association_editText"
+        style="@style/EditTextStyle.GroupDetailWords"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="@string/association" />
 
 
-        <EditText
-            android:id="@+id/translate_editText"
-            style="@style/EditTextStyle.GroupDetailWords"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/translate" />
-
-    </LinearLayout>
-
-    <!--
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/comment" />
-
-            <EditText
-                android:id="@+id/comment_editText"
-                style="@style/EditTextStyle.GroupDetailWords"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_weight="1"
-                android:gravity="start|center_vertical"
-                android:minHeight="32dp"
-                tools:text="Translate" />
-
-        </LinearLayout>
-    -->
+    <EditText
+        android:id="@+id/translate_editText"
+        style="@style/EditTextStyle.GroupDetailWords"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="@string/translate" />
 
 </LinearLayout>
 

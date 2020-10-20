@@ -18,13 +18,8 @@ public final class DataBaseSchema {
         public static final String _ID = BaseColumns._ID;
         public static final String NAME_GROUP = "name_group";
         public static final String UUID = "uuid";
-        // Всегда будет 3 цвета
         public static final String DRAWABLE = "drawable";
-
-        //TODO удалить, когда версия DB будет равна 7 (Сейчас 5 (21.09.2020))
-        public static final String COLOR_ONE = "color_one";
-        public static final String COLOR_TWO = "color_two";
-        public static final String COLOR_THREE = "color_three";
+        public static final String TYPE = "type";
     }
 
 
@@ -36,12 +31,13 @@ public final class DataBaseSchema {
         public static final String UUID = "uuid";
         public static final String UUID_GROUP = "uuid_group";
         public static final String ORIGINAL = "original";
-        // TODO Асоциаций может быть несколько, храниться будут одной строкой, String.split через "/"
         public static final String ASSOCIATION = "association";
         public static final String TRANSLATE = "translate";
         public static final String COMMENT = "comment";
-        //TODO удалить, когда версия DB будет равна 7 (Сейчас 5 (21.09.2020))
-        public static final String NAME_GROUP = "name_group";
+        public static final String DIFFICULT = "difficult";
+
+        public static final String EXAM = "exam";
+        public static final String TIME = "time";
     }
 
 }

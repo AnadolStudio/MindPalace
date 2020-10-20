@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginBottom="8dp"
+    app:cardBackgroundColor="@color/colorFalse"
+    app:cardCornerRadius="@dimen/radius8"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/question_TextView"
+            style="@style/TextViewStyle.ResultItem"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="start|center_vertical"
+            tools:text="@string/question_result" />
+
+        <!--        TODO Нужно добавить TextView с количеством повторений для каждого слова
+                     или что-то из того типа-->
+        <TextView
+            android:id="@+id/trueAnswer_TextView"
+            style="@style/TextViewStyle.ResultItem"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="start|center_vertical"
+            tools:text="@string/answer_result" />
+
+        <TextView
+            android:id="@+id/userAnswer_TextView"
+            style="@style/TextViewStyle.ResultItem"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="end|center_vertical"
+            tools:text="@string/user_answer_result" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
+

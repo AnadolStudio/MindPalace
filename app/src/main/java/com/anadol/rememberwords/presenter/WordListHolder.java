@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
 import com.anadol.rememberwords.R;
+import com.anadol.rememberwords.model.Group;
 import com.anadol.rememberwords.model.SimpleParent;
 import com.anadol.rememberwords.model.Word;
 import com.anadol.rememberwords.view.Fragments.GroupDetailFragment;
@@ -34,15 +35,17 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
         translate = itemView.findViewById(R.id.translate_editText);
 //        comment = itemView.findViewById(R.id.comment_editText);
         addListeners();
-
         sAdapter = mAdapter;
+
     }
 
     private void addListeners() {
         original.addTextChangedListener(new MyTextWatch(MyTextWatch.ORIGINAL));
         association.addTextChangedListener(new MyTextWatch(MyTextWatch.ASSOCIATION));
         translate.addTextChangedListener(new MyTextWatch(MyTextWatch.TRANSLATE));
-        translate.setFilters(new InputFilter[]{new TranslateFilter()});
+
+        association.setFilters(new InputFilter[]{new MultipleFilter()});
+        translate.setFilters(new InputFilter[]{new MultipleFilter()});
 
         original.setOnFocusChangeListener(this);
         association.setOnFocusChangeListener(this);
@@ -52,11 +55,36 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
         itemView.setOnLongClickListener(this);
     }
 
+    private void typeGroupSettings(int typeGroup) {
+        switch (typeGroup){
+            case Group.TYPE_NUMBERS:
+                original.setHint(R.string.number);
+                translate.setVisibility(View.GONE);
+                break;
+            case Group.TYPE_TEXTS:
+                original.setHint(R.string.text);
+                translate.setVisibility(View.GONE);
+                break;
+            case Group.TYPE_DATES:
+                original.setHint(R.string.date);
+                translate.setHint(R.string.event);
+                translate.setVisibility(View.VISIBLE);
+                break;
+
+            default:
+            case Group.TYPE_BOND:
+                translate.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
     @Override
     public void onBind(SimpleParent item, boolean isSelected) {
+        typeGroupSettings(sAdapter.getTypeGroup());
+
         mWord = (Word) item;
         original.setText(mWord.getOriginal());
-        association.setText(mWord.getAssociation());
+        association.setText(mWord.getMultiAssociationFormat());
         translate.setText(mWord.getMultiTranslateFormat());
 //        comment.setText(mWord.getComment());
         this.isSelected = isSelected;
@@ -100,27 +128,28 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
     }
 
     @Override
+    public boolean onLongClick(View v) {
+        if (!sAdapter.isSelectableMode()) {
+            isSelected = true;
+            sAdapter.putSelectedItem(mWord.getUUIDString(), isSelected);
+            Log.i(TAG, "onLongClick");
+//            setEnabledEditTexts(false);
+            sAdapter.setSelectableMode(true, getAdapterPosition());
+            return false;
+        }
+        return false;
+    }
+
+    @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        if (hasFocus){
+        if (hasFocus) {
             GroupDetailFragment fragment = (GroupDetailFragment) sAdapter.getFragment();
             fragment.editTextOnClick();
         }
     }
 
-    @Override
-    public boolean onLongClick(View v) {
-        if (!sAdapter.isSelectableMode()) {
-            isSelected = true;
-            setDrawable(isSelected);
-            sAdapter.putSelectedItem(mWord.getUUIDString(), true);
-            sAdapter.setSelectableMode(true, getAdapterPosition());
-            return true;
-        }
-        return false;
-    }
-
     private void setDrawable(boolean selected) {
-        Resources resources = sAdapter.getFragment().getResources();
+        Resources resources = sAdapter.getFragment().myResources();
         if (selected) {
             itemView.setBackground(new ColorDrawable(resources.getColor(R.color.colorAccent)));
         } else {
@@ -188,5 +217,4 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
             fragment.updateWordCount();
         }
     }
-
 }

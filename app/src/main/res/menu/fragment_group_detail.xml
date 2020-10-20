@@ -12,13 +12,11 @@
     <item
         android:id="@+id/menu_add_item"
         android:title="@string/add_association"
-        app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/menu_learn"
         android:title="@string/learn"
-        app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="never" />
 
     <item
@@ -31,6 +29,12 @@
         android:id="@+id/menu_sort_date"
         android:icon="@drawable/ic_sort_by_date"
         android:title="@string/sort_by_date"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/settings"
         app:showAsAction="never" />
 
 

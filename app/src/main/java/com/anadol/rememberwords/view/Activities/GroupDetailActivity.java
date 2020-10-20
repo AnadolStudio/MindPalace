@@ -7,7 +7,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.fragments.IOnBackPressed;
+import com.anadol.rememberwords.view.Fragments.IOnBackPressed;
 import com.anadol.rememberwords.model.Group;
 import com.anadol.rememberwords.view.Fragments.GroupDetailFragment;
 

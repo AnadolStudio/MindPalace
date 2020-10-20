@@ -1,12 +1,15 @@
 package com.anadol.rememberwords.presenter;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
 import com.anadol.rememberwords.R;
@@ -42,6 +45,7 @@ public class GroupListHolder extends MySimpleHolder implements View.OnClickListe
     public void onClick(View v) {
         int position = getAdapterPosition();
         if (position == -1) return;
+
         if (sAdapter.isSelectableMode()) {
             isSelected = !isSelected;
             sAdapter.putSelectedItem(mGroup.getUUIDString(), isSelected);
@@ -65,12 +69,10 @@ public class GroupListHolder extends MySimpleHolder implements View.OnClickListe
 
     private void setDrawable(boolean selected) {
         if (selected) {
-            Resources resources = sAdapter.getFragment().getResources();
-//                mImageView.setImageDrawable(resources.getDrawable(R.drawable.ic_check));
-            // TODO temp
-            mImageView.setImageDrawable(new ColorDrawable(resources.getColor(R.color.colorAccent)));
+            Resources resources = sAdapter.getResources();
+            mImageView.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.check_group, null));
         } else {
-            mImageView.setImageDrawable(mGroup.getGroupDrawable());
+            mGroup.getImage(mImageView);
         }
     }
 

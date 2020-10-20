@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.fragments.IOnBackPressed;
+import com.anadol.rememberwords.view.Fragments.IOnBackPressed;
 import com.anadol.rememberwords.view.Fragments.GroupListFragment;
 import com.anadol.rememberwords.view.Fragments.SettingsFragment;
 import com.anadol.rememberwords.view.Fragments.StatisticFragment;
@@ -25,14 +25,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         bind();
         setup();
-
-        FragmentManager fm = getSupportFragmentManager();
-
-        if (fm.findFragmentById(R.id.fragment_container) == null) {
-            fm.beginTransaction()
-                    .add(R.id.fragment_container, GroupListFragment.newInstance())
-                    .commit();
-        }
     }
 
     @Override
@@ -48,23 +40,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setup() {
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                int id = menuItem.getItemId();
+        bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
+            int id = menuItem.getItemId();
 
-                switch (id) {
-                    case R.id.navigation_home:
-                        return addFragment(GroupListFragment.newInstance());
-                    case R.id.navigation_statistic:
-                        return addFragment(StatisticFragment.newInstance());
-                    case R.id.navigation_settings:
-                        return addFragment(SettingsFragment.newInstance());
-                }
-
-                return false;
+            switch (id) {
+                case R.id.navigation_statistic:
+                    return addFragment(StatisticFragment.newInstance());
+                case R.id.navigation_home:
+                    return addFragment(GroupListFragment.newInstance());
+                case R.id.navigation_settings:
+                    return addFragment(SettingsFragment.newInstance());
             }
+
+            return false;
         });
+        bottomNavigationView.setSelectedItemId(R.id.navigation_home);
     }
 
     private boolean addFragment(Fragment f) {

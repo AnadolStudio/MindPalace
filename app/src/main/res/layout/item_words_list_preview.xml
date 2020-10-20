@@ -3,45 +3,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center"
     android:divider="?android:attr/dividerHorizontal"
+    android:gravity="center"
+    android:minHeight="48dp"
+    android:orientation="horizontal"
     android:showDividers="middle">
 
     <TextView
         android:id="@+id/original_textView"
+        style="@style/TextViewStyle.WordListPreview"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"
-        android:gravity="center"
-        android:minHeight="32dp"
-        android:textColor="@android:color/black"
-        android:textSize="14sp"
         tools:text="Original" />
 
     <TextView
         android:id="@+id/association_textView"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_margin="4dp"
         android:layout_weight="1"
-        android:gravity="center"
-        android:minHeight="32dp"
-        tools:text="Transcription"
-        android:textColor="@android:color/black"
-        android:textSize="14sp" />
+        style="@style/TextViewStyle.WordListPreview"
+        tools:text="Transcription" />
 
 
     <TextView
         android:id="@+id/translate_textView"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"
-        android:gravity="center"
-        android:minHeight="32dp"
-        android:textColor="@android:color/black"
-        android:textSize="14sp"
+        style="@style/TextViewStyle.WordListPreview"
         tools:text="Translate" />
 
 

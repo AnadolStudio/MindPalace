@@ -5,7 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,7 +16,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,17 +26,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.activities.LearnStartActivity;
-import com.anadol.rememberwords.fragments.ColorPicker;
-import com.anadol.rememberwords.fragments.IOnBackPressed;
 import com.anadol.rememberwords.model.CreatorValues;
 import com.anadol.rememberwords.model.DataBaseSchema.Groups;
 import com.anadol.rememberwords.model.DataBaseSchema.Words;
@@ -46,17 +41,20 @@ import com.anadol.rememberwords.model.Word;
 import com.anadol.rememberwords.presenter.IdComparator;
 import com.anadol.rememberwords.presenter.MyListAdapter;
 import com.anadol.rememberwords.presenter.SlowLinearLayoutManager;
+import com.anadol.rememberwords.presenter.StringIntegerComparator;
 import com.anadol.rememberwords.presenter.WordItemHelperCallBack;
+import com.anadol.rememberwords.view.Dialogs.LearnBottomSheet;
+import com.anadol.rememberwords.view.Dialogs.SettingsBottomSheet;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
-import static com.anadol.rememberwords.model.Group.NON_COLOR;
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static com.anadol.rememberwords.view.Dialogs.LearnBottomSheet.MIN_COUNT_WORDS;
 import static com.anadol.rememberwords.view.Fragments.GroupDetailFragment.WordBackground.DELETE_WORDS;
 import static com.anadol.rememberwords.view.Fragments.GroupDetailFragment.WordBackground.GET_WORDS;
 import static com.anadol.rememberwords.view.Fragments.GroupDetailFragment.WordBackground.INSERT_WORD;
@@ -71,28 +69,28 @@ import static com.anadol.rememberwords.view.Fragments.GroupListFragment.KEY_SELE
 public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     public static final String GROUP = "group";
     public static final String WORD_SAVE = "word_save";
-    public static final String POSITION = "position";
-    private static final String TAG = "GroupDetailFragment";
-    private static final String DIALOG_COLOR = "color";
+    private static final String TAG = GroupDetailFragment.class.getName();
     private static final String KEY_SEARCH_QUERY = "search_query";
-    private static final int REQUEST_DRAWABLE = 1;
-    private static final int REQUEST_MULTI_TRANSLATE = 2;
+    private static final int REQUEST_UPDATE_GROUP = 1;
     private static long backPressed;
+
     private RecyclerView mRecyclerView;
-    private MyListAdapter<Word> mAdapter;
-    private Group mGroup;
-    private ArrayList<Word> mWords;
     private ImageView imageView;
-    private ArrayList<String> selectStringArray;
-    private boolean selectable;
+    private TextView typeGroup;
     private TextView countWordsTextView;
-    private Toolbar toolbar;
-    private Snackbar mSnackbar;
+    private Toolbar mToolbar;
     private FloatingActionButton fabAdd;
     private MaterialButton mButtonLearnStart;
     private TextView titleToolbar;
     private SearchView searchView;
+
+    private MyListAdapter<Word> mAdapter;
+    private Group mGroup;
+    private ArrayList<Word> mWords;
+    private ArrayList<String> selectStringArray;
+    private boolean selectable;
     private String searchQuery;
+
     private WordBackground background;
 
     public static GroupDetailFragment newInstance(Group group) {
@@ -111,6 +109,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     }
 
     private void saveData(@NonNull Bundle outState) {
+        outState.putParcelable(GROUP, mGroup);
         outState.putParcelableArrayList(WORD_SAVE, mWords);
         outState.putBoolean(KEY_SELECT_MODE, mAdapter.isSelectableMode());
         selectStringArray = mAdapter.getSelectedStringArray();
@@ -133,7 +132,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         setListeners();
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.setSupportActionBar(toolbar);
+        activity.setSupportActionBar(mToolbar);
 
 
         if (savedInstanceState != null) {
@@ -145,9 +144,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     }
 
     private void setupAdapter() {
-        mAdapter = new MyListAdapter<>(this, mWords, MyListAdapter.WORD_HOLDER, selectStringArray, selectable);
+        mAdapter = new MyListAdapter<>(this, mWords, MyListAdapter.WORD_HOLDER, selectStringArray, selectable, mGroup.getType());
         mRecyclerView.setAdapter(mAdapter);
-//        addAnimation();
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new WordItemHelperCallBack(mAdapter));
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
@@ -155,41 +153,44 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     private void bind(View view) {
         imageView = view.findViewById(R.id.group_color);
         mRecyclerView = view.findViewById(R.id.recycler_view);
+        typeGroup = view.findViewById(R.id.type_group);
         countWordsTextView = view.findViewById(R.id.count_text);
-
-        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        mToolbar = view.findViewById(R.id.toolbar);
         fabAdd = view.findViewById(R.id.fab_add);
         titleToolbar = view.findViewById(R.id.name_group);
         mButtonLearnStart = view.findViewById(R.id.button_startLearn);
     }
 
     private void getData(Bundle savedInstanceState) {
-        mGroup = getArguments().getParcelable(GROUP);
 
         if (savedInstanceState != null) {
             mWords = savedInstanceState.getParcelableArrayList(WORD_SAVE);
             selectStringArray = savedInstanceState.getStringArrayList(KEY_SELECT_LIST);
             selectable = savedInstanceState.getBoolean(KEY_SELECT_MODE);
             searchQuery = savedInstanceState.getString(KEY_SEARCH_QUERY);
+            mGroup = savedInstanceState.getParcelable(GROUP);
         } else {
             mWords = new ArrayList<>();
+            mGroup = getArguments().getParcelable(GROUP);
             doInBackground(GET_WORDS);
             selectable = false;
             searchQuery = "";
         }
     }
 
+    private void bindDataWithView() {
+        updateGroup();
+
+        SlowLinearLayoutManager manager = new SlowLinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(manager);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
+
+        titleToolbar.setSelected(true);// Чтобы пошла анимация бегущей строки
+    }
+
     private void setListeners() {
-        imageView.setOnClickListener(v -> {
-            FragmentManager fm = getFragmentManager();
-            DialogFragment dialog = ColorPicker.newInstance(mGroup.getColors());
-            dialog.setTargetFragment(GroupDetailFragment.this, REQUEST_DRAWABLE);
-            dialog.show(fm, DIALOG_COLOR);
-        });
         fabAdd.setOnClickListener(v -> {
             createAssociation();
-            /*BottomSheetDialogLearnResult settings = BottomSheetDialogLearnResult.newInstance();
-            settings.show(getFragmentManager(), "bottom_sheet_dialog_fragment_learn");*/
         });
         mRecyclerView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
             // Движение вниз
@@ -201,11 +202,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
             }
         });
         mButtonLearnStart.setOnClickListener(v -> {
-            createLearnStartActivity();
-/*
-            BottomSheetDialogFragmentLearn settings = BottomSheetDialogFragmentLearn.newInstance();
-            settings.show(getFragmentManager(), "bottom_sheet_dialog_fragment_learn");
-*/
+            createBottomSheetLearnDialog();
         });
 
     }
@@ -221,19 +218,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     }
 
     public void editTextOnClick() {
+        // TODO переделать на слушателя поднятия клавиатуры
         setVisibleFab(false);
-    }
-
-    private void bindDataWithView() {
-        imageView.setImageDrawable(mGroup.getGroupDrawable());
-
-        SlowLinearLayoutManager manager = new SlowLinearLayoutManager(getContext());
-        mRecyclerView.setLayoutManager(manager);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
-
-        fabAdd.setColorFilter(Color.rgb(255, 255, 255));// TODO это обязательно?
-        titleToolbar.setText(mGroup.getName());
-        titleToolbar.setSelected(true);
     }
 
     @Override
@@ -242,43 +228,9 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         updateWordCount();
     }
 
-    private void addAnimation() {
-        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(
-                new ViewTreeObserver.OnPreDrawListener() {
-
-                    @Override
-                    public boolean onPreDraw() {
-
-                        int parent = mRecyclerView.getRight();
-
-                        for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
-                            View v = mRecyclerView.getChildAt(i);
-//                                v.setAlpha(0.0f);
-                            //TODO протестировать с alpha
-                            v.setX(-parent);
-                            v.animate().translationX(1.0f)
-                                    .setDuration(200)
-                                    .setStartDelay(i * 50)
-                                    .start();
-                            v.animate().setStartDelay(0);//возвращаю дефолтное значение
-
-                            if (i > 15) {
-                                break;
-                            }
-                        }
-
-                        mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
-                        Log.i(TAG, "Remove OnPreDrawListener");
-                        return true;
-                    }
-                });
-    }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //TODO: Буду использовать другую анимацию
-//        addTransitionListener();
     }
 
     @Override
@@ -292,7 +244,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu = toolbar.getMenu();
+        menu = mToolbar.getMenu();
         super.onCreateOptionsMenu(menu, inflater);
 
         switch (mode) {
@@ -315,11 +267,12 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                 MenuItem menuSearch = menu.findItem(R.id.menu_search_detail);
 
                 searchView = (SearchView) menuSearch.getActionView();
+                searchView.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI); // тоже что и textNoSuggestions
                 searchView.setQueryHint(getResources().getString(R.string.search));
                 setMenuItemsListeners();
 
                 if (!searchQuery.equals("")) {
-                    searchView.setIconified(false); // не помню зачем нужен этот метод
+                    searchView.setIconified(false); // если поставть false то при повороте НЕ закроет SearchView
                     searchView.setQuery(searchQuery, true);
                 }
                 break;
@@ -328,14 +281,17 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     }
 
     private void setMenuItemsListeners() {
+        Configuration configuration = getResources().getConfiguration();
+        int orientation = configuration.orientation;
+
         searchView.setOnSearchClickListener(v -> {
             mode = MODE_SEARCH;
-            titleToolbar.setVisibility(View.GONE);
+            if (orientation != ORIENTATION_LANDSCAPE) titleToolbar.setVisibility(View.GONE);
         });
 
         searchView.setOnCloseListener(() -> {
             mode = MODE_NORMAL;
-            titleToolbar.setVisibility(View.VISIBLE);
+            if (orientation != ORIENTATION_LANDSCAPE) titleToolbar.setVisibility(View.VISIBLE);
             return false;
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -346,6 +302,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
 
             @Override
             public boolean onQueryTextChange(String s) {
+                Log.i(TAG, "onQueryTextChange");
                 searchQuery = s;
                 mAdapter.getFilter().filter(searchQuery);
                 return true;
@@ -364,11 +321,13 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                 createAssociation();
                 return true;
             case R.id.menu_learn:
-                createLearnStartActivity();
+                createBottomSheetLearnDialog();
+                return true;
+            case R.id.menu_settings:
+                createBottomSheetSettingDialog();
                 return true;
             case R.id.menu_sort_alphabetically:
-                // TODO сортировка Integer будет проводиться только для группы Числа
-                Collections.sort(mWords);
+                Collections.sort(mWords, new StringIntegerComparator());
                 updateSearchView();
                 mAdapter.notifyDataSetChanged();
                 return true;
@@ -382,8 +341,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                 selectAll(selectAllItems);
                 return true;
             case R.id.menu_migrate:
-                //TODO
-                Toast.makeText(getContext(),"Migrate", Toast.LENGTH_SHORT).show();
+                //TODO migrate
+                Toast.makeText(getContext(), "Migrate", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -391,8 +350,9 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     }
 
     private void updateSearchView() {
+        CharSequence chars = searchView.getQuery();
         searchView.setQuery("", false);
-        searchView.setQuery(searchQuery, false);
+        searchView.setQuery(chars, false);
     }
 
     private void createAssociation() {
@@ -400,7 +360,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     }
 
     private void doInBackground(String insertWord) {
-        if (insertWord.equals(GET_WORDS)) showLoadingDialog();
+        if (insertWord.equals(GET_WORDS) | insertWord.equals(UPDATE_GROUP)) showLoadingDialog();
 
         background = new WordBackground();
         background.execute(insertWord);
@@ -409,7 +369,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     void selectAll(boolean select) {
         mAdapter.setAllItemSelected(select);
         updateActionBarTitle();
-        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -444,41 +403,35 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         }
 
         switch (requestCode) {
-            case REQUEST_DRAWABLE:
-                int[] newColors = data.getIntArrayExtra(ColorPicker.EXTRA_GRADIENT);
-                int[] colors = new int[3];
-                int i = 0;
-                for (int c : newColors) {
-                    colors[i] = c;
-                    i++;
-                }
-                while (i != 3) {
-                    colors[i] = NON_COLOR;
-                    i++;
-                }
-
-                mGroup.setColors(colors);
-                imageView.setImageDrawable(mGroup.getGroupDrawable());
-                break;
-            case REQUEST_MULTI_TRANSLATE:
-                int p = data.getIntExtra(POSITION, 0);
-                mAdapter.notifyItemChanged(p);
+            case REQUEST_UPDATE_GROUP:
+                Group newGroup = data.getParcelableExtra(GROUP);
+                mGroup = new Group(newGroup);
+                updateGroup();
+                mAdapter.setTypeGroup(mGroup.getType());
+                mAdapter.notifyDataSetChanged();
                 break;
         }
+    }
+
+    private void updateGroup() {
+        mGroup.getImage(imageView);
+        titleToolbar.setText(mGroup.getName());
+        typeGroup.setText(getString(mGroup.getType()));
     }
 
     public void changeSelectableMode(boolean selectable) {
         if (selectable) {
             mode = MODE_SELECT;
-/*            if (searchView != null && searchView.isShown()) {
+            if (searchView != null && !searchView.isIconified()) {
                 searchView.onActionViewCollapsed();
-            }*/
+            }
             fabAdd.hide();
         } else {
-            mAdapter.setSelectableMode(false);
             mode = MODE_NORMAL;
+            mAdapter.setSelectableMode(false);
             fabAdd.show();
         }
+        Log.i(TAG, "changeSelectableMode");
         updateActionBarTitle();
     }
 
@@ -490,32 +443,31 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         activity.finish();
     }
 
-    private void createLearnStartActivity() {
-        Intent intent;
-        ArrayList<Word> words = removeEmptyWords(mWords);
-        if (words.size() < 2) {
-            String s = getString(R.string.min_word_list_size, 2);
+    private void createBottomSheetLearnDialog() {
+        ArrayList<Word> words;
+        if (mode == MODE_SELECT) {
+            words = removeEmptyWords(mAdapter.getSelectedItems());
+        } else {
+            words = removeEmptyWords(mWords);
+        }
+        if (words.size() < MIN_COUNT_WORDS) {
+            String s = getString(R.string.min_word_list_size, MIN_COUNT_WORDS);
             Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
             return;
         }
         showLoadingDialog();
-
-        intent = LearnStartActivity.newIntent(getContext(), mGroup, words, this::hideLoadingDialog);
-        startActivity(intent);
+        LearnBottomSheet learnDialog = LearnBottomSheet.newInstance(mGroup.getType(), words);
+        learnDialog.show(getFragmentManager(), LearnBottomSheet.class.getName());
+        hideLoadingDialog();
     }
 
-    private void saveGroup() {/*
-        String name = nameGroup.getText().toString().trim();
-        // Групп с именем "" быть не должно
-        if (!name.equals(mGroup.getName())) {
-            if (name.equals("")) {
-                nameGroup.setError(getString(R.string.is_empty));
-                return;
-            }
+    private void createBottomSheetSettingDialog() {
+        SettingsBottomSheet settingsDialog = SettingsBottomSheet.newInstance(mGroup);
+        settingsDialog.setTargetFragment(this, REQUEST_UPDATE_GROUP);
+        settingsDialog.show(getFragmentManager(), SettingsBottomSheet.class.getName());
+    }
 
-        }
-        mGroup.setName(name);*/
-        //    TODO эта ф-ия перейдет в BottomSheet
+    private void saveGroup() {
         doInBackground(UPDATE_GROUP);
     }
 
@@ -529,18 +481,14 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     private void updateActionBarTitle() {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.invalidateOptionsMenu();
-        if (mode == MODE_SELECT) {
-            updateCountSelectedItems();
-        } else {
-            activity.getSupportActionBar().setTitle(getString(R.string.app_name));
+        if (mode != MODE_SELECT) {
+            titleToolbar.setText(mGroup.getName());
         }
     }
 
     private void updateCountSelectedItems() {
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
         int selectCount = mAdapter.getCountSelectedItems();
-        Log.i(TAG, "updateCountSelectedItems: " + selectCount);
-        activity.getSupportActionBar().setTitle(String.valueOf(selectCount));
+        titleToolbar.setText(String.valueOf(selectCount));
     }
 
     @Override
@@ -550,13 +498,25 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     }
 
     private ArrayList<Word> removeEmptyWords(ArrayList<Word> words) {
-        // TODO: можно ли улучшить? (Для других типов групп)
         ArrayList<Word> tempList = new ArrayList<>(words);
         for (Word w : words) {
             // Если имеет пустые поля
-            if (w.getOriginal().equals("") || w.getTranslate().equals("")
-                /*|| w.getAssociation().equals("")*/) {
-                tempList.remove(w);
+            switch (mGroup.getType()) {
+                case Group.TYPE_NUMBERS:
+                case Group.TYPE_TEXTS:
+                    if (w.getOriginal().equals("") || w.getAssociation().equals("")) {
+                        tempList.remove(w);
+                    }
+                    break;
+
+                default:
+                case Group.TYPE_DATES:
+                case Group.TYPE_BOND:
+                    if (w.getOriginal().equals("") || w.getTranslate().equals("")
+                            || w.getAssociation().equals("")) {
+                        tempList.remove(w);
+                    }
+                    break;
             }
         }
         return tempList;
@@ -587,13 +547,18 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
             String translate;
             String association;
             String comment;
+            Word.Difficult difficult;
 
             ContentResolver contentResolver = getActivity().getContentResolver();
 
             try {
                 switch (cmd) {
                     case UPDATE_GROUP:
-                        ContentValues values = CreatorValues.createGroupValues(mGroup.getUUID(), mGroup.getName(), mGroup.getColorsString(), mGroup.getColors());
+                        ContentValues values = CreatorValues.createGroupValues(
+                                mGroup.getUUID(),
+                                mGroup.getName(),
+                                mGroup.getStringDrawable(),
+                                mGroup.getType());
 
                         contentResolver.update(
                                 ContentUris.withAppendedId(Groups.CONTENT_URI, mGroup.getTableId()),
@@ -615,16 +580,33 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                         association = "";
                         translate = "";
                         comment = "";
+                        difficult = Word.Difficult.EASY;
+
 
                         Uri uri = contentResolver.insert(
                                 Words.CONTENT_URI,
-                                CreatorValues.createWordsValues(uuid, mGroup.getUUIDString(), original, translate, association, comment));
+                                CreatorValues.createWordsValues(
+                                        uuid,
+                                        mGroup.getUUIDString(),
+                                        original,
+                                        translate,
+                                        association,
+                                        comment,
+                                        difficult.toString()));
 
                         Long l = (ContentUris.parseId(uri));
                         int idNewWord = Integer.valueOf(l.intValue());
                         Log.i(TAG, "_ID new word : " + idNewWord);
 
-                        mWordTemp = new Word(idNewWord, uuid, original, translate, association, mGroup.getUUIDString(), comment);
+                        mWordTemp = new Word(
+                                idNewWord,
+                                uuid,
+                                mGroup.getUUID(),
+                                original,
+                                association,
+                                translate,
+                                comment,
+                                difficult.toString());
 
                         return true;
 
@@ -644,10 +626,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                                 words.add(cursor.getWord());
                                 cursor.moveToNext();
                             }
-
-                            // TODO сортировка будет доступна из меню
-                            Collections.sort(words);
                             mWords.addAll(words);
+                            Collections.sort(mWords, new StringIntegerComparator());
                         }
                         return true;
 
@@ -684,6 +664,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
             switch (cmd) {
                 case UPDATE_GROUP:
                     dataIsChanged();
+                    hideLoadingDialog();
                     break;
                 case INSERT_WORD:
                     mRecyclerView.smoothScrollToPosition(0);

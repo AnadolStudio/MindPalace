@@ -1,32 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#212121</color>
-    <color name="colorSecondary">#42a5f5</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#42a5f5</color>
     <color name="background">#F6F6F6</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorDarkWhite">#D7D7D7</color>
     <color name="colorPrimaryText">#212121</color>
     <color name="colorSecondaryText">#757575</color>
+    <color name="colorSecondaryTextShadow">#AAAAAA</color>
     <color name="colorDivider">#ECECEC</color>
     <color name="colorShadowBackground">#4D000000</color>
-
-
-    <color name="colorChecked">#B2B4001E</color>
-    <!--    <color name="colorAccent">#707070</color>-->
-    <color name="colorError">#777777</color>
-
-    <color name="colorDarkWhite">#DDDDDD</color>
-    <color name="colorDefaultBackground">#FAFAFA</color>
-    <color name="colorSelected">#068CDA</color>
     <color name="colorProgressBarBackground">#667E7E7E</color>
-    <color name="colorLightBlack">#6B6B6B</color>
-    <color name="textColorPrimary">#2C2C2C</color>
-
-    <color name="colorBoundsCardTypeTest">@color/colorPrimaryDark</color>
-    <color name="colorBackgroundCardTypeTest">@color/colorAccent</color>
-    <color name="colorBackgroundDisableCardTypeTest">@color/colorError</color>
+    <color name="colorDefaultBackground">#FAFAFA</color>
+    <color name="colorError">#777777</color>
 
     <color name="colorMistake">#D50000</color>
     <color name="colorCheckBackground">#4D373737</color>
+    <color name="colorTrue">#689F38</color>
+    <color name="colorFalse">#B71C1C</color>
 </resources>

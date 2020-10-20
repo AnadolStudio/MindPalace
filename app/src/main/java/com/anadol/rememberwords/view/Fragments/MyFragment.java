@@ -1,12 +1,16 @@
 package com.anadol.rememberwords.view.Fragments;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-public abstract class MyFragment extends Fragment {
+import com.anadol.rememberwords.view.Dialogs.LoadingDialog;
+import com.anadol.rememberwords.view.Dialogs.LoadingView;
+
+public abstract class MyFragment extends Fragment implements FragmentAdapter{
     public static final String MODE = "mode";
     public static final int MODE_NORMAL = 0;
     public static final int MODE_SEARCH = 1;
@@ -17,7 +21,8 @@ public abstract class MyFragment extends Fragment {
     protected int mode = MODE_NORMAL;
     protected LoadingView mLoadingView;
 
-    public abstract void updateUI();
+    @Override
+    public void updateUI() {}
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -29,7 +34,12 @@ public abstract class MyFragment extends Fragment {
         return mode;
     }
 
-    public void changeSelectableMode(boolean selected) {
+    @Override
+    public void changeSelectableMode(boolean selected) {}
+
+    @Override
+    public Resources myResources() {
+        return getResources();
     }
 
     @Override
@@ -51,4 +61,6 @@ public abstract class MyFragment extends Fragment {
     public void hideLoadingDialog() {
         if (mLoadingView != null) mLoadingView.hideLoadingIndicator();
     }
+
+
 }

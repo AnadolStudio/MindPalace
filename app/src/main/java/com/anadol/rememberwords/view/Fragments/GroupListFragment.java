@@ -17,19 +17,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.FrameLayout;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.fragments.IOnBackPressed;
 import com.anadol.rememberwords.model.CreatorValues;
 import com.anadol.rememberwords.model.DataBaseSchema.Groups;
 import com.anadol.rememberwords.model.DataBaseSchema.Words;
@@ -39,6 +38,7 @@ import com.anadol.rememberwords.presenter.IdComparator;
 import com.anadol.rememberwords.presenter.MyListAdapter;
 import com.anadol.rememberwords.presenter.SlowGridLayoutManager;
 import com.anadol.rememberwords.view.Activities.GroupDetailActivity;
+import com.google.android.material.appbar.AppBarLayout.LayoutParams;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
+import static com.anadol.rememberwords.presenter.MyAnimations.addTranslationAnim;
 import static com.anadol.rememberwords.presenter.MyListAdapter.GROUP_HOLDER;
 import static com.anadol.rememberwords.view.Fragments.GroupListFragment.GroupBackground.DELETE_GROUP;
 import static com.anadol.rememberwords.view.Fragments.GroupListFragment.GroupBackground.GET_GROUPS;
@@ -66,6 +67,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     private RecyclerView mRecyclerView;
     private SearchView searchView;
     private FloatingActionButton fab;
+    private Toolbar mToolbar;
 
     private ArrayList<Group> mGroupsList;
     private MyListAdapter<Group> mAdapter;
@@ -110,9 +112,13 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         getData(savedInstanceState);
         setListeners();
 
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(mToolbar);
+
         if (savedInstanceState != null) {
-            mAdapter = new MyListAdapter<>(this, mGroupsList, GROUP_HOLDER, selectedStringArray, selectable);
-            mRecyclerView.setAdapter(mAdapter);
+            setupAdapter();
+        } else {
+            addTranslationAnim(mRecyclerView);
         }
         mRecyclerView.setLayoutManager(createGridLayoutManager());
 
@@ -120,9 +126,10 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     }
 
     private void bind(View view) {
-        FrameLayout frameLayout = view.findViewById(R.id.group_list_container);
         fab = view.findViewById(R.id.fab);
-        mRecyclerView = frameLayout.findViewById(R.id.recycler);
+        mRecyclerView = view.findViewById(R.id.recycler);
+        mToolbar = view.findViewById(R.id.toolbar);
+
     }
 
     private void getData(Bundle savedInstanceState) {
@@ -147,6 +154,15 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
 
     private void setListeners() {
         fab.setOnClickListener(v -> createGroup());
+        mRecyclerView.setOnScrollChangeListener((v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+            // Движение вниз
+            if (oldScrollY < scrollY) {
+                fab.hide();
+                // Движение вверх
+            } else if (oldScrollY > scrollY) {
+                fab.show();
+            }
+        });
     }
 
     private SlowGridLayoutManager createGridLayoutManager() {
@@ -179,25 +195,31 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu = mToolbar.getMenu();
         super.onCreateOptionsMenu(menu, inflater);
         Log.i(TAG, "onCreateOptionsMenu: " + mode);
         switch (mode) {
             case MODE_NORMAL:
             case MODE_SEARCH:
+                setScrollFlags(false);
                 inflater.inflate(R.menu.fragment_group_list, menu);
                 MenuItem menuSearch = menu.findItem(R.id.menu_search_list);
 
                 searchView = (SearchView) menuSearch.getActionView();
+                searchView.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI); // тоже что и textNoSuggestions
                 searchView.setQueryHint(getResources().getString(R.string.search));
                 setMenuItemsListeners();
 
                 if (!searchQuery.equals("")) {
-                    searchView.setIconified(false); // не помню зачем нужен этот метод
+                    searchView.setIconified(false); // если поставть false то при повороте НЕ закроет SearchView
+
                     searchView.setQuery(searchQuery, true);
                 }
                 break;
 
             case MODE_SELECT:
+                setScrollFlags(true);
+
                 inflater.inflate(R.menu.menu_group_list_selected, menu);
                 MenuItem select = menu.findItem(R.id.menu_select_all);
 
@@ -213,7 +235,20 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         }
     }
 
+    private void setScrollFlags(boolean isSelected) {
+        LayoutParams layoutParams = (LayoutParams) mToolbar.getLayoutParams();
+        if (!isSelected) {
+            layoutParams.setScrollFlags(LayoutParams.SCROLL_FLAG_SCROLL
+                    | LayoutParams.SCROLL_FLAG_SNAP
+                    | LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+        } else {
+            layoutParams.setScrollFlags(LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
+        }
+        mToolbar.setLayoutParams(layoutParams);
+    }
+
     private void setMenuItemsListeners() {
+        Log.i(TAG, "setMenuItemsListeners");
         searchView.setOnSearchClickListener(v -> {
             mode = MODE_SEARCH;
 //            setActionBarTitle("");
@@ -224,6 +259,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
             setActionBarTitle(getString(R.string.app_name));
             return false;
         });
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
@@ -265,25 +301,26 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     }
 
     private void updateSearchView() {
+        Log.i(TAG, "updateSearchView");
+        CharSequence chars = searchView.getQuery();
         searchView.setQuery("", false);
-        searchView.setQuery(searchQuery, false);
+        searchView.setQuery(chars, false);
     }
 
 
     void selectAll(boolean select) {
         mAdapter.setAllItemSelected(select);
         updateActionBarTitle();
-        mAdapter.notifyDataSetChanged();
     }
 
     public void startDetailActivity(Group group) {
         showLoadingDialog();
 
         Intent intent = GroupDetailActivity.newIntent(getActivity(), group, this::hideLoadingDialog);
-        // TODO хочу другую анимацию
         startActivityForResult(intent, REQUIRED_CHANGE);
         searchQuery = "";
         searchView.setQuery(searchQuery, false);
+        searchView.onActionViewCollapsed();
     }
 
     @Override
@@ -310,7 +347,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     public void changeSelectableMode(boolean selectable) {
         if (selectable) {
             mode = MODE_SELECT;
-            if (searchView != null && searchView.isShown()) {
+            if (searchView != null && !searchView.isIconified()) {
                 searchView.onActionViewCollapsed();
             }
             fab.hide();
@@ -373,56 +410,12 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         updateActionBarTitle();
     }
 
-    // TODO почему я использую addTranslationAnim в адаптере а не в onCreate/onPost
-    private void addTranslationAnim() {
-        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(
-                new ViewTreeObserver.OnPreDrawListener() {
 
-                    @Override
-                    public boolean onPreDraw() {
-
-                        int parent = mRecyclerView.getBottom();
-
-                        for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
-                            View v = mRecyclerView.getChildAt(i);
-                            //TODO: изменить анимацию на проявление (Alpha) и уменьшить задержку, внизу есть заготовка к этому
-
-//                                v.setAlpha(0.0f);
-                            v.setY(parent);
-                            v.animate().translationY(1.0f)
-                                    .setDuration(400)
-                                    .setStartDelay(i * 50)
-                                    .start();
-                            v.animate().setStartDelay(0);//возвращаю дефолтное значение
-                        }
-
-                        mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
-                        return true;
-                    }
-                });
+    private void setupAdapter() {
+//        addAlphaAnim();
+        mAdapter = new MyListAdapter<>(GroupListFragment.this, mGroupsList, GROUP_HOLDER, selectedStringArray, selectable);
+        mRecyclerView.setAdapter(mAdapter);
     }
-
-    private void addAlphaAnim() {
-        mRecyclerView.getViewTreeObserver().addOnPreDrawListener(
-                new ViewTreeObserver.OnPreDrawListener() {
-
-                    @Override
-                    public boolean onPreDraw() {
-
-                        for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
-                            View v = mRecyclerView.getChildAt(i);
-                            v.setAlpha(0.0f);
-                            v.animate().alpha(1.0f)
-                                    .setDuration(200)
-                                    .start();
-                        }
-
-                        mRecyclerView.getViewTreeObserver().removeOnPreDrawListener(this);
-                        return true;
-                    }
-                });
-    }
-
 
     public class GroupBackground extends AsyncTask<String, Void, Boolean> {
         static final String GET_GROUPS = "get_groups";
@@ -489,24 +482,19 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                         UUID uuid = UUID.randomUUID();
                         String name = getString(R.string.new_group);
 
-                        int[] ints = new int[]{
-                                Color.BLACK,
-                                Color.BLUE,
-                                Color.BLACK};
-
-                        String colors = Group.getColorsStringFromInts(ints);
+                        String colors = Group.getColorsStringFromInts(Group.getDefaultColors());
                         ContentValues values = CreatorValues.createGroupValues(
                                 uuid,
                                 name,
                                 colors,
-                                ints);
+                                Group.TYPE_NUMBERS);
                         Uri uri = contentResolver.insert(Groups.CONTENT_URI, values);
 
                         // Это более правильный метод конвертации long в int
                         Long l = (ContentUris.parseId(uri));
                         int idNewGroup = Integer.valueOf(l.intValue());
                         Log.i(TAG, "_ID new group : " + idNewGroup);
-                        mGroupTemp = new Group(idNewGroup, uuid, colors, name);
+                        mGroupTemp = new Group(idNewGroup, uuid, colors, name, Group.TYPE_NUMBERS);
                         return true;
 
                     case DELETE_GROUP:
@@ -560,11 +548,9 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                     mRecyclerView.smoothScrollToPosition(position);
                     break;
                 case GET_GROUPS:
-                    mAdapter = new MyListAdapter<>(GroupListFragment.this, mGroupsList, GROUP_HOLDER, null, selectable);
-                    mRecyclerView.setAdapter(mAdapter);
+                    setupAdapter();
                     break;
                 case GET_GROUP_ITEM:
-                    // TODO При перевороте в GroupDetail и возврате вылезает баг связанный с Filter/searchView
                     position = mAdapter.getAdapterPosition(mGroupTemp.getTableId());
                     if (position != -1) {
                         mAdapter.updateItem(position, mGroupTemp);

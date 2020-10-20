@@ -1,57 +1,63 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <style name="SplashActivity" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:windowBackground">@drawable/splash_activity</item>
     </style>
 
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="bottomNavigationStyle">@style/BottomNavigationView</item>
+        <item name="android:windowBackground">@color/colorWhite</item>
+        <item name="android:fontFamily">serif</item>
+        <item name="android:textViewStyle">@style/TextViewStyle</item>
+        <item name="switchStyle">@style/SwitchStyle</item>
+        <item name="chipStyle">@style/MyChipStyle</item>
+    </style>
+
     <!--TODO: Theme.MaterialComponents.Light.DarkActionBar-->
-    <style name="AppThemeDefault" parent="Theme.MaterialComponents.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <!--
+        <style name="DarkTheme" parent="Theme.MaterialComponents.NoActionBar">
+            &lt;!&ndash; Customize your theme here. &ndash;&gt;
+            <item name="colorPrimary">@color/colorPrimary</item>
+            <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+            <item name="colorAccent">@color/colorAccent</item>
+            <item name="colorError">@color/colorError</item>
+            <item name="bottomNavigationStyle">@style/BottomNavigationView</item>
+            <item name="android:windowBackground">@color/colorWhite</item>
+            <item name="android:fontFamily">serif</item>
+            <item name="android:textViewStyle">@style/TextViewStyle</item>
+            <item name="android:buttonStyle">@style/ButtonStyle</item>
+            <item name="editTextStyle">@style/EditTextStyle</item>
+            <item name="switchStyle">@style/SwitchStyle</item>
+        </style>
+    -->
+
+    <style name="BottomSheetModalTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorError">@color/colorError</item>
-        <item name="bottomNavigationStyle">@style/BottomNavigationView</item>
-
-        <item name="android:windowBackground">@color/colorDefaultBackground</item>
-        <item name="android:fontFamily">serif</item>
-        <item name="android:textViewStyle">@style/TextViewStyle</item>
-        <item name="android:buttonStyle">@style/ButtonStyle</item>
-        <item name="editTextStyle">@style/EditTextStyle</item>
-        <item name="switchStyle">@style/SwitchStyle</item>
+        <item name="fontFamily">serif</item>
+        <!--        <item name="chipStyle">w</item>-->
     </style>
 
-    <style name="ThemeNoActionBar" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorError">@color/colorError</item>
-        <item name="bottomNavigationStyle">@style/BottomNavigationView</item>
-
-        <item name="android:windowBackground">@color/colorDefaultBackground</item>
-        <item name="android:fontFamily">serif</item>
-        <item name="android:textViewStyle">@style/TextViewStyle</item>
-        <item name="android:buttonStyle">@style/ButtonStyle</item>
-        <item name="editTextStyle">@style/EditTextStyle</item>
-        <item name="switchStyle">@style/SwitchStyle</item>
+    <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="behavior_peekHeight">56dp</item>
+        <item name="behavior_hideable">true</item>
     </style>
 
-    <style name="AppTheme" parent="AppThemeDefault" />
-
-    <style name="LightTheme" parent="Theme.AppCompat.Light">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <style name="BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+        <item name="itemTextAppearanceActive">@style/NavigationAppearance</item>
+        <item name="itemTextAppearanceInactive">@style/NavigationAppearance</item>
     </style>
 
-    <style name="BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored"></style>
-
-    <style name="ProgressBar" parent="Widget.AppCompat.ProgressBar">
-        <item name="colorAccent">@color/colorDarkWhite</item>
+    <style name="NavigationAppearance" parent="TextAppearance.AppCompat">
+        <item name="fontFamily">serif</item>
+        <item name="android:textSize">12sp</item>
     </style>
-
 
     <style name="CheckBoxStyle" parent="Widget.AppCompat.CompoundButton.CheckBox">
         <item name="android:fontFamily">serif</item>
@@ -65,22 +71,55 @@
         <item name="android:fontFamily">serif</item>
     </style>
 
+    <style name="TextViewStyle.WordListPreview">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/colorPrimaryText</item>
+    </style>
+
+    <style name="TextViewStyle.ResultItem">
+        <item name="android:minHeight">32dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/colorPrimaryText</item>
+    </style>
+
+    <style name="TextViewStyle.SecondaryText">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/colorSecondaryText</item>
+        <item name="android:shadowColor">@color/colorSecondaryTextShadow</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
+
+    <style name="TextViewStyle.QuestionText">
+        <item name="android:textSize">24sp</item>
+<!--        <item name="android:textStyle">bold</item>-->
+        <item name="android:gravity">center</item>
+        <item name="android:maxHeight">150dp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:shadowColor">@color/colorDarkWhite</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">2</item>
+    </style>
+
     <style name="ButtonStyle" parent="Widget.AppCompat.Button">
         <item name="android:fontFamily">serif</item>
-        <!--        <item name="android:background">@color/colorAccent</item>-->
+        <item name="android:minHeight">70dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:layout_margin">4dp</item>
+    </style>
+
+    <style name="TitleTextAppearance" parent="Base.TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="fontFamily">serif</item>
     </style>
 
     <style name="EditTextStyle" parent="Widget.AppCompat.EditText">
         <item name="android:fontFamily">serif</item>
         <item name="android:minHeight">48dp</item>
-    </style>
-
-    <style name="EditTextStyle.GroupDetailNameEditText">
-        <item name="android:maxLines">1</item>
-        <item name="android:gravity">left|top</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:imeOptions">actionDone</item>
-        <item name="android:hint">@string/group_detail_edit_text_hint</item>
     </style>
 
     <style name="EditTextStyle.GroupDetailWords">
@@ -89,26 +128,21 @@
         <item name="android:gravity">center</item>
         <item name="android:textSize">14sp</item>
         <item name="android:inputType">textMultiLine|textNoSuggestions</item>
-        <item name="android:imeOptions">actionDone|flagNoExtractUi</item>
+        <item name="android:imeOptions">actionDone|flagNoFullscreen</item>
         <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:background">@android:color/transparent</item>
-    </style>
-
-    <style name="CollapsingTextAppearance" parent="Base.TextAppearance.AppCompat.Widget.ActionBar.Title" />
-
-    <style name="CollapsingTextAppearance.Inverse">
-        <item name="android:textSize">20sp</item>
-        <item name="fontFamily">sans-serif-black</item>
     </style>
 
     <style name="EditTextStyle.EditTextNumber">
         <item name="android:digits">-0123456789</item>
         <item name="android:numeric">integer</item>
         <item name="android:inputType">numberSigned</item>
+        <item name="android:imeOptions">actionDone</item>
         <item name="android:maxWidth">100dp</item>
         <item name="android:minWidth">50dp</item>
         <item name="android:textAlignment">gravity</item>
         <item name="android:longClickable">false</item>
+        <item name="android:lines">1</item>
     </style>
 
     <style name="MyCardView" parent="CardView">
@@ -116,27 +150,23 @@
         <item name="android:radius">5dp</item>
     </style>
 
-    <style name="SpinnerStyle" parent="CardView">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:layout_marginStart">8dp</item>
-        <item name="android:entries">@array/start_type</item>
-        <item name="android:gravity">fill</item>
-        <item name="android:foreground">@drawable/spinner_foreground</item>
+    <style name="ChipChoice" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="android:textAppearance">@style/MyChipTextAppearance</item>
+        <item name="android:minWidth">80dp</item>
     </style>
 
-    <style name="AppTheme.Skid_2" parent="AppTheme">
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
-        <item name="android:windowAllowReturnTransitionOverlap" tools:targetApi="lollipop">false
-        </item>
-        <item name="android:windowAllowEnterTransitionOverlap" tools:targetApi="lollipop">false
-        </item>
-        <item name="android:windowSharedElementEnterTransition" tools:targetApi="lollipop">
-            @transition/enter_share_element_transfrom_skid_2
-        </item>
+    <style name="MyChipStyle" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="android:textAppearance">@style/MyChipTextAppearance</item>
+        <item name="chipBackgroundColor">@color/chip_state_background</item>
+    </style>
+
+    <style name="MyChipTextAppearance" parent="TextAppearance.AppCompat">
+        <item name="fontFamily">serif</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="LearnProgressBar" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:progressTint">@color/colorPrimary</item>
     </style>
 
 </resources>

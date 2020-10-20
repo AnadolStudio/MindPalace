@@ -58,7 +58,8 @@
                         android:scrollHorizontally="true"
                         android:singleLine="true"
                         android:text="Длинное название группы"
-                        android:textAppearance="@style/CollapsingTextAppearance.Inverse">
+                        style="@style/TitleTextAppearance"
+                        >
 
                     </TextView>
                 </LinearLayout>
@@ -125,7 +126,7 @@
         app:layout_anchor="@id/toolbar"
         app:layout_anchorGravity="bottom|center_horizontal"
         android:elevation="4dp"
-        android:stateListAnimator="@animator/start_learn_button"
+        android:stateListAnimator="@animator/start_learn_fab"
         android:visibility="gone"/>
 
 

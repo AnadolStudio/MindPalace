@@ -9,7 +9,7 @@ import com.anadol.rememberwords.model.DataBaseSchema.Groups;
 import com.anadol.rememberwords.model.DataBaseSchema.Words;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    public static final int DB_VERSION = 6;//6
+    public static final int DB_VERSION = 8;
     public static final String DB_NAME = "rememberWords";
     private static final String TAG = "DatabaseHelper";
 
@@ -29,9 +29,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Groups._ID + " integer primary key autoincrement," +
                 Groups.UUID + " text," +
                 Groups.DRAWABLE + " text," +
-                Groups.COLOR_ONE + " integer," +
-                Groups.COLOR_TWO + " integer," +
-                Groups.COLOR_THREE + " integer," +
+                Groups.TYPE + " text," +
                 Groups.NAME_GROUP + " text)");
     }
 
@@ -40,32 +38,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Words._ID + " integer primary key autoincrement," +
                 Words.UUID + " text ," +
                 Words.UUID_GROUP + " text," +
-                Words.NAME_GROUP + " text," +
                 Words.ORIGINAL + " text," +
                 Words.ASSOCIATION + " text," +
                 Words.TRANSLATE + " text," +
-                Words.COMMENT + " text)");
+                Words.COMMENT + " text," +
+                Words.DIFFICULT + " text)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { // ПРОБЕЛЫ ОЧЕНЬ ВАЖНЫ
         switch (oldVersion) {
-            case 5:
+            case 6:
                 db.execSQL("drop table if exists " + "groups_tmp");
 
                 db.execSQL("alter table " + Groups.TABLE_NAME + " rename to " + "groups_tmp");
                 createGroupsTable(db);
                 db.execSQL("insert into " + Groups.TABLE_NAME + "(" +
                         Groups.UUID + ", " +
-                        Groups.COLOR_ONE + ", " +
-                        Groups.COLOR_TWO + ", " +
-                        Groups.COLOR_THREE + ", " +
+                        Groups.DRAWABLE + ", " +
                         Groups.NAME_GROUP + ")" +
                         "select " +
                         Groups.UUID + ", " +
-                        Groups.COLOR_ONE + ", " +
-                        Groups.COLOR_TWO + ", " +
-                        Groups.COLOR_THREE + ", " +
+                        Groups.DRAWABLE + ", " +
                         Groups.NAME_GROUP + " " +
                         "from groups_tmp");
 
@@ -76,23 +70,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 createWordsTable(db);
                 db.execSQL("insert into " + Words.TABLE_NAME + "(" +
                         Words.UUID + ", " +
+                        Words.UUID_GROUP + ", " +
                         Words.ORIGINAL + ", " +
                         Words.ASSOCIATION + ", " +
                         Words.TRANSLATE + ", " +
-                        Words.COMMENT + ", " +
-                        Words.NAME_GROUP + ")" +
+                        Words.COMMENT + ")" +
                         "select " +
                         Words.UUID + ", " +
+                        Words.UUID_GROUP + ", " +
                         Words.ORIGINAL + ", " +
-                        "transcription, " +
+                        Words.ASSOCIATION + ", " +
                         Words.TRANSLATE + ", " +
-                        Words.COMMENT + ", " +
-                        Words.NAME_GROUP + " " +
+                        Words.COMMENT + " " +
                         "from words_tmp");
 
                 db.execSQL("drop table " + "words_tmp");
                 break;
-            case 6:
+            case 7:
+                db.execSQL("alter table " + Words.TABLE_NAME + " add column " + Words.DIFFICULT);
                 break;
         }
         Log.i(TAG, "onUpgrade. New version: " + newVersion);

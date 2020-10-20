@@ -1,5 +1,6 @@
 package com.anadol.rememberwords.presenter;
 
+import android.content.res.Resources;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,38 +9,47 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.model.SimpleParent;
-import com.anadol.rememberwords.view.Fragments.MyFragment;
+import com.anadol.rememberwords.view.Fragments.FragmentAdapter;
 
 import java.util.ArrayList;
 
 public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<MySimpleHolder> implements Filterable, ItemTouchHelperAdapter {
-    public static final String TAG = "MyListAdapter";
-    public static final int GROUP_HOLDER = 1;
-    public static final int WORD_HOLDER = 2;
-    private MyFragment mFragment;
+    public static final String TAG = MyListAdapter.class.getName();
+    public static final int GROUP_HOLDER = R.layout.item_group_list;
+    public static final int WORD_HOLDER = R.layout.item_words_list;
+    public static final int WORD_PREVIEW_HOLDER = R.layout.item_words_list_preview;
+    private FragmentAdapter mFragment;
     private ArrayList<T> mList;
     private ArrayList<T> mFilterList;
     private ArrayMap<String, Boolean> mSelectionsArray;
-    private int typeHolder;
+    private int layout;
     private boolean isSelectableMode;
-    private int countSelectedGroups;
-//    private int temp;
+    private Resources mResources;
+    private int mTypeGroup;
 
-    public MyListAdapter(MyFragment fragment, ArrayList<T> arrayList, int typeHolder, @Nullable ArrayList<String> selectedItems, boolean isSelectableMode) {
-//        Collections.sort(arrayList);
+    public MyListAdapter(FragmentAdapter fragment, ArrayList<T> arrayList, @LayoutRes int layout,
+                         @Nullable ArrayList<String> selectedItems, boolean isSelectableMode) {
+        Log.i(TAG, "MyListAdapter: was created");
         mList = arrayList;
         mFilterList = mList;
         mFragment = fragment;
+        mResources = mFragment.myResources();
         setSelectionsArray(selectedItems);
         this.isSelectableMode = isSelectableMode;
-        this.typeHolder = typeHolder;
-//        temp = 0;
+        this.layout = layout;
+    }
+
+    public MyListAdapter(FragmentAdapter fragment, ArrayList<T> arrayList, @LayoutRes int layout,
+                         @Nullable ArrayList<String> selectedItems, boolean isSelectableMode, int typeGroup) {
+        this(fragment, arrayList, layout, selectedItems, isSelectableMode);
+        mTypeGroup = typeGroup;
     }
 
     @Override
@@ -47,11 +57,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         MySimpleHolder holder = (MySimpleHolder) viewHolder;
         holder.itemTouch(flag);
         notifyItemChanged(holder.getAdapterPosition());
-    }
-
-    public void setList(ArrayList<T> list) {
-        mList = list;
-        mFilterList = mList;
+        Log.i(TAG, "onItemDismiss: ");
     }
 
     private void setSelectionsArray(@Nullable ArrayList<String> selectedItems) {
@@ -59,22 +65,10 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
             mSelectionsArray = new ArrayMap<>();
         }
 
-        countSelectedGroups = 0;
-        for (SimpleParent item : mList) {
-            // Если имя/id содержиться в selectedItems, то значит эта группа была выделенна,
-            // если null то это первое создание
-            if (selectedItems != null
-                    && selectedItems.contains(item.getUUIDString())) {
-                mSelectionsArray.put(item.getUUIDString(), true);
-                countSelectedGroups++;
-            } else mSelectionsArray.put(item.getUUIDString(), false);
-//            Log.i(TAG, "mSelectionsArray.size(): " + mSelectionsArray.size() + " mList.size(): " + mList.size());
-        }
-    }
-
-    private void setSelectedValueToAllItems(boolean value) {
-        for (int i = 0; i < mSelectionsArray.size(); i++) {
-            mSelectionsArray.setValueAt(i, value);
+        if (selectedItems != null && !selectedItems.isEmpty()) {
+            for (String item : selectedItems) {
+                mSelectionsArray.put(item, true);
+            }
         }
     }
 
@@ -82,9 +76,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         ArrayList<String> strings = new ArrayList<>();
 
         for (int i = 0; i < mSelectionsArray.size(); i++) {
-            if (mSelectionsArray.valueAt(i)) {
-                strings.add(mSelectionsArray.keyAt(i));
-            }
+            strings.add(mSelectionsArray.keyAt(i));
         }
         return strings;
     }
@@ -95,18 +87,23 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         View view;
         MySimpleHolder holder;
 //        Log.i(TAG, "onCreateViewHolder: was created " + temp++);
-        switch (typeHolder) {
+        switch (layout) {
             case GROUP_HOLDER:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_group_list, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(GROUP_HOLDER, parent, false);
                 holder = new GroupListHolder(view, this);
                 break;
             case WORD_HOLDER:
-                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_words_list, parent, false);
+                view = LayoutInflater.from(parent.getContext()).inflate(WORD_HOLDER, parent, false);
                 holder = new WordListHolder(view, this);
+                break;
+            case WORD_PREVIEW_HOLDER:
+                view = LayoutInflater.from(parent.getContext()).inflate(WORD_PREVIEW_HOLDER, parent, false);
+                holder = new WordPreviewListHolder(view, this);
                 break;
             default:
                 throw new NullPointerException("Holder is null");
         }
+        Log.i(TAG, "onCreateViewHolder");
 
         return holder;
     }
@@ -114,37 +111,39 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     @Override
     public void onBindViewHolder(@NonNull MySimpleHolder holder, int position) {
         SimpleParent item = mFilterList.get(position);
-//        Log.i(TAG, "onBindViewHolder. mSelectionsArray.size(): " + mSelectionsArray.size() + " mList.size(): " + mList.size());
-//        boolean b = mSelectionsArray.containsKey(item.getUUIDString());
-//        if (!b) mSelectionsArray.put(item.getUUIDString(), false);
+        Log.i(TAG, "onBindViewHolder: position " + position + " mSelectionsArray.size(): " + mSelectionsArray.size() + " mList.size(): " + mList.size());
 
-        holder.onBind(item, mSelectionsArray.get(item.getUUIDString()));
+        holder.onBind(item, mSelectionsArray.containsKey(item.getUUIDString()));
     }
 
     public int getCountSelectedItems() {
-        return countSelectedGroups;
+        return mSelectionsArray.size();
     }
 
     public boolean isAllItemSelected() {
         // getItemCount возращает size() у mFilterList, но в если используется MODE_SELECT, то
         // MODE_SEARCH отключается, а значит mFilterList = mList
+        Log.i(TAG, "isAllItemSelected: mSelectionsArray.size(): " + mSelectionsArray.size() + " mList.size(): " + mList.size());
         return getItemCount() == getCountSelectedItems();
     }
 
     public int setAllItemSelected(boolean select) {
-        int size = mSelectionsArray.size();
+        int size = mList.size();
 
         if (select) {
-            countSelectedGroups = 0;
+            T item;
+            for (int i = 0; i < size; i++) {
+                item = mList.get(i);
+                mSelectionsArray.put(item.getUUIDString(), true);
+            }
         } else {
-            countSelectedGroups = size;
-        }
+            mSelectionsArray.clear();
 
-        for (int i = 0; i < size; i++) {
-            setValueAt(i, select);
         }
+        notifyDataSetChanged();
+        Log.i(TAG, "notifyDataSetChanged");
         Log.i(TAG, "mSelectionsArray.size(): " + mSelectionsArray.size() + " mList.size(): " + mList.size());
-        return countSelectedGroups;
+        return mSelectionsArray.size();
     }
 
     public void updateItem(int position, T item) {
@@ -177,7 +176,8 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         ArrayList<T> selectedItems = new ArrayList<>();
         for (T item : mList) {
             String id = item.getUUIDString();
-            if (mSelectionsArray.get(id)) {
+
+            if (mSelectionsArray.containsKey(id)) {
                 selectedItems.add(item);
             }
         }
@@ -200,36 +200,24 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     }
 
     public boolean add(T item) {
-        mSelectionsArray.put(item.getUUIDString(), false);
         return mList.add(item);
     }
 
     public void add(int position, T item) {
-        mSelectionsArray.put(item.getUUIDString(), false);
         mList.add(position, item);
     }
 
-    public MyFragment getFragment() {
+    public FragmentAdapter getFragment() {
         return mFragment;
     }
 
     public void putSelectedItem(String key, boolean value) {
-        mSelectionsArray.put(key, value);
-        counter(value);
-        mFragment.updateUI();
-    }
-
-    private void setValueAt(int index, boolean value) {
-        mSelectionsArray.setValueAt(index, value);
-        counter(value);
-    }
-
-    private void counter(boolean value) {
         if (value) {
-            countSelectedGroups++;
+            mSelectionsArray.put(key, true);
         } else {
-            countSelectedGroups--;
+            mSelectionsArray.remove(key);
         }
+        mFragment.updateUI();
     }
 
     @Override
@@ -237,10 +225,17 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         return mFilterList.size();
     }
 
+    public Resources getResources() {
+        if (mResources == null) {
+            mResources = mFragment.myResources();
+            Log.i(TAG, "getResources");
+        }
+        return mResources;
+    }
+
     @Override
     public Filter getFilter() {
-        return new MyFilter() {
-        };
+        return new MyFilter();
     }
 
     public boolean isSelectableMode() {
@@ -251,8 +246,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         isSelectableMode = selectableMode;
         if (!selectableMode) {
 //            setSelectedValueToAllItems(selectableMode);
-            setSelectionsArray(null);
-            notifyDataSetChanged();
+            setAllItemSelected(false);
         } else {
             mFragment.changeSelectableMode(true);
         }
@@ -261,13 +255,19 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     public void setSelectableMode(boolean selectableMode, int position) {
         setSelectableMode(selectableMode);
         if (selectableMode) {
-            int count = getItemCount();
-            // TODO: решение проблемы резкой анимации
-            notifyItemRangeChanged(0, position);
-            notifyItemRangeChanged(position, count);
+//            int count = getItemCount();
+            Log.i(TAG, "setSelectableMode: position " + position);
+            notifyDataSetChanged();
         }
     }
 
+    public int getTypeGroup() {
+        return mTypeGroup;
+    }
+
+    public void setTypeGroup(int type) {
+        mTypeGroup = type;
+    }
 
     private class MyFilter extends Filter {
         @Override
@@ -297,6 +297,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
+            Log.i(TAG, "publishResults");
             notifyDataSetChanged();
         }
     }
