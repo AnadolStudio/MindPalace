@@ -201,7 +201,6 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         switch (mode) {
             case MODE_NORMAL:
             case MODE_SEARCH:
-                setScrollFlags(false);
                 inflater.inflate(R.menu.fragment_group_list, menu);
                 MenuItem menuSearch = menu.findItem(R.id.menu_search_list);
 
@@ -218,7 +217,6 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                 break;
 
             case MODE_SELECT:
-                setScrollFlags(true);
 
                 inflater.inflate(R.menu.menu_group_list_selected, menu);
                 MenuItem select = menu.findItem(R.id.menu_select_all);
@@ -235,6 +233,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         }
     }
 
+/*
     private void setScrollFlags(boolean isSelected) {
         LayoutParams layoutParams = (LayoutParams) mToolbar.getLayoutParams();
         if (!isSelected) {
@@ -246,6 +245,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         }
         mToolbar.setLayoutParams(layoutParams);
     }
+*/
 
     private void setMenuItemsListeners() {
         Log.i(TAG, "setMenuItemsListeners");

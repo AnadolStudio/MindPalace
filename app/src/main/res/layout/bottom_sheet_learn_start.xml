@@ -27,6 +27,14 @@
             tools:text="Tools.Name">
 
         </TextView>
+        <!--TODO добавить описание через SnackBar-->
+        <ImageButton
+            style="@android:style/Widget.Holo.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/information"
+            android:src="@drawable/ic_info" />
+
 
         <ImageButton
             android:id="@+id/cancel_button"
@@ -48,189 +56,206 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
             android:orientation="vertical">
 
-
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="start|center_vertical"
-                android:text="@string/type"
-                android:textColor="@color/colorSecondaryText"
-                android:textSize="18sp" />
+                android:gravity="end"
+                android:orientation="horizontal">
 
-
-            <HorizontalScrollView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="6dp"
-                android:scrollbarFadeDuration="1"
-                android:scrollbarSize="4dp"
-                android:clipToPadding="false">
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/type_test"
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/auto_switch"
                     android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    app:singleLine="true"
-                    app:singleSelection="true"
-                    android:layout_marginBottom="4dp">
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/auto" />
+            </LinearLayout>
 
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/quiz_chip"
-                        style="@style/MyChipStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Quiz" />
-
-                 <!--   <com.google.android.material.chip.Chip
-                        android:id="@+id/trueOrFalse_chip"
-                        style="@style/MyChipStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="True/False" />-->
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/answerQuestion_chip"
-                        style="@style/MyChipStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Answer/Question" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/puzzle_chip"
-                        style="@style/MyChipStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Puzzle" />
-
-                </com.google.android.material.chip.ChipGroup>
-
-            </HorizontalScrollView>
-
-
-            <TextView
+            <LinearLayout
+                android:id="@+id/ll_options"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="start|center_vertical"
-                android:text="@string/route"
-                android:textColor="@color/colorSecondaryText"
-                android:textSize="18sp" />
+                android:layout_margin="8dp"
+                android:orientation="vertical"
+                android:visibility="visible">
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/route_test"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:layout_gravity="center"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="8dp"
-                app:singleSelection="true">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/forward_chip"
-                    style="@style/MyChipStyle"
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/forward" />
+                    android:gravity="start|center_vertical"
+                    android:text="@string/type"
+                    android:textColor="@color/colorSecondaryText"
+                    android:textSize="18sp" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/inverse_chip"
-                    style="@style/MyChipStyle"
+
+                <HorizontalScrollView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="6dp"
+                    android:clipToPadding="false"
+                    android:scrollbarFadeDuration="1"
+                    android:scrollbarSize="4dp">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/type_test"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginBottom="4dp"
+                        app:singleLine="true"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/quiz_chip"
+                            style="@style/MyChipChoice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/quiz" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/puzzle_chip"
+                            style="@style/MyChipChoice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/puzzle" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/answerQuestion_chip"
+                            style="@style/MyChipChoice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/answer" />
+
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/exam_chip"
+                            style="@style/MyChipChoice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/exam" />
+
+                    </com.google.android.material.chip.ChipGroup>
+
+                </HorizontalScrollView>
+
+
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/inverse" />
-
-
-            </com.google.android.material.chip.ChipGroup>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="start|center_vertical"
-                android:text="@string/object"
-                android:textColor="@color/colorSecondaryText"
-                android:textSize="18sp" />
-
-            <HorizontalScrollView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="6dp"
-                android:scrollbarFadeDuration="1"
-                android:scrollbarSize="4dp"
-                android:clipToPadding="false">
+                    android:layout_marginTop="8dp"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/route"
+                    android:textColor="@color/colorSecondaryText"
+                    android:textSize="18sp" />
 
                 <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/object_test"
+                    android:id="@+id/route_test"
                     android:layout_width="wrap_content"
                     android:layout_height="36dp"
-                    app:singleLine="true"
-                    app:singleSelection="true"
-                    android:layout_marginBottom="4dp">
+                    android:layout_gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    app:singleSelection="true">
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/all_chip"
-                        style="@style/MyChipStyle"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/forward_chip"
+                        style="@style/MyChipChoice"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="All"
-                        android:visibility="gone"/>
-
-                    <!--                    <com.google.android.material.chip.Chip-->
-                    <!--                        android:id="@+id/selected_chip"-->
-                    <!--                        style="@style/MyChipStyle"-->
-                    <!--                        android:layout_width="wrap_content"-->
-                    <!--                        android:layout_height="wrap_content"-->
-                    <!--                        android:text="Selected" />-->
+                        android:text="@string/forward" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/random_chip"
-                        style="@style/MyChipStyle"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/inverse_chip"
+                        style="@style/MyChipChoice"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Random" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/diapason_chip"
-                        style="@style/MyChipStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Diapason" />
+                        android:text="@string/inverse" />
 
 
                 </com.google.android.material.chip.ChipGroup>
 
-            </HorizontalScrollView>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/object"
+                    android:textColor="@color/colorSecondaryText"
+                    android:textSize="18sp" />
 
-            <EditText
-                android:id="@+id/count_word_edit_text"
-                style="@style/EditTextStyle.EditTextNumber"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:hint="@string/_0"
-                />
+                <HorizontalScrollView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="6dp"
+                    android:clipToPadding="false"
+                    android:scrollbarFadeDuration="1"
+                    android:scrollbarSize="4dp">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/object_test"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginBottom="4dp"
+                        app:singleLine="true"
+                        app:singleSelection="true">
 
 
-            <com.google.android.material.button.MaterialButton
+                        <!--
+                                                <com.google.android.material.chip.Chip
+                                                    android:id="@+id/auto_chip"
+                                                    style="@style/MyChipChoice"
+                                                    android:layout_width="wrap_content"
+                                                    android:layout_height="wrap_content"
+                                                    android:text="@string/auto" />
+                        -->
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/random_chip"
+                            style="@style/MyChipChoice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/random" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/diapason_chip"
+                            style="@style/MyChipChoice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/diapason" />
+
+
+                    </com.google.android.material.chip.ChipGroup>
+
+                </HorizontalScrollView>
+
+                <EditText
+                    android:id="@+id/count_word_edit_text"
+                    style="@style/EditTextStyle.EditTextNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:hint="@string/_0" />
+
+            </LinearLayout>
+
+            <Button
                 android:id="@+id/button_start_to_learn_fragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="end"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="8dp"
                 android:text="@string/start" />
 
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
 
 

@@ -3,4 +3,6 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="radius16">16dp</dimen>
     <dimen name="radius8">8dp</dimen>
+    <dimen name="radius4">4dp</dimen>
+    <dimen name="radius2">2dp</dimen>
 </resources>

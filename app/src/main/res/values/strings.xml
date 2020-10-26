@@ -1,27 +1,22 @@
 <resources>
-    <string name="app_name">Mind Place</string>
+    <string name="app_name" translatable="false">Mind Place</string>
 
     <string name="remove">Delete</string>
-    <string name="red">R</string>
-    <string name="green">G</string>
-    <string name="blue">B</string>
+    <string name="red" translatable="false">R</string>
+    <string name="green" translatable="false">G</string>
+    <string name="blue" translatable="false">B</string>
 
-    <string name="enter_word">Enter word</string>
-    <string name="quiz">Quiz</string>
-    <string name="answer">Answer</string>
+    <string name="enter_association">Enter association</string>
     <string name="saved_succes_toast">Saved Successfully</string>
     <string name="create">Create</string>
     <string name="search">Search&#8230;</string>
-    <string name="type_of_test">Type of test:</string>
-    <string name="answer_question">Answer/Question</string>
     <string name="select_all">Select all</string>
-    <string name="word_count">Count: %1$s</string>
-    <string name="_0">000</string>
+    <string name="_0" translatable="false">000</string>
     <string name="information">Information</string>
     <string name="comment">Comment:</string>
 
 
-    <string name="is_empty">Is empty</string>
+    <string name="is_empty">Enter name</string>
     <string name="min_word_list_size">You need at least %1$d words</string>
     <string name="override_number_words">The number of words exceeds the allowed size</string>
     <string name="diapason_error">Diapason Error</string>
@@ -32,42 +27,55 @@
     <string name="settings">Settings</string>
     <string name="new_group">New Group</string>
     <string name="deleting_was_successful">Deleting was successful</string>
-    <string name="sort_ascending">Sort ascending</string>
-    <string name="sort_by_date">Sort by date</string>
-    <string name="answer_save">Save changes?</string>
+    <string name="sort_ascending" translatable="false">Sort ascending</string>
+    <string name="sort_by_date" translatable="false">Sort by date</string>
     <string name="loading">Loading&#8230;</string>
     <string name="original">Original</string>
     <string name="association">Association</string>
     <string name="translate">Translate</string>
-    <string name="associations_count">%1$d / %2$d</string> <!--"·" = &#183; / "•" = &#8226; символ-->
+    <string name="associations_count" translatable="false">%1$d / %2$d</string> <!--"·" = &#183; / "•" = &#8226; символ-->
     <string name="add_association">Add association</string>
-<!--    TODO подумай о синониме-->
+    <!--    TODO подумай о синониме-->
     <string name="learn">Learn</string>
     <string name="double_click_for_exit">Double click for exit</string>
     <string name="migrate">Migrate</string>
     <string name="forward">Forward</string>
     <string name="inverse">Inverse</string>
-    <string name="object">Object</string>
-    <string name="route">Route</string>
-    <string name="type">Type</string>
+    <string name="object">Objects:</string>
+    <string name="route">Route:</string>
+    <string name="type">Type:</string>
     <string name="name">Name</string>
     <string name="apply">Apply</string>
-    <string name="numbers">Числа</string>
-    <string name="number">Число</string>
-    <string name="dates">Даты</string>
-    <string name="date">Дата</string>
-    <string name="event">Событие</string>
-    <string name="texts">Текст</string>
-    <string name="text">Текст</string>
-    <string name="bond">Связь</string>
-    <string name="choice_answer">Выберите ответ:</string>
-    <string name="question_result">Вопрос №%1$d: %2$s</string>
-    <string name="answer_result">Ответ: %1$s</string>
-    <string name="user_answer_result">Ваш ответ: %1$s</string>
+    <string name="numbers">Numbers</string>
+    <string name="number">Number</string>
+    <string name="dates">Dates</string>
+    <string name="date">Date</string>
+    <string name="event">Event</string>
+    <string name="texts">Texts</string>
+    <string name="text">Text</string>
+    <string name="bond">Bond</string>
+    <string name="choice_answer">Choice an answer:</string>
+    <string name="write_answer">Write an answer:</string>
+    <string name="collect_the_answer">Collect an answer:</string>
+    <string name="question_result">Question №%1$d: %2$s</string>
+    <string name="answer_result">Answer: %1$s</string>
+    <string name="user_answer_result">Your answer: %1$s</string>
     <string name="start">Start</string>
     <string name="next">Next</string>
+    <string name="quiz">Quiz</string>
+    <string name="puzzle">Puzzle</string>
+    <string name="answer">Answer</string>
+    <string name="exam">Exam</string>
+    <string name="random">Random</string>
+    <string name="diapason">Diapason</string>
+    <string name="auto">Auto</string>
+    <string name="results">Results</string>
+    <!--    <string name="count_reps">%1$d %2$s</string> 3 повторени · 4 окт-->
 
-
+    <plurals name="reps">
+        <item quantity="one">%1$d rep<b> · %2$s</b></item>
+        <item quantity="other">%1$d reps<b> · %2$s</b></item>
+    </plurals>
     <plurals name="association_items">
         <item quantity="one">%1$d Association</item>
         <item quantity="other">%1$d associations</item>
@@ -87,5 +95,6 @@
         <item>Diapason:</item>
         <item>Random:</item>
     </string-array>
+    <string name="never">never</string>
 
 </resources>

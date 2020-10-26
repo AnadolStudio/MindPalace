@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="remove">Удалить</string>
+    <string name="enter_association">Введите слово</string>
+    <string name="saved_succes_toast">Сохранено</string>
+    <string name="create">Создать</string>
+    <string name="search">Поиск</string>
+    <string name="select_all">Выбрать все</string>
+    <string name="information">Информация</string>
+    <string name="comment">Комментарий</string>
+    <string name="is_empty">Введите имя</string>
+    <string name="min_word_list_size">Вам нужно по крайне мере %1$d слов</string>
+    <string name="override_number_words">Слишком большое число</string>
+    <string name="diapason_error">Ошибка диапазона</string>
+    <string name="home">Главная</string>
+    <string name="statistic">Статистика</string>
+    <string name="settings">Настройки</string>
+    <string name="new_group">Новая Группа</string>
+    <string name="deleting_was_successful">Удалено</string>
+    <string name="loading">Загрузка</string>
+    <string name="original">Оригинал</string>
+    <string name="association">Ассоциация</string>
+    <string name="translate">Перевод</string>
+    <string name="add_association">Добавить ассоциацию</string>
+    <string name="learn">Учить</string>
+    <string name="double_click_for_exit">Нажмите еще раз, чтобы выйти</string>
+    <string name="migrate">Перенести</string>
+    <string name="forward">Прямое</string>
+    <string name="inverse">Обратное</string>
+    <string name="object">Объекты:</string>
+    <string name="route">Направление:</string>
+    <string name="type">Тип:</string>
+    <string name="name">Имя</string>
+    <string name="apply">Принять</string>
+    <string name="numbers">Числа</string>
+    <string name="number">Число</string>
+    <string name="dates">Даты</string>
+    <string name="date">Дата</string>
+    <string name="event">Событие</string>
+    <string name="texts">Текст</string>
+    <string name="text">Текст</string>
+    <string name="bond">Связь</string>
+    <string name="choice_answer">Выберите ответ</string>
+    <string name="write_answer">Напишите ответ:</string>
+    <string name="collect_the_answer">Соберите ответ:</string>
+    <string name="question_result">Вопрос №%1$d: %2$s</string>
+    <string name="answer_result">Ответ: %1$s</string>
+    <string name="user_answer_result">Ваш ответ: %1$s</string>
+    <string name="start">Старт</string>
+    <string name="next">Далее</string>
+    <string name="quiz">Викторина</string>
+    <string name="puzzle">Пазл</string>
+    <string name="answer">Ответ</string>
+    <string name="exam">Экзамен</string>
+    <string name="random">Случайные</string>
+    <string name="diapason">Диапазон</string>
+    <string name="auto">Авто</string>
+    <string name="results">Результаты</string>
+
+    <plurals name="reps">
+        <item quantity="one">%1$d повторение<b> · %2$s</b></item>
+        <item quantity="few">%1$d повторения<b> · %2$s</b></item>
+        <item quantity="many">%1$d повторений<b> · %2$s</b></item>
+    </plurals>
+
+    <plurals name="association_items">
+        <item quantity="one">%1$d ассоциация</item>
+        <item quantity="few">%1$d асоциации</item>
+        <item quantity="many">%1$d асоциаций</item>
+    </plurals>
+
+    <plurals name="correct_items">
+        <item quantity="one">%1$d правельный ответ</item>
+        <item quantity="few">%1$d правельных ответа</item>
+        <item quantity="many">%1$d правельных ответов</item>
+    </plurals>
+
+    <plurals name="wrong_items">
+        <item quantity="one">%1$d неправельный ответ</item>
+        <item quantity="few">%1$d неправельных ответа</item>
+        <item quantity="many">%1$d неправельных ответов</item>
+    </plurals>
+    <string name="never">ни разу</string>
+</resources>

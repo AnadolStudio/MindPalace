@@ -1,6 +1,7 @@
 package com.anadol.rememberwords.model;
 
 import android.content.ContentValues;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -10,6 +11,8 @@ import com.anadol.rememberwords.model.DataBaseSchema.Words;
 import java.util.UUID;
 
 public class CreatorValues {
+
+    private static final String TAG = CreatorValues.class.getName();
 
     public static ContentValues createGroupValues(@NonNull UUID uuid,
                                                   @NonNull String name,
@@ -25,13 +28,16 @@ public class CreatorValues {
         return values;
     }
 
+    // Используется для создания новых слов
     public static ContentValues createWordsValues(@NonNull UUID uuid,
                                                   @NonNull String uuidGroup,
                                                   @NonNull String orig,
                                                   @NonNull String association,
                                                   @NonNull String translate,
                                                   @NonNull String comment,
-                                                  @NonNull String difficult) {
+                                                  int countLearn,
+                                                  long time,
+                                                  boolean isExam) {
 
         ContentValues values = new ContentValues();
         values.put(Words.UUID, uuid.toString());
@@ -40,11 +46,24 @@ public class CreatorValues {
         values.put(Words.ASSOCIATION, association);
         values.put(Words.TRANSLATE, translate);
         values.put(Words.COMMENT, comment);
-        values.put(Words.DIFFICULT, difficult);
+        values.put(Words.COUNT_LEARN, countLearn);
+        values.put(Words.TIME, time);
+        values.put(Words.EXAM, isExam);
 
         return values;
     }
 
+    public static ContentValues createWordsLearnValues(int countLearn,
+                                                  long time,
+                                                  boolean isExam) {
+
+        ContentValues values = new ContentValues();
+        values.put(Words.COUNT_LEARN, countLearn);
+        values.put(Words.TIME, time);
+        values.put(Words.EXAM, isExam ? 1 : 0);
+        Log.i(TAG, "createWordsLearnValues: " + values);
+        return values;
+    }
     public static ContentValues createWordsValues(@NonNull Word word) {
 
         ContentValues values = new ContentValues();
@@ -54,7 +73,10 @@ public class CreatorValues {
         values.put(Words.ASSOCIATION, word.getAssociation());
         values.put(Words.TRANSLATE, word.getTranslate());
         values.put(Words.COMMENT, word.getComment());
-        values.put(Words.DIFFICULT, word.getDifficult().toString());
+        // Эти параметры сохраняютися только после Learn
+//        values.put(Words.COUNT_LEARN, word.getCountLearn());
+//        values.put(Words.TIME, word.getTime());
+//        values.put(Words.EXAM, word.isExam());
 
         return values;
     }

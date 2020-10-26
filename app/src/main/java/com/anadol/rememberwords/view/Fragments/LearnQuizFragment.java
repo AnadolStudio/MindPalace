@@ -10,23 +10,27 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.view.Dialogs.DialogResultBottomSheet;
 import com.anadol.rememberwords.presenter.Question;
+import com.anadol.rememberwords.view.Activities.LearnActivity;
+import com.anadol.rememberwords.view.Dialogs.DialogResultBottomSheet;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
+import static com.anadol.rememberwords.view.Activities.LearnActivity.PROGRESS;
 import static com.anadol.rememberwords.view.Activities.LearnActivity.QUESTIONS;
 import static com.anadol.rememberwords.view.Activities.LearnActivity.REQUEST_RESULT;
 
 public class LearnQuizFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = LearnQuizFragment.class.getName();
 
+    private TextView countTextView;
     private TextView mQuestionTextView;
     private Button nextButton;
     private ProgressBar mProgressBar;
@@ -34,10 +38,11 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
 
     private Question[] mQuestions;
 
-    public static LearnQuizFragment newInstance(Question[] questions) {
+    public static LearnQuizFragment newInstance(Question[] questions, int progress) {
 
         Bundle args = new Bundle();
         args.putParcelableArray(QUESTIONS, questions);
+        if (progress != -1) args.putInt(PROGRESS, progress);
         LearnQuizFragment fragment = new LearnQuizFragment();
         fragment.setArguments(args);
         return fragment;
@@ -64,8 +69,11 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
     private void bind(View view) {
         mProgressBar = view.findViewById(R.id.progressBar);
         mQuestionTextView = view.findViewById(R.id.text_question);
+        countTextView = view.findViewById(R.id.count_text);
         mChipGroup = view.findViewById(R.id.answer_group);
         nextButton = view.findViewById(R.id.next_button);
+        TextView titleQuestion = view.findViewById(R.id.question_title);
+        titleQuestion.setText(R.string.choice_answer);
     }
 
     private void setListeners() {
@@ -89,8 +97,17 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
     private void bindDataWithView(Bundle savedInstanceState) {
         mQuestionTextView.setMovementMethod(new ScrollingMovementMethod());
         mProgressBar.setMax(mQuestions.length);
+        if (savedInstanceState == null) {
+            int progress = getArguments().getInt(PROGRESS, 0);
+            mProgressBar.setProgress(progress);
+        }
         updateUI();
+        updateCountText();
         addQuestion(mQuestions[mProgressBar.getProgress()]);
+    }
+
+    private void updateCountText() {
+        countTextView.setText(getString(R.string.associations_count, mProgressBar.getProgress(), mQuestions.length));
     }
 
     private void updateUI() {
@@ -105,19 +122,26 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
 
     private void addAnswers(Question question) {
         Chip chip;
-        ChipGroup.LayoutParams chipParams = new ChipGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
 
         String[] strings = question.getAllAnswersRandomOrder();
 
         for (int i = 0; i < strings.length; i++) {
-            chip = new Chip(getContext(), null, R.attr.chipStyle);
-            chip.setLayoutParams(chipParams);
+            chip = createNewChip(R.layout.chip_choice, mChipGroup);
             chip.setText(strings[i]);
             mChipGroup.addView(chip);
         }
     }
+
+    private Chip createNewChip(@LayoutRes int layout, ViewGroup group) {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        Chip chip = (Chip) inflater.inflate(layout, group, false);
+        ChipGroup.LayoutParams chipParams = new ChipGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        chip.setLayoutParams(chipParams);
+        return chip;
+    }
+
 
     @Override
     public void onClick(View view) {
@@ -127,11 +151,18 @@ public class LearnQuizFragment extends Fragment implements View.OnClickListener 
     private void nextQuestion() {
         Log.i(TAG, "onClick: userAnswer " + mQuestions[mProgressBar.getProgress()].getUserAnswer());
         mProgressBar.incrementProgressBy(1);
+        updateCountText();
+
         if (mProgressBar.getMax() != mProgressBar.getProgress()) {
-            // updateUI не подходиит, ибо все равно возращется id Chip'a
-            mChipGroup.removeAllViews();
-            nextButton.setEnabled(false);
-            addQuestion(mQuestions[mProgressBar.getProgress()]);
+            LearnActivity activity = (LearnActivity) getActivity();
+            if (activity.isExamType()) {
+                activity.newTypeTestForExam(mQuestions, mProgressBar.getProgress());
+            } else {
+                // updateUI не подходиит, ибо все равно возращется id Chip'a
+                mChipGroup.removeAllViews();
+                nextButton.setEnabled(false);
+                addQuestion(mQuestions[mProgressBar.getProgress()]);
+            }
         } else {
             finish();
         }

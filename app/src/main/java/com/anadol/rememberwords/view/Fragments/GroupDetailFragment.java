@@ -43,7 +43,7 @@ import com.anadol.rememberwords.presenter.MyListAdapter;
 import com.anadol.rememberwords.presenter.SlowLinearLayoutManager;
 import com.anadol.rememberwords.presenter.StringIntegerComparator;
 import com.anadol.rememberwords.presenter.WordItemHelperCallBack;
-import com.anadol.rememberwords.view.Dialogs.LearnBottomSheet;
+import com.anadol.rememberwords.view.Dialogs.LearnStartBottomSheet;
 import com.anadol.rememberwords.view.Dialogs.SettingsBottomSheet;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -54,7 +54,7 @@ import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
-import static com.anadol.rememberwords.view.Dialogs.LearnBottomSheet.MIN_COUNT_WORDS;
+import static com.anadol.rememberwords.view.Dialogs.LearnStartBottomSheet.MIN_COUNT_WORDS;
 import static com.anadol.rememberwords.view.Fragments.GroupDetailFragment.WordBackground.DELETE_WORDS;
 import static com.anadol.rememberwords.view.Fragments.GroupDetailFragment.WordBackground.GET_WORDS;
 import static com.anadol.rememberwords.view.Fragments.GroupDetailFragment.WordBackground.INSERT_WORD;
@@ -183,7 +183,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
 
         SlowLinearLayoutManager manager = new SlowLinearLayoutManager(getContext());
         mRecyclerView.setLayoutManager(manager);
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
+//        mRecyclerView.addItemDecoration(new DividerItemDecoration(mRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
         titleToolbar.setSelected(true);// Чтобы пошла анимация бегущей строки
     }
@@ -225,7 +225,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     @Override
     public void onResume() {
         super.onResume();
-        updateWordCount();
+        // TODO начало ошибки removeEmptyWords (updateWordCount();)
     }
 
     @Override
@@ -456,8 +456,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
             return;
         }
         showLoadingDialog();
-        LearnBottomSheet learnDialog = LearnBottomSheet.newInstance(mGroup.getType(), words);
-        learnDialog.show(getFragmentManager(), LearnBottomSheet.class.getName());
+        LearnStartBottomSheet learnDialog = LearnStartBottomSheet.newInstance(mGroup.getType(), words);
+        learnDialog.show(getFragmentManager(), LearnStartBottomSheet.class.getName());
         hideLoadingDialog();
     }
 
@@ -499,6 +499,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
 
     private ArrayList<Word> removeEmptyWords(ArrayList<Word> words) {
         ArrayList<Word> tempList = new ArrayList<>(words);
+        Log.i(TAG, "removeEmptyWords: " + tempList);
+        // TODO тут возникает ошибка
         for (Word w : words) {
             // Если имеет пустые поля
             switch (mGroup.getType()) {
@@ -547,7 +549,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
             String translate;
             String association;
             String comment;
-            Word.Difficult difficult;
+            int countLearn;
+            long time;
 
             ContentResolver contentResolver = getActivity().getContentResolver();
 
@@ -569,7 +572,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                         for (Word word : mWords) {
                             contentResolver.update(Words.CONTENT_URI,
                                     CreatorValues.createWordsValues(word),
-                                    Groups.UUID + " = ?",
+                                    Words.UUID + " = ?",
                                     new String[]{word.getUUIDString()});
                         }
                         return true;
@@ -580,7 +583,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                         association = "";
                         translate = "";
                         comment = "";
-                        difficult = Word.Difficult.EASY;
+                        countLearn = 0;
+                        time = 0;
 
 
                         Uri uri = contentResolver.insert(
@@ -592,7 +596,9 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                                         translate,
                                         association,
                                         comment,
-                                        difficult.toString()));
+                                        countLearn,
+                                        time,
+                                        false));
 
                         Long l = (ContentUris.parseId(uri));
                         int idNewWord = Integer.valueOf(l.intValue());
@@ -606,7 +612,9 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                                 association,
                                 translate,
                                 comment,
-                                difficult.toString());
+                                countLearn,
+                                time,
+                                false);
 
                         return true;
 

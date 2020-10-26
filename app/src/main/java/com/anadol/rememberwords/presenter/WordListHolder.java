@@ -2,12 +2,15 @@ package com.anadol.rememberwords.presenter;
 
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
+import android.icu.text.SimpleDateFormat;
+import android.icu.util.TimeZone;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -25,6 +28,7 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
     private EditText original;
     private EditText association;
     private EditText translate;
+    private TextView countReps;
     private EditText comment; // TODO: в финальной версии его не будет, либо он будет спрятан
     private boolean isSelected;
 
@@ -33,7 +37,8 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
         original = itemView.findViewById(R.id.original_editText);
         association = itemView.findViewById(R.id.association_editText);
         translate = itemView.findViewById(R.id.translate_editText);
-//        comment = itemView.findViewById(R.id.comment_editText);
+        countReps = itemView.findViewById(R.id.count_reps);
+        //        comment = itemView.findViewById(R.id.comment_editText);
         addListeners();
         sAdapter = mAdapter;
 
@@ -86,12 +91,31 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
         original.setText(mWord.getOriginal());
         association.setText(mWord.getMultiAssociationFormat());
         translate.setText(mWord.getMultiTranslateFormat());
+
+        countReps.setText(sAdapter.getResources()
+                .getQuantityString(
+                        R.plurals.reps,
+                        mWord.getCountLearn(), mWord.getCountLearn(), getDate(mWord.getTime())));
+
 //        comment.setText(mWord.getComment());
         this.isSelected = isSelected;
 
         setEnabledEditTexts(!sAdapter.isSelectableMode());
         setDrawable(isSelected);
     }
+
+    private String getDate(long time) {
+        TimeZone timeZone = TimeZone.getDefault();
+        SimpleDateFormat format = new SimpleDateFormat("d MMM");
+        format.setTimeZone(timeZone);
+
+        if (time != 0) {
+            return format.format(time);
+        }else {
+            return sAdapter.getResources().getString(R.string.never);
+        }
+    }
+
 
     private void setEnabledEditTexts(boolean b) {
         original.setEnabled(b);

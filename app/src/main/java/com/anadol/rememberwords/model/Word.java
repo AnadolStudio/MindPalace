@@ -2,6 +2,7 @@ package com.anadol.rememberwords.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -21,6 +22,9 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
             return new Word[size];
         }
     };
+    // 7,5с > 30c > 2м > 8м > |30м| > 2ч > 32ч > 5д > 20д > 80д > 320д
+//    public static final int MIN_REPEAT_UNIT = 1000 * 60 * 30; // 30 минут
+    public static final int MIN_REPEAT_UNIT = 1000 * 7; // 7 сек
     private static final String TAG = "word";
     private int tableId;
     private UUID uuid;
@@ -29,10 +33,12 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
     private String association;
     private String translate;
     private String comment;
-    private Difficult mDifficult;
+    private int countLearn;
+    private long time;
+    private boolean isExam;
 
     public Word(Parcel in) {
-        String[] dataStrings = new String[7];
+        String[] dataStrings = new String[6];
         in.readStringArray(dataStrings);
 
         setOriginal(dataStrings[0]);
@@ -41,12 +47,17 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
         this.uuid = UUID.fromString(dataStrings[3]);
         this.groupUUID = UUID.fromString(dataStrings[4]);
         setComment(dataStrings[5]);
-        setDifficult(dataStrings[6]);
 
-        int[] dataInts = new int[1];
+        int[] dataInts = new int[2];
         in.readIntArray(dataInts);
 
         this.tableId = dataInts[0];
+        this.countLearn = dataInts[1];
+
+        time = in.readLong();
+        boolean[] booleans = new boolean[1];
+        in.readBooleanArray(booleans);
+        isExam = booleans[0];
     }
 
     public Word(int tableId,
@@ -56,7 +67,9 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
                 @NonNull String association,
                 @NonNull String translate,
                 @NonNull String comment,
-                @NonNull String difficult) {
+                int countLearn,
+                long time,
+                boolean isExam) {
 
         this.tableId = tableId;
         this.uuid = uuid;
@@ -65,8 +78,15 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
         setAssociation(association);
         this.groupUUID = groupUUID;
         this.comment = comment;
-        setDifficult(difficult);
-//        Log.i(TAG, dataToString());
+        setCountLearn(countLearn);
+        this.time = time;
+        this.isExam = isExam;
+        Log.i(TAG, dataToString());
+    }
+
+    public static boolean isRepeatable(long lastRepeat, long currentTime, int countLearn) {
+        long time = currentTime - lastRepeat;
+        return time >= (MIN_REPEAT_UNIT * Math.pow(4, countLearn));
     }
 
     @Override
@@ -82,11 +102,13 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
                 translate,
                 uuid.toString(),
                 groupUUID.toString(),
-                comment,
-                mDifficult.toString()});
+                comment});
 
         dest.writeIntArray(new int[]{
-                tableId});
+                tableId, countLearn});
+
+        dest.writeLong(time);
+        dest.writeBooleanArray(new boolean[]{isExam});
     }
 
     public boolean isMultiTranslate() {
@@ -96,6 +118,9 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
     public boolean isMultiAssociation() {
         return association.contains(";"); // Возможно будет другой знак
     }
+
+//    public boolean isExistTranslate(String s) {
+//        return translate.contains(s);
 
     private String deleteSpace(String s) {
         if (!s.contains(";")) return s;
@@ -111,9 +136,21 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
         return builder.toString();
     }
 
-//    public boolean isExistTranslate(String s) {
-//        return translate.contains(s);
-//    }
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    public boolean isExam() {
+        return isExam;
+    }
+
+    public void setExam(boolean exam) {
+        isExam = exam;
+    }
 
     private String isNull(String s) {
         if (s == null) s = "";
@@ -132,7 +169,7 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
 
     public String getMultiAssociationFormatSpace() {
         // Формат для EditText
-        return association.replaceAll(";", "; ");
+        return association.replaceAll(";", " ");
     }
 
     //Возвращает нужное слово из списка всех слов
@@ -249,12 +286,6 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
         return original.compareTo(word.getOriginal());
     }
 
-    @NonNull
-    @Override
-    public String toString() {
-        return original + " " + association + " " + translate;
-    }
-
     public String dataToString() {
         return "Word{" +
                 "tableId=" + tableId +
@@ -263,26 +294,38 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
                 ", original='" + original + '\'' +
                 ", association='" + association + '\'' +
                 ", translate='" + translate + '\'' +
-                ", comment='" + comment + '\'' +
-                ", mDifficult=" + mDifficult +
+                ", countLearn=" + countLearn +
+                ", isRepeatable=" + isRepeatable(time,System.currentTimeMillis(),countLearn) +
+                ", isExam=" + isExam +
                 '}';
     }
 
+    @NonNull
+    @Override
+    public String toString() {
+        return original + " " + association + " " + translate;
+    }
+
     public Difficult getDifficult() {
-        if (mDifficult == null) mDifficult = Difficult.EASY;// temp
-        return mDifficult;
-    }
+        Difficult difficult = Difficult.EASY;
 
-    public void setDifficult(Difficult difficult) {
-        mDifficult = difficult;
-    }
-
-    public void setDifficult(String string) {
-        if (string == null) {
-            mDifficult = Difficult.EASY;
-        } else {
-            mDifficult = Difficult.valueOf(string);
+        if (countLearn == 2) {
+            difficult = Difficult.MEDIUM;
+        } else if (countLearn >= 3) {
+            difficult = Difficult.HARD;
         }
+
+        return difficult;
+    }
+
+    public int getCountLearn() {
+        return countLearn;
+    }
+
+    public void setCountLearn(int countLearn) {
+        if (countLearn < 0) countLearn = 0;
+
+        this.countLearn = countLearn;
     }
 
     public String getRandomTranslate() {

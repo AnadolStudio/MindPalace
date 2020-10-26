@@ -13,8 +13,9 @@ import static com.anadol.rememberwords.model.Group.TYPE_NUMBERS;
 import static com.anadol.rememberwords.model.Group.TYPE_TEXTS;
 import static com.anadol.rememberwords.presenter.MyRandom.getRandomArrayList;
 import static com.anadol.rememberwords.presenter.MyRandom.getRandomInts;
-import static com.anadol.rememberwords.view.Dialogs.LearnBottomSheet.FORWARD;
-import static com.anadol.rememberwords.view.Dialogs.LearnBottomSheet.INVERSE;
+import static com.anadol.rememberwords.presenter.MyRandom.nextInt;
+import static com.anadol.rememberwords.view.Dialogs.LearnStartBottomSheet.FORWARD;
+import static com.anadol.rememberwords.view.Dialogs.LearnStartBottomSheet.INVERSE;
 
 public class QuestionMaker {
     public static final int EASY_ARRAY_LENGTH = 3;
@@ -84,6 +85,8 @@ public class QuestionMaker {
 
     private Question createNewQuestion(Word word, Word[] wordsForFalseAnswers, int typeGroup, int route) {
         Question question;
+        if (route == -1) route = nextInt(2);
+
 
         String questionString = buildQuestion(typeGroup, word);
         String answerString = word.getMultiAssociationFormatSpace();
@@ -92,10 +95,10 @@ public class QuestionMaker {
         switch (route) {
             default:
             case FORWARD:
-                question = new Question(questionString, answerString, falseAnswers, word.getUUIDString());
+                question = new Question(questionString, answerString, falseAnswers, word);
                 break;
             case INVERSE:
-                question = new Question(answerString, questionString, falseAnswers, word.getUUIDString());
+                question = new Question(answerString, questionString, falseAnswers, word);
                 break;
         }
 

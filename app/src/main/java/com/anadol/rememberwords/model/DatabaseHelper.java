@@ -9,7 +9,7 @@ import com.anadol.rememberwords.model.DataBaseSchema.Groups;
 import com.anadol.rememberwords.model.DataBaseSchema.Words;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    public static final int DB_VERSION = 8;
+    public static final int DB_VERSION = 9;
     public static final String DB_NAME = "rememberWords";
     private static final String TAG = "DatabaseHelper";
 
@@ -42,30 +42,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Words.ASSOCIATION + " text," +
                 Words.TRANSLATE + " text," +
                 Words.COMMENT + " text," +
-                Words.DIFFICULT + " text)");
+                Words.COUNT_LEARN + " integer," +
+                Words.TIME + " integer," +
+                Words.EXAM + " integer)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { // ПРОБЕЛЫ ОЧЕНЬ ВАЖНЫ
         switch (oldVersion) {
-            case 6:
-                db.execSQL("drop table if exists " + "groups_tmp");
-
-                db.execSQL("alter table " + Groups.TABLE_NAME + " rename to " + "groups_tmp");
-                createGroupsTable(db);
-                db.execSQL("insert into " + Groups.TABLE_NAME + "(" +
-                        Groups.UUID + ", " +
-                        Groups.DRAWABLE + ", " +
-                        Groups.NAME_GROUP + ")" +
-                        "select " +
-                        Groups.UUID + ", " +
-                        Groups.DRAWABLE + ", " +
-                        Groups.NAME_GROUP + " " +
-                        "from groups_tmp");
-
-                db.execSQL("drop table " + "groups_tmp");
-
-
+            case 7:
+                db.execSQL("alter table " + Words.TABLE_NAME + " add column difficult");
+                break;
+            case 8:
                 db.execSQL("alter table " + Words.TABLE_NAME + " rename to " + "words_tmp");
                 createWordsTable(db);
                 db.execSQL("insert into " + Words.TABLE_NAME + "(" +
@@ -83,11 +71,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         Words.TRANSLATE + ", " +
                         Words.COMMENT + " " +
                         "from words_tmp");
-
                 db.execSQL("drop table " + "words_tmp");
-                break;
-            case 7:
-                db.execSQL("alter table " + Words.TABLE_NAME + " add column " + Words.DIFFICULT);
                 break;
         }
         Log.i(TAG, "onUpgrade. New version: " + newVersion);

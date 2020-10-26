@@ -2,6 +2,8 @@ package com.anadol.rememberwords.presenter;
 
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
+import android.icu.text.SimpleDateFormat;
+import android.icu.util.TimeZone;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -20,6 +22,7 @@ public class WordPreviewListHolder extends MySimpleHolder implements View.OnClic
     private TextView original;
     private TextView association;
     private TextView translate;
+    private TextView countReps;
     private boolean isSelected;
 
     public WordPreviewListHolder(@NonNull View itemView, MyListAdapter<? extends SimpleParent> mAdapter) {
@@ -27,6 +30,7 @@ public class WordPreviewListHolder extends MySimpleHolder implements View.OnClic
         original = itemView.findViewById(R.id.original_textView);
         association = itemView.findViewById(R.id.association_textView);
         translate = itemView.findViewById(R.id.translate_textView);
+        countReps = itemView.findViewById(R.id.count_reps);
 //        comment = itemView.findViewById(R.id.comment_editText);
         addListeners();
 
@@ -44,10 +48,30 @@ public class WordPreviewListHolder extends MySimpleHolder implements View.OnClic
         original.setText(mWord.getOriginal());
         association.setText(mWord.getMultiAssociationFormat());
         translate.setText(mWord.getMultiTranslateFormat());
+
+        String countRepsString = sAdapter.getResources()
+                .getQuantityString(
+                        R.plurals.reps,
+                        mWord.getCountLearn(),
+                        getDate(mWord.getTime()));
+
+        countReps.setText(countRepsString);
 //        comment.setText(mWord.getComment());
         this.isSelected = isSelected;
 
         setDrawable(isSelected);
+    }
+
+    private String getDate(long time) {
+        TimeZone timeZone = TimeZone.getDefault();
+        SimpleDateFormat format = new SimpleDateFormat("DD:MM");
+        format.setTimeZone(timeZone);
+
+        if (time != 0) {
+            return format.format(time);
+        }else {
+            return "";
+        }
     }
 
     @Override

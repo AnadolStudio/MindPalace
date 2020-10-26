@@ -34,8 +34,7 @@ public final class DataBaseSchema {
         public static final String ASSOCIATION = "association";
         public static final String TRANSLATE = "translate";
         public static final String COMMENT = "comment";
-        public static final String DIFFICULT = "difficult";
-
+        public static final String COUNT_LEARN = "count_learn";
         public static final String EXAM = "exam";
         public static final String TIME = "time";
     }

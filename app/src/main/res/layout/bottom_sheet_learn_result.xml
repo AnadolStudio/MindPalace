@@ -17,13 +17,14 @@
         android:showDividers="middle"
         android:theme="@style/ThemeOverlay.AppCompat.Light">
 
-        <ImageButton
-            android:id="@+id/replay_button"
-            style="@android:style/Widget.Holo.Button.Borderless"
+        <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:src="@drawable/ic_replay" />
+            android:text="@string/results"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textAppearance="@style/TextViewStyle.SecondaryText"/>
 
         <TextView
             android:id="@+id/result_textView"

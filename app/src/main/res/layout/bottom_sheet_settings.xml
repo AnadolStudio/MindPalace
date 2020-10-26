@@ -106,28 +106,28 @@
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/numbers_chip"
-                            style="@style/MyChipStyle"
+                            style="@style/MyChipChoice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/numbers" />
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/dates_chip"
-                            style="@style/MyChipStyle"
+                            style="@style/MyChipChoice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/dates" />
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/texts_chip"
-                            style="@style/MyChipStyle"
+                            style="@style/MyChipChoice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/texts" />
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/foreign_words_chip"
-                            style="@style/MyChipStyle"
+                            style="@style/MyChipChoice"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/bond" />
@@ -197,19 +197,19 @@
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/color_one"
-                        style="@style/ChipChoice"
+                        style="@style/ColorChipChoice"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/color_two"
-                        style="@style/ChipChoice"
+                        style="@style/ColorChipChoice"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/color_three"
-                        style="@style/ChipChoice"
+                        style="@style/ColorChipChoice"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 

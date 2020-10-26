@@ -13,7 +13,7 @@
         <item name="android:fontFamily">serif</item>
         <item name="android:textViewStyle">@style/TextViewStyle</item>
         <item name="switchStyle">@style/SwitchStyle</item>
-        <item name="chipStyle">@style/MyChipStyle</item>
+
     </style>
 
     <!--TODO: Theme.MaterialComponents.Light.DarkActionBar-->
@@ -43,10 +43,18 @@
         <!--        <item name="chipStyle">w</item>-->
     </style>
 
+    <style name="BottomSheetModalTheme.LearnStart">
+        <item name="bottomSheetStyle">@style/BottomSheetStyle.LearnStart</item>
+    </style>
+
     <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
         <item name="behavior_peekHeight">56dp</item>
         <item name="behavior_hideable">true</item>
+    </style>
+
+    <style name="BottomSheetStyle.LearnStart">
+        <item name="behavior_peekHeight">500dp</item>
     </style>
 
     <style name="BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
@@ -94,7 +102,7 @@
 
     <style name="TextViewStyle.QuestionText">
         <item name="android:textSize">24sp</item>
-<!--        <item name="android:textStyle">bold</item>-->
+        <!--        <item name="android:textStyle">bold</item>-->
         <item name="android:gravity">center</item>
         <item name="android:maxHeight">150dp</item>
         <item name="android:padding">8dp</item>
@@ -150,12 +158,22 @@
         <item name="android:radius">5dp</item>
     </style>
 
-    <style name="ChipChoice" parent="Widget.MaterialComponents.Chip.Choice">
+    <style name="ColorChipChoice" parent="Widget.MaterialComponents.Chip.Choice">
         <item name="android:textAppearance">@style/MyChipTextAppearance</item>
         <item name="android:minWidth">80dp</item>
     </style>
 
-    <style name="MyChipStyle" parent="Widget.MaterialComponents.Chip.Choice">
+    <style name="MyChipEntry" parent="Widget.MaterialComponents.Chip.Entry">
+        <item name="android:textAppearance">@style/MyChipTextAppearance</item>
+        <item name="android:backgroundTint">@color/colorAccent</item>
+    </style>
+
+    <style name="MyChipAction" parent="Widget.MaterialComponents.Chip.Action">
+        <item name="android:textAppearance">@style/MyChipTextAppearance</item>
+        <item name="chipBackgroundColor">@color/chip_action_state_background</item>
+    </style>
+
+    <style name="MyChipChoice" parent="Widget.MaterialComponents.Chip.Choice">
         <item name="android:textAppearance">@style/MyChipTextAppearance</item>
         <item name="chipBackgroundColor">@color/chip_state_background</item>
     </style>

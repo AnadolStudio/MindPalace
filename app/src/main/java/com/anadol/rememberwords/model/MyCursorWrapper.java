@@ -40,7 +40,9 @@ public class MyCursorWrapper extends CursorWrapper {
         String association = getString(getColumnIndex(Words.ASSOCIATION));
         String uuidGroupString = getString(getColumnIndex(Words.UUID_GROUP));
         String comment = getString(getColumnIndex(Words.COMMENT));
-        String difficult = getString(getColumnIndex(Words.DIFFICULT));
+        int countLear = getInt(getColumnIndex(Words.COUNT_LEARN));
+        long time = getLong(getColumnIndex(Words.TIME));
+        boolean exam = getInt(getColumnIndex(Words.EXAM)) == 1;
 
         return new Word(
                 tableId,
@@ -50,6 +52,25 @@ public class MyCursorWrapper extends CursorWrapper {
                 association,
                 translate,
                 comment,
-                difficult);
+                countLear,
+                time,
+                exam);
+    }
+
+    public void getWordExam(Word word) {
+        int countLear = getInt(getColumnIndex(Words.COUNT_LEARN));
+        long time = getLong(getColumnIndex(Words.TIME));
+        boolean exam = getInt(getColumnIndex(Words.EXAM)) == 1;
+
+        if (word.getTime() != time || word.getCountLearn() != countLear) {
+            Log.i(TAG, "getWordExam: " + word.getOriginal() +
+                    " oldTime " + word.getTime() + " oldCountLearn " + word.getCountLearn());
+            Log.i(TAG, "getWordExam: " + word.getOriginal() +
+                    " newTime " + time + " newCountLearn " + countLear);
+        }
+
+        word.setCountLearn(countLear);
+        word.setTime(time);
+        word.setExam(exam);
     }
 }

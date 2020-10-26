@@ -2,9 +2,13 @@ package com.anadol.rememberwords.presenter;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+
+import com.anadol.rememberwords.model.Word;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static com.anadol.rememberwords.presenter.MyRandom.getRandomInts;
 
@@ -21,18 +25,18 @@ public class Question implements Parcelable {
         }
     };
     private static final String TAG = Question.class.getName();
-    private String UUID;
+    private Word mWord;
     private String question;
     private String trueAnswer;
     private String[] falseAnswers; // минимум 3
     private String userAnswer;
-    private String[] allAnswersRandomOrder; // минимум 3
+    private String[] allAnswersRandomOrder;
 
-    public Question(String question, String trueAnswer, String[] falseAnswers, String uuid) {
+    public Question(String question, String trueAnswer, String[] falseAnswers, Word word) {
         this.question = question;
         this.trueAnswer = trueAnswer;
         this.falseAnswers = falseAnswers;
-        this.UUID = uuid;
+        mWord = word;
     }
 
     private Question(Parcel in) {
@@ -40,7 +44,27 @@ public class Question implements Parcelable {
         trueAnswer = in.readString();
         falseAnswers = in.createStringArray();
         userAnswer = in.readString();
-        UUID = in.readString();
+        mWord = in.readParcelable(mWord.getClass().getClassLoader());
+    }
+
+    public String getUUID() {
+        return mWord.getUUIDString();
+    }
+
+    public int getCountLearn() {
+        return mWord.getCountLearn();
+    }
+
+    public long getTime() {
+        return mWord.getTime();
+    }
+
+    public boolean isExam() {
+        return mWord.isExam();
+    }
+
+    public Word getWord() {
+        return mWord;
     }
 
     public String getQuestion() {
@@ -63,7 +87,7 @@ public class Question implements Parcelable {
         this.userAnswer = userAnswer.toLowerCase().trim();
     }
 
-    public void createAllAnswersRandomOrder(){
+    public void createAllAnswersRandomOrder() {
         int length = falseAnswers.length + 1;// + 1 true Answer
         ArrayList<Integer> integers = getRandomInts(length, length);
 
@@ -81,7 +105,7 @@ public class Question implements Parcelable {
     }
 
     public String[] getAllAnswersRandomOrder() {
-        if (allAnswersRandomOrder == null || allAnswersRandomOrder.length == 0){
+        if (allAnswersRandomOrder == null || allAnswersRandomOrder.length == 0) {
             createAllAnswersRandomOrder();
         }
         return allAnswersRandomOrder;
@@ -89,13 +113,8 @@ public class Question implements Parcelable {
 
     public boolean isUserAnswerCorrect() {
         // TODO: остановился на следующем:
-        //  Решено! 1) необходимо сначала довести до ума дизайн LearnQuiz;
-        //  Решено! 2) обновить DialogResult, он будеь в виде BottomSheet;
-        //  !Отложено 3) реализовать более точную проверку ответов;
-        //  Решено! 4) реализовать MultiAssociation;
-        //  Решено! 5) протестировать Learn с MultiAssociation;
-        //  6) занятся LearnPuzzle;
-        //  7) comment в Detail;
+        //  3) реализовать более точную проверку ответов (для Answer);
+        //  7) comment(вместо него будет допинфа о кол-ве поторений,последней сдаче и т.п.) в Detail;
         //  8) иной способо select words в Detail;
         //  9) Выполнить оставшиеся "TO DO".
 
@@ -106,6 +125,10 @@ public class Question implements Parcelable {
         if (s1.equals(s2)) {
             isCorrect = true;
         } else {
+            // TODO:
+            //  проверка типа Связь при MultiTranslate
+            //  проверка типа Даты
+
             // TODO тут необходимо реализовать более точную проверку
         }
         return isCorrect;
@@ -132,6 +155,73 @@ public class Question implements Parcelable {
         dest.writeString(trueAnswer);
         dest.writeStringArray(falseAnswers);
         dest.writeString(userAnswer);
-        dest.writeString(UUID);
+        dest.writeParcelable(mWord, flags);
+    }
+
+    public String[] toPuzzle() {
+        ArrayList<String> puzzle = new ArrayList<>();
+        // будет использоваться 1-3 ложных ассоциации (зависит от сложности)
+        ArrayList<String> allAnswers = getAllAnswers(getFalseAnswers().length / 2);
+
+        String[] split;
+
+        int countSpace = 0;
+        for (int i = 0; i < allAnswers.size(); i++) {
+            split = allAnswers.get(i).split(" ");
+            countSpace += split.length - 1;
+            Log.i(TAG, "split: " + Arrays.toString(split) + " countSpace " + countSpace);
+            Collections.addAll(puzzle, split);
+        }
+        allAnswers = new ArrayList<>(puzzle);
+        puzzle.clear();
+
+        int index;
+        int increment;
+        int length;
+        String string;
+
+        for (int i = 0; i < allAnswers.size(); i++) {
+            string = allAnswers.get(i);
+            index = 0;
+            length = getLengthPuzzle(string.length());
+
+            for (int j = 0; j < length; j++) {
+                increment = (j + 1) * (string.length() / length);
+                Log.i(TAG, "increment: " + increment);
+                if (j == length - 1) {// если последний круг в цикле, то берем остаток
+                    Log.i(TAG, "toPuzzle: substring(index) " + string.substring(index));
+                    puzzle.add(string.substring(index));
+                } else {
+                    Log.i(TAG, "toPuzzle: substring(index, increment) " + string.substring(index, increment));
+                    puzzle.add(string.substring(index, increment));
+                }
+                index = increment;
+            }
+        }
+        for (int i = 0; i < countSpace; i++) {
+            puzzle.add(" ");
+        }
+        Log.i(TAG, "toPuzzle: " + puzzle);
+        puzzle = MyRandom.getRandomArrayList(puzzle, puzzle.size());
+        return puzzle.toArray(new String[0]);
+    }
+
+    private ArrayList<String> getAllAnswers(int countFalseAnswers) {
+        ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add(getTrueAnswer());
+        for (int i = 0; i < countFalseAnswers; i++) {
+            arrayList.add(getFalseAnswers()[i]);
+        }
+        return arrayList;
+    }
+
+    private int getLengthPuzzle(int length) {
+        int i;
+        if (length < 6) {
+            i = 2;
+        } else {
+            i = 3;
+        }
+        return i;
     }
 }

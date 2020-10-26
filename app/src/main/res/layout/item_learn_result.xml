@@ -27,8 +27,6 @@
             android:gravity="start|center_vertical"
             tools:text="@string/question_result" />
 
-        <!--        TODO Нужно добавить TextView с количеством повторений для каждого слова
-                     или что-то из того типа-->
         <TextView
             android:id="@+id/trueAnswer_TextView"
             style="@style/TextViewStyle.ResultItem"

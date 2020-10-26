@@ -39,7 +39,6 @@
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             app:elevation="4dp"
-            app:layout_scrollFlags="scroll|snap|enterAlways"
             app:title="@string/app_name"
             app:titleTextAppearance="@style/TitleTextAppearance"
             />
