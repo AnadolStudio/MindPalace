@@ -59,9 +59,9 @@
     <string name="results">Результаты</string>
 
     <plurals name="reps">
-        <item quantity="one">%1$d повторение<b> · %2$s</b></item>
-        <item quantity="few">%1$d повторения<b> · %2$s</b></item>
-        <item quantity="many">%1$d повторений<b> · %2$s</b></item>
+        <item quantity="one">%1$d повторение · %2$s</item>
+        <item quantity="few">%1$d повторения · %2$s</item>
+        <item quantity="many">%1$d повторений · %2$s</item>
     </plurals>
 
     <plurals name="association_items">
@@ -82,4 +82,13 @@
         <item quantity="many">%1$d неправельных ответов</item>
     </plurals>
     <string name="never">ни разу</string>
+    <string name="no_data">Нет данных</string>
+    <string name="colorNeedToLearn">Не изучено</string>
+    <string name="colorLearning">Изучается</string>
+    <string name="colorLearned">Изучено</string>
+    <string name="need_to_learn_associations">• Не изучено: %1$d</string>
+    <string name="learning_associations">• Изучается: %1$d</string>
+    <string name="learned_associations">• Изучено: %1$d</string>
+    <string name="general_statistic">Общая статистика</string>
+    <string name="total_association">• Всего ассоциаций: %1$d</string>
 </resources>

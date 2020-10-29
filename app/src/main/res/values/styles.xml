@@ -43,18 +43,18 @@
         <!--        <item name="chipStyle">w</item>-->
     </style>
 
-    <style name="BottomSheetModalTheme.LearnStart">
-        <item name="bottomSheetStyle">@style/BottomSheetStyle.LearnStart</item>
+    <style name="BottomSheetModalTheme.Result">
+        <item name="bottomSheetStyle">@style/BottomSheetStyle.Result</item>
     </style>
 
     <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
-        <item name="behavior_peekHeight">56dp</item>
+        <item name="behavior_peekHeight">500dp</item>
         <item name="behavior_hideable">true</item>
     </style>
 
-    <style name="BottomSheetStyle.LearnStart">
-        <item name="behavior_peekHeight">500dp</item>
+    <style name="BottomSheetStyle.Result">
+        <item name="behavior_peekHeight">56dp</item>
     </style>
 
     <style name="BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
@@ -100,6 +100,13 @@
         <item name="android:shadowRadius">2</item>
     </style>
 
+    <style name="TextViewStyle.StatisticText">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/colorSecondaryText</item>
+        <item name="android:shadowColor">@color/colorSecondaryTextShadow</item>
+        <item name="android:layout_margin">4dp</item>
+    </style>
+
     <style name="TextViewStyle.QuestionText">
         <item name="android:textSize">24sp</item>
         <!--        <item name="android:textStyle">bold</item>-->
@@ -107,6 +114,12 @@
         <item name="android:maxHeight">150dp</item>
         <item name="android:padding">8dp</item>
         <item name="android:textColor">@color/colorWhite</item>
+
+        <item name="android:fadeScrollbars">false</item>
+        <item name="android:scrollbarThumbVertical">@color/scrollBarThumbLight</item>
+        <item name="android:scrollbarSize">4dp</item>
+        <item name="android:scrollbars">vertical</item>
+
         <item name="android:shadowColor">@color/colorDarkWhite</item>
         <item name="android:shadowDx">2</item>
         <item name="android:shadowDy">2</item>
@@ -153,9 +166,13 @@
         <item name="android:lines">1</item>
     </style>
 
-    <style name="MyCardView" parent="CardView">
-        <item name="android:minHeight">150dp</item>
-        <item name="android:radius">5dp</item>
+    <style name="SimpleCardView" parent="CardView">
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="cardCornerRadius">@dimen/radius16</item>
+        <item name="cardElevation">8dp</item>
     </style>
 
     <style name="ColorChipChoice" parent="Widget.MaterialComponents.Chip.Choice">
@@ -187,4 +204,5 @@
         <item name="android:progressTint">@color/colorPrimary</item>
     </style>
 
+    <color name="scrollBarThumbLight">#BEA7A7A7</color>
 </resources>

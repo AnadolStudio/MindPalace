@@ -21,7 +21,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="@string/results"
+            android:text=""
             android:gravity="center"
             android:textSize="20sp"
             android:textAppearance="@style/TextViewStyle.SecondaryText"/>

@@ -106,7 +106,7 @@ public class DialogResultBottomSheet extends BottomSheetDialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        setStyle(STYLE_NORMAL, R.style.BottomSheetModalTheme);
+        setStyle(STYLE_NORMAL, R.style.BottomSheetModalTheme_Result);
         setCancelable(false);
         return super.onCreateDialog(savedInstanceState);
     }

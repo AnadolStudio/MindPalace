@@ -27,14 +27,15 @@
             tools:text="Tools.Name">
 
         </TextView>
+
         <!--TODO добавить описание через SnackBar-->
+
         <ImageButton
             style="@android:style/Widget.Holo.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:contentDescription="@string/information"
             android:src="@drawable/ic_info" />
-
 
         <ImageButton
             android:id="@+id/cancel_button"

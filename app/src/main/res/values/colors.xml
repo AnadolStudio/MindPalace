@@ -12,11 +12,14 @@
     <color name="colorDivider">#ECECEC</color>
     <color name="colorShadowBackground">#4D000000</color>
     <color name="colorProgressBarBackground">#667E7E7E</color>
-    <color name="colorDefaultBackground">#FAFAFA</color>
     <color name="colorError">#777777</color>
 
     <color name="colorMistake">#D50000</color>
     <color name="colorCheckBackground">#4D373737</color>
     <color name="colorTrue">#689F38</color>
     <color name="colorFalse">#B71C1C</color>
+    
+    <color name="colorLearned">#18AAEC</color>
+    <color name="colorLearning">#4CAF50</color>
+    <color name="colorNeedToLearn">#BABABA</color>
 </resources>

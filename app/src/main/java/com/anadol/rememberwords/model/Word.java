@@ -24,7 +24,7 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
     };
     // 7,5с > 30c > 2м > 8м > |30м| > 2ч > 32ч > 5д > 20д > 80д > 320д
 //    public static final int MIN_REPEAT_UNIT = 1000 * 60 * 30; // 30 минут
-    public static final int MIN_REPEAT_UNIT = 1000 * 7; // 7 сек
+    public static final int MIN_REPEAT_UNIT = 1000 * 7; // TODO 7 сек
     private static final String TAG = "word";
     private int tableId;
     private UUID uuid;
@@ -323,8 +323,9 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
     }
 
     public void setCountLearn(int countLearn) {
-        if (countLearn < 0) countLearn = 0;
-
+        if (countLearn < 0){
+            countLearn = 0;
+        }
         this.countLearn = countLearn;
     }
 

@@ -73,8 +73,8 @@
     <!--    <string name="count_reps">%1$d %2$s</string> 3 повторени · 4 окт-->
 
     <plurals name="reps">
-        <item quantity="one">%1$d rep<b> · %2$s</b></item>
-        <item quantity="other">%1$d reps<b> · %2$s</b></item>
+        <item quantity="one">%1$d rep · %2$s</item>
+        <item quantity="other">%1$d reps · %2$s</item>
     </plurals>
     <plurals name="association_items">
         <item quantity="one">%1$d Association</item>
@@ -96,5 +96,14 @@
         <item>Random:</item>
     </string-array>
     <string name="never">never</string>
+    <string name="no_data">No data</string>
+    <string name="colorNeedToLearn">Need to learn</string>
+    <string name="colorLearning">Learning</string>
+    <string name="colorLearned">Learned</string>
+    <string name="general_statistic">General statistic</string>
+    <string name="learned_associations">• Learned: %1$d</string>
+    <string name="learning_associations">• Learning: %1$d</string>
+    <string name="need_to_learn_associations">• Need to learn: %1$d</string>
+    <string name="total_association">• Total association: %1$d</string>
 
 </resources>

@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
 import com.anadol.rememberwords.R;
@@ -61,7 +62,7 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
     }
 
     private void typeGroupSettings(int typeGroup) {
-        switch (typeGroup){
+        switch (typeGroup) {
             case Group.TYPE_NUMBERS:
                 original.setHint(R.string.number);
                 translate.setVisibility(View.GONE);
@@ -91,6 +92,9 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
         original.setText(mWord.getOriginal());
         association.setText(mWord.getMultiAssociationFormat());
         translate.setText(mWord.getMultiTranslateFormat());
+        original.setHint(getHintOriginal(sAdapter.getTypeGroup()));
+        association.setHint(R.string.association);
+        translate.setHint(getHintTranslate(sAdapter.getTypeGroup()));
 
         countReps.setText(sAdapter.getResources()
                 .getQuantityString(
@@ -104,6 +108,46 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
         setDrawable(isSelected);
     }
 
+    @StringRes
+    private int getHintTranslate(int typeGroup) {
+        int res;
+        switch (typeGroup) {
+            default:
+            case Group.TYPE_NUMBERS:
+            case Group.TYPE_TEXTS:
+            case Group.TYPE_BOND:
+                res = R.string.translate;
+                break;
+
+            case Group.TYPE_DATES:
+                res = R.string.event;
+                break;
+        }
+        return res;
+
+    }
+
+    @StringRes
+    private int getHintOriginal(int typeGroup) {
+        int res;
+        switch (typeGroup) {
+            default:
+            case Group.TYPE_NUMBERS:
+                res = R.string.number;
+                break;
+            case Group.TYPE_TEXTS:
+                res = R.string.text;
+                break;
+            case Group.TYPE_DATES:
+                res = R.string.date;
+                break;
+            case Group.TYPE_BOND:
+                res = R.string.original;
+                break;
+        }
+        return res;
+    }
+
     private String getDate(long time) {
         TimeZone timeZone = TimeZone.getDefault();
         SimpleDateFormat format = new SimpleDateFormat("d MMM");
@@ -111,7 +155,7 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
 
         if (time != 0) {
             return format.format(time);
-        }else {
+        } else {
             return sAdapter.getResources().getString(R.string.never);
         }
     }

@@ -193,7 +193,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        setStyle(STYLE_NORMAL, R.style.BottomSheetModalTheme_LearnStart);
+        setStyle(STYLE_NORMAL, R.style.BottomSheetModalTheme);
         Dialog dialog = super.onCreateDialog(savedInstanceState);
 //        setCancelable(false);
         return dialog;

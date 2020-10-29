@@ -176,6 +176,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
             selectable = false;
             searchQuery = "";
         }
+        updateWordCount();
     }
 
     private void bindDataWithView() {

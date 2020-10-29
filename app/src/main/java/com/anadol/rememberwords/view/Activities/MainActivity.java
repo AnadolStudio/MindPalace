@@ -1,9 +1,7 @@
 package com.anadol.rememberwords.view.Activities;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -24,7 +22,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bind();
-        setup();
+        setListeners();
+
+        if (savedInstanceState == null){
+            bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+        }
+
     }
 
     @Override
@@ -39,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottom_navigation);
     }
 
-    private void setup() {
+    private void setListeners() {
         bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             int id = menuItem.getItemId();
 
@@ -54,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
             return false;
         });
-        bottomNavigationView.setSelectedItemId(R.id.navigation_home);
     }
 
     private boolean addFragment(Fragment f) {
