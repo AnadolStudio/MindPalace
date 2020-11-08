@@ -24,7 +24,7 @@
             android:text=""
             android:gravity="center"
             android:textSize="20sp"
-            android:textAppearance="@style/TextViewStyle.SecondaryText"/>
+            android:textAppearance="@style/SimpleSecondaryText.SecondaryText"/>
 
         <TextView
             android:id="@+id/result_textView"

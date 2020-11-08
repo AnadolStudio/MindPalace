@@ -1,5 +1,6 @@
 package com.anadol.rememberwords.presenter;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.util.ArrayMap;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.Filterable;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.anadol.rememberwords.R;
@@ -24,31 +26,31 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     public static final String TAG = MyListAdapter.class.getName();
     public static final int GROUP_HOLDER = R.layout.item_group_list;
     public static final int WORD_HOLDER = R.layout.item_words_list;
-    public static final int WORD_PREVIEW_HOLDER = R.layout.item_words_list_preview;
+
     private FragmentAdapter mFragment;
     private ArrayList<T> mList;
     private ArrayList<T> mFilterList;
     private ArrayMap<String, Boolean> mSelectionsArray;
     private int layout;
     private boolean isSelectableMode;
-    private Resources mResources;
+    private Context mContext;
     private int mTypeGroup;
 
-    public MyListAdapter(FragmentAdapter fragment, ArrayList<T> arrayList, @LayoutRes int layout,
+    public MyListAdapter(Context context, FragmentAdapter fragment, ArrayList<T> arrayList, @LayoutRes int layout,
                          @Nullable ArrayList<String> selectedItems, boolean isSelectableMode) {
         Log.i(TAG, "MyListAdapter: was created");
         mList = arrayList;
         mFilterList = mList;
         mFragment = fragment;
-        mResources = mFragment.myResources();
+        mContext = context;
         setSelectionsArray(selectedItems);
         this.isSelectableMode = isSelectableMode;
         this.layout = layout;
     }
 
-    public MyListAdapter(FragmentAdapter fragment, ArrayList<T> arrayList, @LayoutRes int layout,
+    public MyListAdapter(Context context, FragmentAdapter fragment, ArrayList<T> arrayList, @LayoutRes int layout,
                          @Nullable ArrayList<String> selectedItems, boolean isSelectableMode, int typeGroup) {
-        this(fragment, arrayList, layout, selectedItems, isSelectableMode);
+        this(context, fragment, arrayList, layout, selectedItems, isSelectableMode);
         mTypeGroup = typeGroup;
     }
 
@@ -56,8 +58,14 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     public void onItemDismiss(RecyclerView.ViewHolder viewHolder, int flag) {
         MySimpleHolder holder = (MySimpleHolder) viewHolder;
         holder.itemTouch(flag);
-        notifyItemChanged(holder.getAdapterPosition());
-        Log.i(TAG, "onItemDismiss: ");
+        switch (flag) {
+            case ItemTouchHelper.START:
+
+                notifyItemChanged(holder.getAdapterPosition());
+                break;
+            case ItemTouchHelper.END:
+                break;
+        }
     }
 
     private void setSelectionsArray(@Nullable ArrayList<String> selectedItems) {
@@ -95,10 +103,6 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
             case WORD_HOLDER:
                 view = LayoutInflater.from(parent.getContext()).inflate(WORD_HOLDER, parent, false);
                 holder = new WordListHolder(view, this);
-                break;
-            case WORD_PREVIEW_HOLDER:
-                view = LayoutInflater.from(parent.getContext()).inflate(WORD_PREVIEW_HOLDER, parent, false);
-                holder = new WordPreviewListHolder(view, this);
                 break;
             default:
                 throw new NullPointerException("Holder is null");
@@ -184,13 +188,14 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         return selectedItems;
     }
 
-    public boolean remove(SimpleParent item) {
+    public void remove(SimpleParent item) {
         int index = mList.indexOf(item);
         if (index != -1) {
             notifyItemRemoved(index);
         }
         Log.i(TAG, "SimpleParent " + item.toString() + "was removed");
-        return mList.remove(item);
+        mSelectionsArray.remove(item.getUUIDString());
+        mList.remove(item);
     }
 
     public void remove(ArrayList<? extends SimpleParent> groups) {
@@ -226,11 +231,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     }
 
     public Resources getResources() {
-        if (mResources == null) {
-            mResources = mFragment.myResources();
-            Log.i(TAG, "getResources");
-        }
-        return mResources;
+        return mContext.getResources();
     }
 
     @Override
@@ -257,7 +258,10 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         if (selectableMode) {
 //            int count = getItemCount();
             Log.i(TAG, "setSelectableMode: position " + position);
-            notifyDataSetChanged();
+            if (position > 0) {
+                notifyItemRangeChanged(0, position);
+            }
+            notifyItemRangeChanged(position, mFilterList.size());
         }
     }
 

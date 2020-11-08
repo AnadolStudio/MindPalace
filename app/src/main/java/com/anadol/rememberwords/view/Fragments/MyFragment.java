@@ -9,12 +9,14 @@ import androidx.fragment.app.Fragment;
 
 import com.anadol.rememberwords.view.Dialogs.LoadingDialog;
 import com.anadol.rememberwords.view.Dialogs.LoadingView;
+import com.anadol.rememberwords.view.Dialogs.SortDialog;
 
 public abstract class MyFragment extends Fragment implements FragmentAdapter{
     public static final String MODE = "mode";
     public static final int MODE_NORMAL = 0;
     public static final int MODE_SEARCH = 1;
     public static final int MODE_SELECT = 2;
+    protected static final int REQUEST_SORT = 103;
     protected static final String KEY_SELECT_ALL = "select_all";
     protected static final String KEY_SELECT_COUNT = "select_count";
     protected static final String KEY_SELECT_LIST = "select_list";
@@ -62,5 +64,10 @@ public abstract class MyFragment extends Fragment implements FragmentAdapter{
         if (mLoadingView != null) mLoadingView.hideLoadingIndicator();
     }
 
+    protected void createDialogSort(MyFragment fragment, SortDialog.Types type) {
+        SortDialog sortDialog = SortDialog.newInstance(type);
+        sortDialog.setTargetFragment(fragment, REQUEST_SORT);
+        sortDialog.show(getFragmentManager(), SortDialog.class.getName());
+    }
 
 }

@@ -2,20 +2,29 @@ package com.anadol.rememberwords.view.Activities;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.anadol.rememberwords.R;
-import com.anadol.rememberwords.view.Fragments.IOnBackPressed;
 import com.anadol.rememberwords.view.Fragments.GroupListFragment;
+import com.anadol.rememberwords.view.Fragments.IOnBackPressed;
 import com.anadol.rememberwords.view.Fragments.SettingsFragment;
 import com.anadol.rememberwords.view.Fragments.StatisticFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String CURRENT_ID = "id";
     private BottomNavigationView bottomNavigationView;
+    private int currentId;
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(CURRENT_ID, currentId);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -24,8 +33,10 @@ public class MainActivity extends AppCompatActivity {
         bind();
         setListeners();
 
-        if (savedInstanceState == null){
+        if (savedInstanceState == null) {
             bottomNavigationView.setSelectedItemId(R.id.navigation_home);
+        } else {
+            currentId = savedInstanceState.getInt(CURRENT_ID);
         }
 
     }
@@ -45,14 +56,18 @@ public class MainActivity extends AppCompatActivity {
     private void setListeners() {
         bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             int id = menuItem.getItemId();
+            //
+            if (currentId != id) {
 
-            switch (id) {
-                case R.id.navigation_statistic:
-                    return addFragment(StatisticFragment.newInstance());
-                case R.id.navigation_home:
-                    return addFragment(GroupListFragment.newInstance());
-                case R.id.navigation_settings:
-                    return addFragment(SettingsFragment.newInstance());
+                currentId = id;
+                switch (id) {
+                    case R.id.navigation_statistic:
+                        return addFragment(StatisticFragment.newInstance());
+                    case R.id.navigation_home:
+                        return addFragment(GroupListFragment.newInstance());
+                    case R.id.navigation_settings:
+                        return addFragment(SettingsFragment.newInstance());
+                }
             }
 
             return false;

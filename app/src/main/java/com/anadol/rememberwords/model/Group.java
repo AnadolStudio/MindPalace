@@ -6,14 +6,18 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.anadol.rememberwords.R;
+import com.google.android.material.chip.ChipGroup;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.UUID;
 
 public class Group extends SimpleParent implements Parcelable, Comparable<Group> {
@@ -152,14 +156,17 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
 //        Log.i(TAG, "getImage: " + drawable);
         if (drawable.contains("content")) {
             Picasso.get()
-                    .load(Uri.parse(drawable))
+                    .load(drawable)
                     .error(createDrawable(getDefaultColors()))
+                    .fit()
+                    .centerCrop()
                     .into(imageView);
         } else {
             int[] colors = getColorsFromString(drawable);
             imageView.setImageDrawable(createDrawable(colors));
         }
     }
+
 
     public int getType() {
         return type;

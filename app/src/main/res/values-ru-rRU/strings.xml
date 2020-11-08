@@ -22,7 +22,7 @@
     <string name="original">Оригинал</string>
     <string name="association">Ассоциация</string>
     <string name="translate">Перевод</string>
-    <string name="add_association">Добавить ассоциацию</string>
+    <string name="create_association">Создать</string>
     <string name="learn">Учить</string>
     <string name="double_click_for_exit">Нажмите еще раз, чтобы выйти</string>
     <string name="migrate">Перенести</string>
@@ -32,7 +32,7 @@
     <string name="route">Направление:</string>
     <string name="type">Тип:</string>
     <string name="name">Имя</string>
-    <string name="apply">Принять</string>
+    <string name="apply">Применить</string>
     <string name="numbers">Числа</string>
     <string name="number">Число</string>
     <string name="dates">Даты</string>
@@ -58,16 +58,18 @@
     <string name="auto">Авто</string>
     <string name="results">Результаты</string>
 
-    <plurals name="reps">
-        <item quantity="one">%1$d повторение · %2$s</item>
-        <item quantity="few">%1$d повторения · %2$s</item>
-        <item quantity="many">%1$d повторений · %2$s</item>
-    </plurals>
+    <string name="reps">%1$s · %2$d · %3$s</string>
 
     <plurals name="association_items">
         <item quantity="one">%1$d ассоциация</item>
         <item quantity="few">%1$d асоциации</item>
         <item quantity="many">%1$d асоциаций</item>
+    </plurals>
+
+    <plurals name="association_repeat">
+        <item quantity="one">%1$d ассоциация готова к повторению</item>
+        <item quantity="few">%1$d асоциации готовы к повторению</item>
+        <item quantity="many">%1$d асоциаций готовы к повторению</item>
     </plurals>
 
     <plurals name="correct_items">
@@ -83,12 +85,20 @@
     </plurals>
     <string name="never">ни разу</string>
     <string name="no_data">Нет данных</string>
-    <string name="colorNeedToLearn">Не изучено</string>
-    <string name="colorLearning">Изучается</string>
-    <string name="colorLearned">Изучено</string>
+    <string name="not_learned">Не изучено</string>
+    <string name="learning">Изучается</string>
+    <string name="learned">Изучено</string>
     <string name="need_to_learn_associations">• Не изучено: %1$d</string>
     <string name="learning_associations">• Изучается: %1$d</string>
     <string name="learned_associations">• Изучено: %1$d</string>
     <string name="general_statistic">Общая статистика</string>
     <string name="total_association">• Всего ассоциаций: %1$d</string>
+    <string name="sort">Сортировать</string>
+    <string name="sort_by">Сортировать по</string>
+    <string name="sort_name">Название</string>
+    <string name="unknown">Неизвестно</string>
+    <string name="repeat">Повторить</string>
+    <string name="order">Порядок</string>
+    <string name="sort_asc">По возрастанию</string>
+    <string name="sort_desc">По убыванию</string>
 </resources>

@@ -26,6 +26,7 @@ import com.anadol.rememberwords.model.MyCursorWrapper;
 import com.anadol.rememberwords.model.Word;
 import com.anadol.rememberwords.presenter.Question;
 import com.anadol.rememberwords.view.Activities.LearnActivity;
+import com.anadol.rememberwords.view.Services.NotificationService;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
@@ -186,7 +187,7 @@ public class DialogResultBottomSheet extends BottomSheetDialogFragment {
         }
     }
 
-    public class SetResultBackground extends AsyncTask<String, Void, Boolean> {
+    public class SetResultBackground extends AsyncTask<String, Void, ArrayList<Word>> {
         static final String UPDATE_WORDS = "update_words";
         int countLearn;
         long time;
@@ -202,7 +203,7 @@ public class DialogResultBottomSheet extends BottomSheetDialogFragment {
         }
 
         @Override
-        protected Boolean doInBackground(String... strings) {
+        protected ArrayList<Word> doInBackground(String... strings) {
             MyCursorWrapper cursor = null;
             cmd = strings[0];
 
@@ -215,16 +216,23 @@ public class DialogResultBottomSheet extends BottomSheetDialogFragment {
                     case UPDATE_WORDS:
                         long currentTime = System.currentTimeMillis();
 
+                        ArrayList<Word> words = new ArrayList<>();
+                        Word w;
                         for (Question question : mQuestions) {
 
                             countLearn = question.getCountLearn();
                             time = question.getTime();
                             isExam = question.isExam();
 
-                            if (question.isUserAnswerCorrect() && Word.isRepeatable(time, currentTime, countLearn)) {
-                                countLearn++;
-                                time = currentTime;
+                            if (question.isUserAnswerCorrect()) {
+                               w = question.getWord();
+                                if (Word.isRepeatable(time, currentTime, countLearn)) {
+                                    countLearn++;
+                                    time = currentTime;
+                                    w.setCountLearn(countLearn);
+                                }
                                 if (isExamType) isExam = true;
+                                words.add(w);
                             } else {
                                 if (countLearn > 0) {
                                     countLearn--;
@@ -237,7 +245,7 @@ public class DialogResultBottomSheet extends BottomSheetDialogFragment {
                                     DataBaseSchema.Words.UUID + " = ?",
                                     new String[]{question.getUUID()});
                         }
-                        return true;
+                        return words;
                 }
                 if (cursor != null) {
                     cursor.close();
@@ -246,7 +254,17 @@ public class DialogResultBottomSheet extends BottomSheetDialogFragment {
                 ex.printStackTrace();
             }
 
-            return false;
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Word> words) {
+            super.onPostExecute(words);
+            if (words != null){
+                Log.i(TAG, "onPostExecute: words.size() " + words.size());
+                Log.i(TAG, "onPostExecute: words " + words);
+                NotificationService.setServiceAlarm(getContext(), words);
+            }
         }
     }
 

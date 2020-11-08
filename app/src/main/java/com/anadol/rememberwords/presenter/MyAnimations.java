@@ -1,7 +1,9 @@
 package com.anadol.rememberwords.presenter;
 
+import android.os.Handler;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.animation.TranslateAnimation;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -54,4 +56,6 @@ public class MyAnimations {
                     }
                 });
     }
+
+
 }

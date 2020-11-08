@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat;
 
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.model.Group;
+import com.anadol.rememberwords.presenter.MyAnimations;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -143,7 +144,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
             }
         });
         gradientButton.setOnClickListener(v -> {
-            if (colorsGradient == null) {
+            if (colorsGradient == null) { ;
                 llColorPicker.setVisibility(View.VISIBLE);
 
                 uriPhoto = null;

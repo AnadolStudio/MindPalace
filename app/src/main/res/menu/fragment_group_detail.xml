@@ -11,7 +11,7 @@
 
     <item
         android:id="@+id/menu_add_item"
-        android:title="@string/add_association"
+        android:title="@string/create_association"
         app:showAsAction="never" />
 
     <item
@@ -20,15 +20,9 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/menu_sort_alphabetically"
-        android:icon="@drawable/ic_sort_alphabetically"
-        android:title="@string/sort_ascending"
-        app:showAsAction="never" />
-
-    <item
-        android:id="@+id/menu_sort_date"
+        android:id="@+id/menu_sort"
         android:icon="@drawable/ic_sort_by_date"
-        android:title="@string/sort_by_date"
+        android:title="@string/sort"
         app:showAsAction="never" />
 
     <item

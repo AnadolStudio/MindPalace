@@ -13,7 +13,7 @@
         <item name="android:fontFamily">serif</item>
         <item name="android:textViewStyle">@style/TextViewStyle</item>
         <item name="switchStyle">@style/SwitchStyle</item>
-
+<!--        <item name="radioButtonStyle">@style/RadioButton</item>-->
     </style>
 
     <!--TODO: Theme.MaterialComponents.Light.DarkActionBar-->
@@ -91,10 +91,13 @@
         <item name="android:textColor">@color/colorPrimaryText</item>
     </style>
 
-    <style name="TextViewStyle.SecondaryText">
+    <style name="SimpleSecondaryText" parent="TextViewStyle">
         <item name="android:textSize">20sp</item>
         <item name="android:textColor">@color/colorSecondaryText</item>
         <item name="android:shadowColor">@color/colorSecondaryTextShadow</item>
+    </style>
+
+    <style name="SimpleSecondaryText.SecondaryText">
         <item name="android:shadowDx">2</item>
         <item name="android:shadowDy">2</item>
         <item name="android:shadowRadius">2</item>

@@ -6,7 +6,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,11 +33,12 @@ import com.anadol.rememberwords.model.DataBaseSchema.Groups;
 import com.anadol.rememberwords.model.DataBaseSchema.Words;
 import com.anadol.rememberwords.model.Group;
 import com.anadol.rememberwords.model.MyCursorWrapper;
-import com.anadol.rememberwords.presenter.IdComparator;
+import com.anadol.rememberwords.model.SettingsPreference;
+import com.anadol.rememberwords.presenter.ComparatorMaker;
 import com.anadol.rememberwords.presenter.MyListAdapter;
 import com.anadol.rememberwords.presenter.SlowGridLayoutManager;
 import com.anadol.rememberwords.view.Activities.GroupDetailActivity;
-import com.google.android.material.appbar.AppBarLayout.LayoutParams;
+import com.anadol.rememberwords.view.Dialogs.SortDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -48,6 +48,8 @@ import java.util.UUID;
 import static android.app.Activity.RESULT_OK;
 import static com.anadol.rememberwords.presenter.MyAnimations.addTranslationAnim;
 import static com.anadol.rememberwords.presenter.MyListAdapter.GROUP_HOLDER;
+import static com.anadol.rememberwords.view.Dialogs.SortDialog.ORDER_SORT;
+import static com.anadol.rememberwords.view.Dialogs.SortDialog.TYPE_SORT;
 import static com.anadol.rememberwords.view.Fragments.GroupListFragment.GroupBackground.DELETE_GROUP;
 import static com.anadol.rememberwords.view.Fragments.GroupListFragment.GroupBackground.GET_GROUPS;
 import static com.anadol.rememberwords.view.Fragments.GroupListFragment.GroupBackground.GET_GROUP_ITEM;
@@ -285,15 +287,8 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                 boolean selectAllItems = !mAdapter.isAllItemSelected();
                 selectAll(selectAllItems);
                 return true;
-            case R.id.menu_sort_alphabetically:
-                Collections.sort(mGroupsList);
-                updateSearchView();
-                mAdapter.notifyDataSetChanged();
-                return true;
-            case R.id.menu_sort_date:
-                Collections.sort(mGroupsList, new IdComparator());
-                updateSearchView();
-                mAdapter.notifyDataSetChanged();
+            case R.id.menu_sort:
+                createDialogSort(this, SortDialog.Types.GROUP);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -398,6 +393,14 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                 background.execute(GET_GROUP_ITEM);
 
                 break;
+            case REQUEST_SORT:
+                int type = data.getIntExtra(TYPE_SORT, 0);
+                int order = data.getIntExtra(ORDER_SORT, 0);
+                Collections.sort(mGroupsList, ComparatorMaker.getComparator(type, order));
+                updateSearchView();
+                mAdapter.notifyDataSetChanged();
+                break;
+
         }
     }
 
@@ -413,7 +416,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
 
     private void setupAdapter() {
 //        addAlphaAnim();
-        mAdapter = new MyListAdapter<>(GroupListFragment.this, mGroupsList, GROUP_HOLDER, selectedStringArray, selectable);
+        mAdapter = new MyListAdapter<>(getActivity(),GroupListFragment.this, mGroupsList, GROUP_HOLDER, selectedStringArray, selectable);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -460,6 +463,9 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                             Log.i(TAG, "Id :" + cursor.getGroup().getTableId());
                             cursor.moveToNext();
                         }
+                        Collections.sort(mGroupsList, ComparatorMaker.getComparator(
+                                SettingsPreference.getGroupTypeSort(getContext()),
+                                SettingsPreference.getGroupOrderSort(getContext())));
 
                         return true;
 
@@ -538,7 +544,8 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                     // Обновленный код
                     mAdapter.remove(groupsListToRemove);
                     Toast.makeText(getContext(), getString(R.string.deleting_was_successful), Toast.LENGTH_SHORT).show();
-                    changeSelectableMode(false);
+//                    changeSelectableMode(false);
+                    updateActionBarTitle();
                     break;
                 case INSERT_GROUP:
                     mAdapter.add(mGroupTemp);

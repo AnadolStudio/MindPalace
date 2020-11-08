@@ -35,6 +35,7 @@ import com.google.android.material.chip.ChipGroup;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static android.app.Activity.RESULT_OK;
 import static com.anadol.rememberwords.presenter.MyRandom.getRandomArrayList;
 
 
@@ -139,7 +140,11 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
     }
 
     private void setListeners() {
-        cancelButton.setOnClickListener(v -> dismiss());
+        cancelButton.setOnClickListener(v -> {
+            getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_OK, new Intent());
+            dismiss();
+        });
+
         mChipGroupTypeTest.setOnCheckedChangeListener(this);
         mChipGroupRouteTest.setOnCheckedChangeListener(this);
         mChipGroupObjectTest.setOnCheckedChangeListener(this);
@@ -261,10 +266,28 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
 
     private void autoOptions() {
         ArrayList<Word> words = getWordsForPriority(mWords, Math.min(mWords.size(), 20));
+
+        typeTest = getTypeTest(words);
+        routeTest = getRouteTest(words);
+        objectTest = AUTO;
+    }
+
+    public static int getRouteTest(ArrayList<Word> words) {
+        int count = 0;
+        for (Word w : words) {
+
+            if (w.getCountLearn() % 2 == 0) {
+                count++;
+            }
+        }
+
+        return count > words.size() / 2 ? FORWARD : INVERSE;
+    }
+
+    public static String getTypeTest(ArrayList<Word> words) {
         int easy = 0; // Quiz
         int medium = 0; //Puzzle
         int hard = 0; // Answer
-        int count = 0;
 
         for (Word w : words) {
             switch (w.getCountLearn()) {
@@ -280,21 +303,15 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
                     hard++;
                     break;
             }
-
-            if (w.getCountLearn() % 2 == 0) {
-                count++;
-            }
         }
-        typeTest = (easy > medium) ? QUIZ : ((medium > hard) ? PUZZLE : ANSWER);
-        routeTest = count > words.size() / 2 ? FORWARD : INVERSE;
-        objectTest = AUTO;
+        return (easy > medium) ? QUIZ : ((medium > hard) ? PUZZLE : ANSWER);
     }
 
     @Override
     public void onClick(View v) {
         if (!examChip.isChecked()) {
             startLearn();
-        }else {
+        } else {
             startExam();
         }
     }
@@ -316,7 +333,8 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         switch (objectTest) {
             case AUTO:
                 count = Math.min(mWords.size(), 20);
-                // TODO необходимо протестировать
+                // TODO изменить логику, EXAM в первом приоритете
+                // getWordsToExam(mWords).size() > MIN_COUNT_WORDS
                 if (getWordsToExam(mWords).size() == mWords.size()) {
                     learnList = getWordsToExam(mWords);
                 } else {
@@ -400,7 +418,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         startActivity(intent);
     }
 
-    private boolean hasWordToExam(ArrayList<Word> words){
+    private boolean hasWordToExam(ArrayList<Word> words) {
         int count = 0;
         for (Word word : words) {
             if (readyToExam(word)) count++;

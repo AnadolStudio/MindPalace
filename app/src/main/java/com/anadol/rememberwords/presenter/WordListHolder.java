@@ -6,7 +6,9 @@ import android.icu.text.SimpleDateFormat;
 import android.icu.util.TimeZone;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.SpannableString;
 import android.text.TextWatcher;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -96,16 +98,74 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
         association.setHint(R.string.association);
         translate.setHint(getHintTranslate(sAdapter.getTypeGroup()));
 
-        countReps.setText(sAdapter.getResources()
-                .getQuantityString(
-                        R.plurals.reps,
-                        mWord.getCountLearn(), mWord.getCountLearn(), getDate(mWord.getTime())));
+        SpannableString info = getStatusAssociation();
+        countReps.setText(info);
 
 //        comment.setText(mWord.getComment());
         this.isSelected = isSelected;
 
         setEnabledEditTexts(!sAdapter.isSelectableMode());
         setDrawable(isSelected);
+    }
+
+    private SpannableString getStatusAssociation() {
+        Resources resources = sAdapter.getResources();
+        String isLearned = isLearned(resources);
+        String date = getDate(mWord, resources);
+
+        String s = resources.getString(R.string.reps,
+                isLearned, mWord.getCountLearn(), date);
+
+        SpannableString info = new SpannableString(s);
+
+        int colorTimeRepeat = getColorTimeRepeat(resources);
+        int colorStatus = getColorStatus(resources);
+
+        int indexDate = s.indexOf(date);
+        int indexStatus = s.indexOf(isLearned);
+        info.setSpan(new ForegroundColorSpan(colorTimeRepeat), indexDate, indexDate + date.length(), 0);
+        info.setSpan(new ForegroundColorSpan(colorStatus), indexStatus, indexStatus + isLearned.length(), 0);
+        return info;
+    }
+
+    private int getColorStatus(Resources resources) {
+        int color;
+        if (mWord.getTime() == 0) {
+            color = resources.getColor(R.color.colorSecondaryText);
+        } else if (mWord.isExam()) {
+            color = resources.getColor(R.color.colorLearned);
+        } else {
+            color = resources.getColor(R.color.colorLearning);
+        }
+
+        return color;
+    }
+
+    private int getColorTimeRepeat(Resources resources) {
+        int colorSpan;
+        if (!mWord.isExam()) {
+            if (mWord.getTime() != 0 && mWord.isRepeatable()) {
+                colorSpan = resources.getColor(R.color.colorReadyRepeat);
+            } else {
+                colorSpan = resources.getColor(R.color.colorNotReadyRepeat);
+            }
+        } else {
+            colorSpan = resources.getColor(R.color.colorLearned);
+        }
+        return colorSpan;
+    }
+
+    private String isLearned(Resources resources) {
+        String isLearned;
+
+        if (mWord.getTime() == 0) {
+            isLearned = resources.getString(R.string.not_learned);
+        } else if (mWord.isExam()) {
+            isLearned = resources.getString(R.string.learned);
+        } else {
+            isLearned = resources.getString(R.string.learning);
+        }
+        return isLearned;
     }
 
     @StringRes
@@ -148,15 +208,17 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
         return res;
     }
 
-    private String getDate(long time) {
-        TimeZone timeZone = TimeZone.getDefault();
-        SimpleDateFormat format = new SimpleDateFormat("d MMM");
-        format.setTimeZone(timeZone);
+    private String getDate(Word word, Resources resources) {
+        long time = word.getNextRepeatTime();
+        Log.i(TAG, "getDate: nextTime " + time);
 
+        TimeZone timeZone = TimeZone.getDefault();
+        SimpleDateFormat format = new SimpleDateFormat("d MMM H:mm");
+        format.setTimeZone(timeZone);
         if (time != 0) {
             return format.format(time);
         } else {
-            return sAdapter.getResources().getString(R.string.never);
+            return resources.getString(R.string.unknown);
         }
     }
 
@@ -172,12 +234,14 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
     public void itemTouch(int flag) {
         switch (flag) {
             case ItemTouchHelper.START:
-            case ItemTouchHelper.END:
+
                 if (!sAdapter.isSelectableMode()) {
                     onLongClick(itemView);
                 } else {
                     onClick(itemView);
                 }
+                break;
+            case ItemTouchHelper.END:
                 break;
         }
     }
@@ -189,9 +253,6 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
             isSelected = !isSelected;
             sAdapter.putSelectedItem(mWord.getUUIDString(), isSelected);
             setDrawable(isSelected);
-        } else {
-            GroupDetailFragment fragment = (GroupDetailFragment) sAdapter.getFragment();
-            fragment.editTextOnClick();
         }
     }
 
@@ -210,16 +271,15 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
 
     @Override
     public void onFocusChange(View v, boolean hasFocus) {
-        if (hasFocus) {
-            GroupDetailFragment fragment = (GroupDetailFragment) sAdapter.getFragment();
-            fragment.editTextOnClick();
-        }
+        GroupDetailFragment fragment = (GroupDetailFragment) sAdapter.getFragment();
+        fragment.editTextOnClick(!hasFocus);
     }
 
+
     private void setDrawable(boolean selected) {
-        Resources resources = sAdapter.getFragment().myResources();
+        Resources resources = sAdapter.getResources();// Тут была ошибка, фрагмент не был прикремлен к контексту
         if (selected) {
-            itemView.setBackground(new ColorDrawable(resources.getColor(R.color.colorAccent)));
+            itemView.setBackground(new ColorDrawable(resources.getColor(R.color.colorAccentLight)));
         } else {
             itemView.setBackground(new ColorDrawable(resources.getColor(R.color.colorWhite)));
         }

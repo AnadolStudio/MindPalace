@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.anadol.rememberwords">
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -11,13 +11,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service
+            android:name=".view.Services.NotificationService"
+            android:exported="false" />
 
         <provider
-            android:name="com.anadol.rememberwords.model.MyContentProvider"
+            android:name=".model.MyContentProvider"
             android:authorities="ru.anadolstudio.mindplace"
-            android:exported="false"/>
+            android:exported="false" />
 
-        <activity android:name=".view.Activities.StartActivity"
+        <activity
+            android:name=".view.Activities.StartActivity"
             android:theme="@style/SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,27 +29,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".view.Activities.MainActivity"
-            android:windowSoftInputMode="adjustPan"
-            >
-        </activity>
-
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".view.Activities.GroupDetailActivity"
-            android:windowSoftInputMode="adjustResize|stateHidden"
             android:launchMode="singleTop"
-            >
-        </activity>
-
+            android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name=".view.Activities.LearnActivity"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            android:screenOrientation="portrait">
-
-        </activity>
-
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
     </application>
 
 </manifest>

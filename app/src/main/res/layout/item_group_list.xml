@@ -19,6 +19,7 @@
         <ImageView
             android:id="@+id/image_group"
             android:layout_width="match_parent"
+            android:minWidth="128dp"
             android:layout_height="128dp"
             android:scaleType="centerCrop"/>
 

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Mind Place</string>
+    <string name="app_name" translatable="false">Mind Palace</string>
 
     <string name="remove">Delete</string>
     <string name="red" translatable="false">R</string>
@@ -34,7 +34,7 @@
     <string name="association">Association</string>
     <string name="translate">Translate</string>
     <string name="associations_count" translatable="false">%1$d / %2$d</string> <!--"·" = &#183; / "•" = &#8226; символ-->
-    <string name="add_association">Add association</string>
+    <string name="create_association">Create</string>
     <!--    TODO подумай о синониме-->
     <string name="learn">Learn</string>
     <string name="double_click_for_exit">Double click for exit</string>
@@ -42,7 +42,7 @@
     <string name="forward">Forward</string>
     <string name="inverse">Inverse</string>
     <string name="object">Objects:</string>
-    <string name="route">Route:</string>
+    <string name="route">Direction:</string>
     <string name="type">Type:</string>
     <string name="name">Name</string>
     <string name="apply">Apply</string>
@@ -53,7 +53,7 @@
     <string name="event">Event</string>
     <string name="texts">Texts</string>
     <string name="text">Text</string>
-    <string name="bond">Bond</string>
+    <string name="bond">Bond</string> <!--TODO-->
     <string name="choice_answer">Choice an answer:</string>
     <string name="write_answer">Write an answer:</string>
     <string name="collect_the_answer">Collect an answer:</string>
@@ -67,18 +67,20 @@
     <string name="answer">Answer</string>
     <string name="exam">Exam</string>
     <string name="random">Random</string>
-    <string name="diapason">Diapason</string>
+    <string name="diapason">Range</string>
     <string name="auto">Auto</string>
     <string name="results">Results</string>
     <!--    <string name="count_reps">%1$d %2$s</string> 3 повторени · 4 окт-->
 
-    <plurals name="reps">
-        <item quantity="one">%1$d rep · %2$s</item>
-        <item quantity="other">%1$d reps · %2$s</item>
-    </plurals>
+    <string name="reps">%1$s · %2$d · %3$s</string>
+
     <plurals name="association_items">
         <item quantity="one">%1$d Association</item>
         <item quantity="other">%1$d associations</item>
+    </plurals>
+    <plurals name="association_repeat">
+        <item quantity="one">%1$d association ready to repeat</item>
+        <item quantity="other">%1$d associations ready to repeat</item>
     </plurals>
     <plurals name="correct_items">
         <item quantity="one">%1$d correct answer</item>
@@ -95,15 +97,25 @@
         <item>Diapason:</item>
         <item>Random:</item>
     </string-array>
+
     <string name="never">never</string>
     <string name="no_data">No data</string>
-    <string name="colorNeedToLearn">Need to learn</string>
-    <string name="colorLearning">Learning</string>
-    <string name="colorLearned">Learned</string>
+    <string name="not_learned">No learned</string>
+    <string name="learning">Learning</string>
+    <string name="learned">Learned</string>
     <string name="general_statistic">General statistic</string>
     <string name="learned_associations">• Learned: %1$d</string>
     <string name="learning_associations">• Learning: %1$d</string>
     <string name="need_to_learn_associations">• Need to learn: %1$d</string>
     <string name="total_association">• Total association: %1$d</string>
+    <string name="sort">Sort</string>
+    <string name="sort_by">Sort</string>
+    <string name="sort_desc">Descending</string>
+    <string name="sort_asc">Ascending</string>    // возрастание
+    <string name="order">Order</string>
+    <string name="sort_name">Name</string>
+    <string name="repeat">Repeat</string>
+    <string name="unknown">Unknown</string>
+
 
 </resources>

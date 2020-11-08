@@ -23,8 +23,8 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
         }
     };
     // 7,5с > 30c > 2м > 8м > |30м| > 2ч > 32ч > 5д > 20д > 80д > 320д
-//    public static final int MIN_REPEAT_UNIT = 1000 * 60 * 30; // 30 минут
-    public static final int MIN_REPEAT_UNIT = 1000 * 7; // TODO 7 сек
+    public static final int MIN_REPEAT_UNIT = 1000 * 60 * 30; // 30 минут
+//    public static final int MIN_REPEAT_UNIT = 1000 * 7;
     private static final String TAG = "word";
     private int tableId;
     private UUID uuid;
@@ -87,6 +87,18 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
     public static boolean isRepeatable(long lastRepeat, long currentTime, int countLearn) {
         long time = currentTime - lastRepeat;
         return time >= (MIN_REPEAT_UNIT * Math.pow(4, countLearn));
+    }
+    public boolean isRepeatable() {
+        long currentTime = System.currentTimeMillis();
+        return isRepeatable(time, currentTime, countLearn);
+    }
+    public long getNextRepeatTime() {
+        long rtn = (long) (time + (MIN_REPEAT_UNIT * Math.pow(4, countLearn)));
+        return time == 0 ? 0 : rtn;
+    }
+
+    public static long repeatTime(int countLearn) {
+        return (long) (MIN_REPEAT_UNIT * Math.pow(4, countLearn));
     }
 
     @Override

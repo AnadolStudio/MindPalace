@@ -24,18 +24,9 @@
             android:layout_weight="1"
             android:gravity="start|center_vertical"
             android:singleLine="true"
-            tools:text="Tools.Name">
+            tools:text="Title">
 
         </TextView>
-
-        <!--TODO добавить описание через SnackBar-->
-
-        <ImageButton
-            style="@android:style/Widget.Holo.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/information"
-            android:src="@drawable/ic_info" />
 
         <ImageButton
             android:id="@+id/cancel_button"

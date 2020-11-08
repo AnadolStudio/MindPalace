@@ -261,9 +261,9 @@ public class StatisticFragment extends MyFragment {
     }
 
     private String[] getWordsLabels() {
-        String needToLearn = getString(R.string.colorNeedToLearn);
-        String learning = getString(R.string.colorLearning);
-        String learned = getString(R.string.colorLearned);
+        String needToLearn = getString(R.string.not_learned);
+        String learning = getString(R.string.learning);
+        String learned = getString(R.string.learned);
         return new String[]{needToLearn, learning, learned};
     }
 

@@ -2,7 +2,8 @@
 <resources>
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#42a5f5</color>
+    <color name="colorAccent">#42A5F5</color>
+    <color name="colorAccentLight">#29B6F6</color>
     <color name="background">#F6F6F6</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorDarkWhite">#D7D7D7</color>
@@ -10,11 +11,10 @@
     <color name="colorSecondaryText">#757575</color>
     <color name="colorSecondaryTextShadow">#AAAAAA</color>
     <color name="colorDivider">#ECECEC</color>
-    <color name="colorShadowBackground">#4D000000</color>
+    <color name="colorShadowBackground">#B3000000</color>
     <color name="colorProgressBarBackground">#667E7E7E</color>
     <color name="colorError">#777777</color>
 
-    <color name="colorMistake">#D50000</color>
     <color name="colorCheckBackground">#4D373737</color>
     <color name="colorTrue">#689F38</color>
     <color name="colorFalse">#B71C1C</color>
@@ -22,4 +22,8 @@
     <color name="colorLearned">#18AAEC</color>
     <color name="colorLearning">#4CAF50</color>
     <color name="colorNeedToLearn">#BABABA</color>
+
+    <color name="colorGray">#CCCCCC</color>
+    <color name="colorReadyRepeat">#419646</color>
+    <color name="colorNotReadyRepeat">#D32F2F</color>
 </resources>
