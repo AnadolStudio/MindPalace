@@ -26,7 +26,6 @@ import androidx.core.content.ContextCompat;
 
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.model.Group;
-import com.anadol.rememberwords.presenter.MyAnimations;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -126,7 +125,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
                     type = Group.TYPE_TEXTS;
                     break;
                 case R.id.foreign_words_chip:
-                    type = Group.TYPE_BOND;
+                    type = Group.TYPE_LINK;
                     break;
             }
         });
@@ -229,7 +228,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
             case Group.TYPE_TEXTS:
                 typeChipGroup.check(R.id.texts_chip);
                 break;
-            case Group.TYPE_BOND:
+            case Group.TYPE_LINK:
                 typeChipGroup.check(R.id.foreign_words_chip);
                 break;
         }

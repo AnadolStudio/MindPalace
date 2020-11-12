@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.cardview.widget.CardView
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="@dimen/radius16"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/introduction_textView"
+                        style="@style/Information.BodyText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/introduction" />
+
+                    <TextView
+                        android:id="@+id/headerBasic_textView"
+                        style="@style/Information.HeaderText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/header_basic" />
+
+                    <TextView
+                        android:id="@+id/bodyBasic_textView"
+                        style="@style/Information.BodyText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/body_basic" />
+
+                    <TextView
+                        android:id="@+id/headerLearning_textView"
+                        style="@style/Information.HeaderText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/header_learning" />
+
+                    <TextView
+                        android:id="@+id/bodyLearning1_textView"
+                        style="@style/Information.BodyText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/body_learning1" />
+
+                    <TextView
+                        android:id="@+id/repeat_textView"
+                        style="@style/Information.BodyText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/body_repeat"
+                        android:textColor="@color/colorAccent" />
+
+                    <include layout="@layout/item_preview_words_list" />
+
+                    <TextView
+                        android:id="@+id/additional_textView"
+                        style="@style/Information.BodyText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="@string/additional"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/bodyLearning2_textView"
+                        style="@style/Information.BodyText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/body_learning2" />
+
+                    <TextView
+                        android:id="@+id/headerChart_textView"
+                        style="@style/Information.HeaderText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/forgetting_curve" />
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/chart_forget"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp" />
+
+                    <TextView
+                        style="@style/Information.BodyText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/description_forget"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/bodyChart_textView"
+                        style="@style/Information.BodyText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/forgetting_curve_additional" />
+
+                    <TextView
+                        android:id="@+id/periodExample_textView"
+                        style="@style/Information.BodyText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/period_example"
+                        android:textColor="@color/colorAccent" />
+
+                    <TextView
+                        android:id="@+id/bodyChart_textView2"
+                        style="@style/Information.BodyText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/forgetting_curve_additional2" />
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            app:elevation="4dp"
+            app:title="@string/app_name"
+            app:titleTextAppearance="@style/TitleTextAppearance" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

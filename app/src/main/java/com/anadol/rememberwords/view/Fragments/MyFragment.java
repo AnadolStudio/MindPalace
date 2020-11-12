@@ -11,11 +11,12 @@ import com.anadol.rememberwords.view.Dialogs.LoadingDialog;
 import com.anadol.rememberwords.view.Dialogs.LoadingView;
 import com.anadol.rememberwords.view.Dialogs.SortDialog;
 
-public abstract class MyFragment extends Fragment implements FragmentAdapter{
+public abstract class MyFragment extends Fragment implements FragmentAdapter {
     public static final String MODE = "mode";
     public static final int MODE_NORMAL = 0;
     public static final int MODE_SEARCH = 1;
     public static final int MODE_SELECT = 2;
+    public static final String SCROLL_POSITION = "scroll_position";
     protected static final int REQUEST_SORT = 103;
     protected static final String KEY_SELECT_ALL = "select_all";
     protected static final String KEY_SELECT_COUNT = "select_count";
@@ -24,7 +25,8 @@ public abstract class MyFragment extends Fragment implements FragmentAdapter{
     protected LoadingView mLoadingView;
 
     @Override
-    public void updateUI() {}
+    public void updateUI() {
+    }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -37,7 +39,8 @@ public abstract class MyFragment extends Fragment implements FragmentAdapter{
     }
 
     @Override
-    public void changeSelectableMode(boolean selected) {}
+    public void changeSelectableMode(boolean selected) {
+    }
 
     @Override
     public Resources myResources() {

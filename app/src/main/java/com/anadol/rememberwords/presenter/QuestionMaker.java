@@ -7,7 +7,7 @@ import com.anadol.rememberwords.model.Word;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.anadol.rememberwords.model.Group.TYPE_BOND;
+import static com.anadol.rememberwords.model.Group.TYPE_LINK;
 import static com.anadol.rememberwords.model.Group.TYPE_DATES;
 import static com.anadol.rememberwords.model.Group.TYPE_NUMBERS;
 import static com.anadol.rememberwords.model.Group.TYPE_TEXTS;
@@ -146,7 +146,7 @@ public class QuestionMaker {
                 q = original;
                 break;
             case TYPE_DATES:
-            case TYPE_BOND:
+            case TYPE_LINK:
                 if (new Random().nextBoolean()) {
                     q = original;
                 } else {

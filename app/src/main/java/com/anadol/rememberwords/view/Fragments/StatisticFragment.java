@@ -50,7 +50,7 @@ import java.util.List;
 public class StatisticFragment extends MyFragment {
     private static final Typeface TYPEFACE = Typeface.SERIF;
     private static final String TAG = StatisticFragment.class.getName();
-    private static final String SCROLL_POSITION = "scroll_position";
+
     private static final String ITEMS = "items";
     private PieChart mChartGeneral;
     private BarChart mChartDetail;
@@ -143,6 +143,7 @@ public class StatisticFragment extends MyFragment {
         mChartDetail.getAxisRight().setEnabled(false);
         mChartDetail.getDescription().setEnabled(false);
         mChartDetail.setDrawValueAboveBar(false);
+        mChartDetail.setScaleYEnabled(false);
 
         XAxis xAxis = mChartDetail.getXAxis();
         xAxis.setTypeface(TYPEFACE);

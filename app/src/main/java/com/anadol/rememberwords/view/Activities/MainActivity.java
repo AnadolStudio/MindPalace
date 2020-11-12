@@ -11,7 +11,7 @@ import androidx.fragment.app.FragmentManager;
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.view.Fragments.GroupListFragment;
 import com.anadol.rememberwords.view.Fragments.IOnBackPressed;
-import com.anadol.rememberwords.view.Fragments.SettingsFragment;
+import com.anadol.rememberwords.view.Fragments.InfoFragment;
 import com.anadol.rememberwords.view.Fragments.StatisticFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.navigation_home:
                         return addFragment(GroupListFragment.newInstance());
                     case R.id.navigation_settings:
-                        return addFragment(SettingsFragment.newInstance());
+                        return addFragment(InfoFragment.newInstance());
                 }
             }
 

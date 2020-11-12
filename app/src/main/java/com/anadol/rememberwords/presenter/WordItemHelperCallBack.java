@@ -23,7 +23,7 @@ public class WordItemHelperCallBack extends ItemTouchHelper.Callback {
 
     @Override
     public int getMovementFlags(@NonNull RecyclerView mRecyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-        int swipeFlag = ItemTouchHelper.START | ItemTouchHelper.END;
+        int swipeFlag = ItemTouchHelper.START; // TODO можно сделать более гибким через конструктор
         return makeFlag(ItemTouchHelper.ACTION_STATE_SWIPE, swipeFlag);
     }
 

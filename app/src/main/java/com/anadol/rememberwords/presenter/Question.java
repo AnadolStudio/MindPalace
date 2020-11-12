@@ -112,11 +112,6 @@ public class Question implements Parcelable {
     }
 
     public boolean isUserAnswerCorrect() {
-        // TODO: остановился на следующем:
-        //  3) реализовать более точную проверку ответов (для Answer);
-        //  7) comment(вместо него будет допинфа о кол-ве поторений,последней сдаче и т.п.) в Detail;
-        //  8) иной способо select words в Detail;
-        //  9) Выполнить оставшиеся "TO DO".
 
         boolean isCorrect = false;
         String s1 = trueAnswer.toLowerCase();
@@ -129,7 +124,7 @@ public class Question implements Parcelable {
             //  проверка типа Связь при MultiTranslate
             //  проверка типа Даты
 
-            // TODO тут необходимо реализовать более точную проверку
+            // TODO реализовать более точную проверку ответов (для Answer);
         }
         return isCorrect;
     }
@@ -185,17 +180,22 @@ public class Question implements Parcelable {
             index = 0;
             length = getLengthPuzzle(string.length());
 
-            for (int j = 0; j < length; j++) {
-                increment = (j + 1) * (string.length() / length);
-                Log.i(TAG, "increment: " + increment);
-                if (j == length - 1) {// если последний круг в цикле, то берем остаток
-                    Log.i(TAG, "toPuzzle: substring(index) " + string.substring(index));
-                    puzzle.add(string.substring(index));
-                } else {
-                    Log.i(TAG, "toPuzzle: substring(index, increment) " + string.substring(index, increment));
-                    puzzle.add(string.substring(index, increment));
+            if (string.length() > 1) {
+
+                for (int j = 0; j < length; j++) {
+                    increment = (j + 1) * (string.length() / length);
+                    Log.i(TAG, "increment: " + increment);
+                    if (j == length - 1) {// если последний круг в цикле, то берем остаток
+                        Log.i(TAG, "toPuzzle: substring(index) " + string.substring(index));
+                        puzzle.add(string.substring(index));
+                    } else {
+                        Log.i(TAG, "toPuzzle: substring(index, increment) " + string.substring(index, increment));
+                        puzzle.add(string.substring(index, increment));
+                    }
+                    index = increment;
                 }
-                index = increment;
+            }else {
+                puzzle.add(string);
             }
         }
         for (int i = 0; i < countSpace; i++) {

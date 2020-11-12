@@ -88,6 +88,60 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         return fragment;
     }
 
+    public static int getRouteTest(ArrayList<Word> words) {
+        int count = 0;
+        for (Word w : words) {
+
+            if (w.getCountLearn() % 2 == 0) {
+                count++;
+            }
+        }
+
+        return count > words.size() / 2 ? FORWARD : INVERSE;
+    }
+
+    public static String getTypeTest(ArrayList<Word> words) {
+        int easy = 0; // Quiz
+        int medium = 0; //Puzzle
+        int hard = 0; // Answer
+
+        for (Word w : words) {
+            switch (w.getCountLearn()) {
+                case 0:
+                case 1:
+                    easy++;
+                    break;
+                case 2:
+                    medium++;
+                    break;
+                default:
+                case 3:
+                    hard++;
+                    break;
+            }
+        }
+        if (hasWordToExam(words)) return EXAM;
+
+        return (easy > medium) ? QUIZ : ((medium > hard) ? PUZZLE : ANSWER);
+    }
+
+    private static boolean hasWordToExam(ArrayList<Word> words) {
+        int count = 0;
+        for (Word word : words) {
+            if (readyToExam(word)) count++;
+        }
+        return count >= MIN_COUNT_WORDS;
+    }
+
+    private static boolean readyToExam(Word word) {
+        int countLearn = word.getCountLearn();
+//        boolean neverExam = word.isExam();
+
+//        boolean isRep = Word.isRepeatable(word.getTime(), System.currentTimeMillis(), countLearn);
+//        return countLearn > 3 && isRep || countLearn > 4;
+        return countLearn >= 4;
+    }
+
     public void updateUI() {
         startButton.setEnabled(isAllReady());
         examChip.setEnabled(hasWordToExam(mWords));
@@ -272,41 +326,6 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         objectTest = AUTO;
     }
 
-    public static int getRouteTest(ArrayList<Word> words) {
-        int count = 0;
-        for (Word w : words) {
-
-            if (w.getCountLearn() % 2 == 0) {
-                count++;
-            }
-        }
-
-        return count > words.size() / 2 ? FORWARD : INVERSE;
-    }
-
-    public static String getTypeTest(ArrayList<Word> words) {
-        int easy = 0; // Quiz
-        int medium = 0; //Puzzle
-        int hard = 0; // Answer
-
-        for (Word w : words) {
-            switch (w.getCountLearn()) {
-                case 0:
-                case 1:
-                    easy++;
-                    break;
-                case 2:
-                    medium++;
-                    break;
-                default:
-                case 3:
-                    hard++;
-                    break;
-            }
-        }
-        return (easy > medium) ? QUIZ : ((medium > hard) ? PUZZLE : ANSWER);
-    }
-
     @Override
     public void onClick(View v) {
         if (!examChip.isChecked()) {
@@ -333,10 +352,10 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         switch (objectTest) {
             case AUTO:
                 count = Math.min(mWords.size(), 20);
-                // TODO изменить логику, EXAM в первом приоритете
-                // getWordsToExam(mWords).size() > MIN_COUNT_WORDS
-                if (getWordsToExam(mWords).size() == mWords.size()) {
-                    learnList = getWordsToExam(mWords);
+
+                ArrayList<Word> toExam = getWordsToExam(mWords);
+                if (toExam.size() >= MIN_COUNT_WORDS) {
+                    learnList = toExam;
                 } else {
                     learnList = getWordsForPriority(mWords, count);
                 }
@@ -416,21 +435,6 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
                 routeTest);
 
         startActivity(intent);
-    }
-
-    private boolean hasWordToExam(ArrayList<Word> words) {
-        int count = 0;
-        for (Word word : words) {
-            if (readyToExam(word)) count++;
-        }
-        return count >= MIN_COUNT_WORDS;
-    }
-
-    private boolean readyToExam(Word word) {
-        int countLearn = word.getCountLearn();
-        boolean isRep = Word.isRepeatable(word.getTime(), System.currentTimeMillis(), countLearn);
-
-        return countLearn > 3 && isRep || countLearn > 4;
     }
 
     private ArrayList<Word> getWordsToExam(ArrayList<Word> words) {

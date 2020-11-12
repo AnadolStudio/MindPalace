@@ -2,6 +2,7 @@ package com.anadol.rememberwords.view.Dialogs;
 
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,20 +19,25 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.anadol.rememberwords.R;
 import com.anadol.rememberwords.model.CreatorValues;
 import com.anadol.rememberwords.model.DataBaseSchema;
 import com.anadol.rememberwords.model.MyCursorWrapper;
 import com.anadol.rememberwords.model.Word;
+import com.anadol.rememberwords.presenter.NotificationWorker;
 import com.anadol.rememberwords.presenter.Question;
 import com.anadol.rememberwords.view.Activities.LearnActivity;
-import com.anadol.rememberwords.view.Services.NotificationService;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
+import static com.anadol.rememberwords.presenter.NotificationWorker.WORDS_ID;
 import static com.anadol.rememberwords.view.Activities.LearnActivity.QUESTIONS;
 
 public class DialogResultBottomSheet extends BottomSheetDialogFragment {
@@ -50,6 +56,35 @@ public class DialogResultBottomSheet extends BottomSheetDialogFragment {
         DialogResultBottomSheet fragment = new DialogResultBottomSheet();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    private void createService(Context context, ArrayList<Word> words) {
+        String[] ids = new String[words.size()];
+        int minCount = -1;
+        Word word;
+
+        for (int i = 0; i < words.size(); i++) {
+            word = words.get(i);
+            ids[i] = word.getUUIDString();
+            // Поиск самого малаго промежутка для повторения
+            if (minCount == -1 || minCount > word.getCountLearn()) {
+                minCount = word.getCountLearn() - 1;// Данный countLearn уже новый, а счет должен идти по старому
+            }
+        }
+
+        Data data = new Data.Builder().putStringArray(WORDS_ID, ids).build();
+        OneTimeWorkRequest oneTimeWorkRequest =
+                new OneTimeWorkRequest.Builder(NotificationWorker.class)
+//                        .setInitialDelay(Word.repeatTime(minCount), TimeUnit.MILLISECONDS)
+                        .setInitialDelay(20, TimeUnit.MINUTES)
+                        .setInputData(data)
+                        .build();
+        oneTimeWorkRequest.getId();
+
+        WorkManager.getInstance(context).enqueue(oneTimeWorkRequest);
+//        WorkManager.getInstance(context).getWorkInfoById(oneTimeWorkRequest.getId());
+
+        Log.i(TAG, "createService");
     }
 
     @Nullable
@@ -112,6 +147,10 @@ public class DialogResultBottomSheet extends BottomSheetDialogFragment {
         return super.onCreateDialog(savedInstanceState);
     }
 
+//    public interface LearnCallback {
+//        void repeatTest(Boolean isTrue);
+//    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -120,10 +159,6 @@ public class DialogResultBottomSheet extends BottomSheetDialogFragment {
             Log.i(TAG, "onStop: background was canceled");
         }
     }
-
-//    public interface LearnCallback {
-//        void repeatTest(Boolean isTrue);
-//    }
 
     private class ResultAdapter extends RecyclerView.Adapter<ResultItem> {
         ArrayList<Question> mQuestions;
@@ -225,8 +260,9 @@ public class DialogResultBottomSheet extends BottomSheetDialogFragment {
                             isExam = question.isExam();
 
                             if (question.isUserAnswerCorrect()) {
-                               w = question.getWord();
-                                if (Word.isRepeatable(time, currentTime, countLearn)) {
+                                w = question.getWord();
+                                if (w.isRepeatable(currentTime)) {
+
                                     countLearn++;
                                     time = currentTime;
                                     w.setCountLearn(countLearn);
@@ -260,10 +296,11 @@ public class DialogResultBottomSheet extends BottomSheetDialogFragment {
         @Override
         protected void onPostExecute(ArrayList<Word> words) {
             super.onPostExecute(words);
-            if (words != null){
+            if (words != null && !words.isEmpty()) {
                 Log.i(TAG, "onPostExecute: words.size() " + words.size());
                 Log.i(TAG, "onPostExecute: words " + words);
-                NotificationService.setServiceAlarm(getContext(), words);
+
+                createService(getActivity(), words);
             }
         }
     }

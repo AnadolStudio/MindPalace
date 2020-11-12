@@ -15,12 +15,10 @@
     <string name="information">Information</string>
     <string name="comment">Comment:</string>
 
-
     <string name="is_empty">Enter name</string>
     <string name="min_word_list_size">You need at least %1$d words</string>
     <string name="override_number_words">The number of words exceeds the allowed size</string>
     <string name="diapason_error">Diapason Error</string>
-
 
     <string name="home">Home</string>
     <string name="statistic">Statistic</string>
@@ -35,7 +33,6 @@
     <string name="translate">Translate</string>
     <string name="associations_count" translatable="false">%1$d / %2$d</string> <!--"·" = &#183; / "•" = &#8226; символ-->
     <string name="create_association">Create</string>
-    <!--    TODO подумай о синониме-->
     <string name="learn">Learn</string>
     <string name="double_click_for_exit">Double click for exit</string>
     <string name="migrate">Migrate</string>
@@ -53,7 +50,7 @@
     <string name="event">Event</string>
     <string name="texts">Texts</string>
     <string name="text">Text</string>
-    <string name="bond">Bond</string> <!--TODO-->
+    <string name="link">Link</string>
     <string name="choice_answer">Choice an answer:</string>
     <string name="write_answer">Write an answer:</string>
     <string name="collect_the_answer">Collect an answer:</string>
@@ -111,11 +108,45 @@
     <string name="sort">Sort</string>
     <string name="sort_by">Sort</string>
     <string name="sort_desc">Descending</string>
-    <string name="sort_asc">Ascending</string>    // возрастание
+    <string name="sort_asc">Ascending</string>
+    // возрастание
     <string name="order">Order</string>
     <string name="sort_name">Name</string>
     <string name="repeat">Repeat</string>
     <string name="unknown">Unknown</string>
+<!--    TODO необходимо проверить на грамматику эти предложений> -->
+    <string name="introduction">For effective memorization of information, a person created mnemonics.
+        The word "mnemonic" is derived from the Ancient Greek word μνημονικός (mnēmonikos), meaning "of memory, or relating to memory"
+        \n
+        \nMind Palace will help you master this art.</string>
+    <string name="header_basic">The basics</string>
+    <string name="body_basic">In the Mind Palace, there are 4 types of associative groups:
+        \n
+        \n • Number;
+        \n • Dates;
+        \n • Text;
+        \n • Link.
+        \n
+        \n Each group has its own characteristics. You can select the appropriate one in the group settings.
+        After creating a group, you need to create your own associations. And then start learning them.</string>
+    <string name="header_learning">The learning</string>
+    <string name="body_learning1">When you have at least 10 associations, you can start studying them.
+        The learning process is based on the forgetting Curve (Ebbinghaus curve), i.e., the repetition of the material at certain intervals.</string>
+    <string name="body_repeat">\"Repetition\" is independent and error-free reproduction of information.</string>
+    <string name="additional">\"%1$s\"- current status of the Association;\n\"%2$d\" - number of repetitions;\n"%3$s\ " - time of the next repetition.</string>
+    <string name="body_learning2">After the 4th successful repetition of at least 10 associations,
+        you will be able to pass the exam to confirm that you have learned them.</string>
+    <string name="forgetting_curve">Forgetting curve</string>
+    <string name="forgetting_curve_additional">Our brain erases unnecessary information for itself, so that this does not happen,
+        you need to \"explain\" to the brain that this information is important. To do this, repeat the information at the following intervals:</string>
+    <string name="period_example">30 min -> 2 hours -> 8 hours -> 32 hours - > 5 days - > 20 days - > 80 days, etc.</string>
+    <string name="forgetting_curve_additional2">These boundaries are the minimum period between repetitions. You can move them up to 50%.</string>
+    <string name="description_forget">In the first hour, up to 60% of the information is forgotten, i.e. only 40% remains in memory, and in 10 hours - 35%.
+        Then forgetting slows down, after 6 days there is 20%, and the same amount remains in a month.</string>
+    <!--    <TODO необходимо проверить на грамматику эти предложений -->
 
+    <string name="exaple_original" translatable="false">43</string>
+    <string name="exaple_association">fear</string>
+    <string name="exaple_translate" translatable="false">43</string>
 
 </resources>

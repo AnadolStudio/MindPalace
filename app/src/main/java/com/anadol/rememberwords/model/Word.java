@@ -7,6 +7,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static com.anadol.rememberwords.presenter.MyRandom.getRandomInts;
 
@@ -23,9 +24,9 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
         }
     };
     // 7,5с > 30c > 2м > 8м > |30м| > 2ч > 32ч > 5д > 20д > 80д > 320д
-    public static final int MIN_REPEAT_UNIT = 1000 * 60 * 30; // 30 минут
-//    public static final int MIN_REPEAT_UNIT = 1000 * 7;
-    private static final String TAG = "word";
+    public static final long MIN_REPEAT_UNIT = TimeUnit.MINUTES.toMillis(30);
+    //    public static final int MIN_REPEAT_UNIT = 1000 * 7;
+    private static final String TAG = Word.class.getName();
     private int tableId;
     private UUID uuid;
     private UUID groupUUID;
@@ -88,17 +89,28 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
         long time = currentTime - lastRepeat;
         return time >= (MIN_REPEAT_UNIT * Math.pow(4, countLearn));
     }
-    public boolean isRepeatable() {
-        long currentTime = System.currentTimeMillis();
-        return isRepeatable(time, currentTime, countLearn);
-    }
-    public long getNextRepeatTime() {
-        long rtn = (long) (time + (MIN_REPEAT_UNIT * Math.pow(4, countLearn)));
-        return time == 0 ? 0 : rtn;
-    }
 
     public static long repeatTime(int countLearn) {
+
         return (long) (MIN_REPEAT_UNIT * Math.pow(4, countLearn));
+    }
+
+    @Override
+    public String getName() {
+        return original;
+    }
+
+    public boolean isRepeatable() {
+        long currentTime = System.currentTimeMillis();
+        return isRepeatable(time, currentTime, countLearn - 1);
+    }
+    public boolean isRepeatable(long currentTime) {
+        return isRepeatable(time, currentTime, countLearn - 1);
+    }
+
+    public long getNextRepeatTime() {
+        long rtn = (time + repeatTime(Math.max(0, countLearn - 1)));
+        return time == 0 ? 0 : rtn;
     }
 
     @Override
@@ -307,7 +319,7 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
                 ", association='" + association + '\'' +
                 ", translate='" + translate + '\'' +
                 ", countLearn=" + countLearn +
-                ", isRepeatable=" + isRepeatable(time,System.currentTimeMillis(),countLearn) +
+                ", isRepeatable=" + isRepeatable(time, System.currentTimeMillis(), countLearn) +
                 ", isExam=" + isExam +
                 '}';
     }
@@ -335,7 +347,7 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
     }
 
     public void setCountLearn(int countLearn) {
-        if (countLearn < 0){
+        if (countLearn < 0) {
             countLearn = 0;
         }
         this.countLearn = countLearn;

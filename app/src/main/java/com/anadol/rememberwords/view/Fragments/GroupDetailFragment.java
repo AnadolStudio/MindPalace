@@ -56,6 +56,7 @@ import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static com.anadol.rememberwords.view.Dialogs.DialogResultBottomSheet.createService;
 import static com.anadol.rememberwords.view.Dialogs.LearnStartBottomSheet.MIN_COUNT_WORDS;
 import static com.anadol.rememberwords.view.Dialogs.SortDialog.ORDER_SORT;
 import static com.anadol.rememberwords.view.Dialogs.SortDialog.TYPE_SORT;
@@ -541,7 +542,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
 
                 default:
                 case Group.TYPE_DATES:
-                case Group.TYPE_BOND:
+                case Group.TYPE_LINK:
                     if (w.getOriginal().equals("") || w.getTranslate().equals("")
                             || w.getAssociation().equals("")) {
                         tempList.remove(w);
@@ -713,9 +714,12 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                     break;
 
                 case DELETE_WORDS:
+                    boolean changeSM = mAdapter.getItemCount() == mAdapter.getItemCount();
                     mAdapter.remove(wordsListToRemove);
                     Toast.makeText(getContext(), getString(R.string.deleting_was_successful), Toast.LENGTH_SHORT).show();
-//                    changeSelectableMode(false);
+                    if (changeSM) {
+                        changeSelectableMode(false);
+                    }
                     updateUI();
                     break;
 

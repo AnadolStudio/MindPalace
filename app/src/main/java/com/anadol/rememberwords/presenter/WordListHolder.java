@@ -80,7 +80,7 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
                 break;
 
             default:
-            case Group.TYPE_BOND:
+            case Group.TYPE_LINK:
                 translate.setVisibility(View.VISIBLE);
                 break;
         }
@@ -143,14 +143,10 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
 
     private int getColorTimeRepeat(Resources resources) {
         int colorSpan;
-        if (!mWord.isExam()) {
-            if (mWord.getTime() != 0 && mWord.isRepeatable()) {
-                colorSpan = resources.getColor(R.color.colorReadyRepeat);
-            } else {
-                colorSpan = resources.getColor(R.color.colorNotReadyRepeat);
-            }
+        if (mWord.getTime() != 0 && mWord.isRepeatable()) {
+            colorSpan = resources.getColor(R.color.colorReadyRepeat);
         } else {
-            colorSpan = resources.getColor(R.color.colorLearned);
+            colorSpan = resources.getColor(R.color.colorNotReadyRepeat);
         }
         return colorSpan;
     }
@@ -175,7 +171,7 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
             default:
             case Group.TYPE_NUMBERS:
             case Group.TYPE_TEXTS:
-            case Group.TYPE_BOND:
+            case Group.TYPE_LINK:
                 res = R.string.translate;
                 break;
 
@@ -201,7 +197,7 @@ public class WordListHolder extends MySimpleHolder implements View.OnClickListen
             case Group.TYPE_DATES:
                 res = R.string.date;
                 break;
-            case Group.TYPE_BOND:
+            case Group.TYPE_LINK:
                 res = R.string.original;
                 break;
         }

@@ -6,25 +6,21 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.anadol.rememberwords.R;
-import com.google.android.material.chip.ChipGroup;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.UUID;
 
 public class Group extends SimpleParent implements Parcelable, Comparable<Group> {
     public static final int TYPE_NUMBERS = R.string.numbers;
     public static final int TYPE_DATES = R.string.dates;
     public static final int TYPE_TEXTS = R.string.texts;
-    public static final int TYPE_BOND = R.string.bond;
+    public static final int TYPE_LINK = R.string.link;
     public static final Parcelable.Creator<Group> CREATOR = new Parcelable.Creator<Group>() {
         @Override
         public Group createFromParcel(Parcel source) {
@@ -103,6 +99,7 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
         return mName.compareTo(o.getName());
     }
 
+    @Override
     public String getName() {
         return mName;
     }
@@ -177,7 +174,7 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
             case TYPE_NUMBERS:
             case TYPE_DATES:
             case TYPE_TEXTS:
-            case TYPE_BOND:
+            case TYPE_LINK:
                 this.type = type;
                 break;
 

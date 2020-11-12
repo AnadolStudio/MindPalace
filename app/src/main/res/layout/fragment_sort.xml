@@ -41,18 +41,17 @@
                     style="@style/SimpleSecondaryText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="8dp"
                     android:text="@string/sort_name"
-                    android:textSize="18sp" />
+                     />
 
                 <RadioButton
                     android:id="@+id/date_radio"
                     style="@style/SimpleSecondaryText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:text="@string/date"
-                    android:textSize="18sp" />
+                    android:layout_marginBottom="8dp"
+                    android:text="@string/date" />
 
             </RadioGroup>
 
@@ -66,7 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/order"
-                    android:textSize="16sp" />
+                    android:textSize="14sp" />
 
                 <View
                     android:layout_width="wrap_content"
@@ -86,18 +85,18 @@
                     style="@style/SimpleSecondaryText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="8dp"
                     android:text="@string/sort_desc"
-                    android:textSize="18sp" />
+                    />
 
                 <RadioButton
                     android:id="@+id/asc_radio"
                     style="@style/SimpleSecondaryText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="8dp"
                     android:text="@string/sort_asc"
-                    android:textSize="18sp" />
+                    />
 
             </RadioGroup>
 

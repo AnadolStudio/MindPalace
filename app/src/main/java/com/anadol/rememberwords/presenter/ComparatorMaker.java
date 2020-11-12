@@ -11,14 +11,14 @@ public class ComparatorMaker {
     public static final int ORDER_ASC = 202;
 
     // TODO Sort для слов в процессе и уже изученых
-    public static Comparator<SimpleParent> getComparator(int type, int order){
+    public static Comparator<SimpleParent> getComparator(int type, int order) {
         Comparator<SimpleParent> comparator;
-        switch (type){
+        switch (type) {
             default:
             case TYPE_NAME:
                 comparator = new StringIntegerComparator(order);
                 break;
-                case TYPE_DATE:
+            case TYPE_DATE:
                 comparator = new IdComparator(order);
                 break;
         }
@@ -35,7 +35,7 @@ public class ComparatorMaker {
         @Override
         public int compare(SimpleParent o1, SimpleParent o2) {
             SimpleParent temp;
-            if (order == ORDER_DESC){
+            if (order == ORDER_DESC) {
                 temp = o1;
 
                 o1 = o2;
@@ -58,7 +58,7 @@ public class ComparatorMaker {
         @Override
         public int compare(SimpleParent o1, SimpleParent o2) {
             SimpleParent temp;
-            if (order == ORDER_DESC){
+            if (order == ORDER_DESC) {
                 temp = o1;
 
                 o1 = o2;
@@ -66,18 +66,21 @@ public class ComparatorMaker {
             }
             Integer i1;
             Integer i2;
-            if (isInt(o1.toString()) && isInt(o2.toString())) {
-                i1 = Integer.parseInt(o1.toString());
-                i2 = Integer.parseInt(o2.toString());
+
+            boolean b1 = isInt(o1.getName());
+            boolean b2 = isInt(o2.getName());
+            if (b1 && b2) {
+                i1 = Integer.parseInt(o1.getName());
+                i2 = Integer.parseInt(o2.getName());
                 return i1.compareTo(i2);
-            }else if (!(isInt(o1.toString()) || isInt(o2.toString()))){
-                return o1.toString().compareTo(o2.toString());
-            }else {
-                return -1;
+            } else if (!(b1 || b2)) {
+                return o1.getName().compareTo(o2.getName());
+            } else {
+                return b1 ? -1 : 1;
             }
         }
 
-        private boolean isInt(String s){
+        private boolean isInt(String s) {
             try {
                 Integer.parseInt(s);
                 return true;
