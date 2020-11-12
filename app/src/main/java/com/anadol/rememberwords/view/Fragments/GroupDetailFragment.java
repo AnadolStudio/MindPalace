@@ -56,7 +56,6 @@ import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
-import static com.anadol.rememberwords.view.Dialogs.DialogResultBottomSheet.createService;
 import static com.anadol.rememberwords.view.Dialogs.LearnStartBottomSheet.MIN_COUNT_WORDS;
 import static com.anadol.rememberwords.view.Dialogs.SortDialog.ORDER_SORT;
 import static com.anadol.rememberwords.view.Dialogs.SortDialog.TYPE_SORT;
