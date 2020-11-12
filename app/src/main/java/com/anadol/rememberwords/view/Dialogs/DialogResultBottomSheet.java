@@ -75,8 +75,8 @@ public class DialogResultBottomSheet extends BottomSheetDialogFragment {
         Data data = new Data.Builder().putStringArray(WORDS_ID, ids).build();
         OneTimeWorkRequest oneTimeWorkRequest =
                 new OneTimeWorkRequest.Builder(NotificationWorker.class)
-//                        .setInitialDelay(Word.repeatTime(minCount), TimeUnit.MILLISECONDS)
-                        .setInitialDelay(20, TimeUnit.MINUTES)
+                        .setInitialDelay(Word.repeatTime(minCount), TimeUnit.MILLISECONDS)
+//                        .setInitialDelay(20, TimeUnit.MINUTES)
                         .setInputData(data)
                         .build();
         oneTimeWorkRequest.getId();
