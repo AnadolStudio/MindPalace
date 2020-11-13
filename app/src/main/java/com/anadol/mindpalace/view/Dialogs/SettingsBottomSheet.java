@@ -130,6 +130,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
             }
         });
         colorsChipGroup.setOnCheckedChangeListener((chipGroup, i) -> {
+            Log.i(TAG, "setListeners: chip id"+ i);
             switch (i) {
                 case R.id.color_one:
                     setValueSeekBars(colorsGradient[0]);
@@ -143,7 +144,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
             }
         });
         gradientButton.setOnClickListener(v -> {
-            if (colorsGradient == null) { ;
+            if (colorsGradient == null) {
                 llColorPicker.setVisibility(View.VISIBLE);
 
                 uriPhoto = null;
@@ -314,12 +315,13 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
         int iRed;
         int iGreen;
         int iBlue;
-        int i = -1;
+        int i = 0;
 
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             int id = colorsChipGroup.getCheckedChipId();
             switch (id) {
+                default:
                 case R.id.color_one:
                     i = 0;
                     break;

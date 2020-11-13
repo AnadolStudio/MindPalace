@@ -28,6 +28,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.anadol.mindpalace.model.CreatorValues;
+import com.anadol.mindpalace.model.DataBaseSchema.Groups;
+import com.anadol.mindpalace.model.DataBaseSchema.Words;
 import com.anadol.mindpalace.model.Group;
 import com.anadol.mindpalace.model.MyCursorWrapper;
 import com.anadol.mindpalace.model.SettingsPreference;
@@ -35,11 +37,9 @@ import com.anadol.mindpalace.presenter.ComparatorMaker;
 import com.anadol.mindpalace.presenter.MyAnimations;
 import com.anadol.mindpalace.presenter.MyListAdapter;
 import com.anadol.mindpalace.presenter.SlowGridLayoutManager;
-import com.anadol.rememberwords.R;
-import com.anadol.mindpalace.model.DataBaseSchema.Groups;
-import com.anadol.mindpalace.model.DataBaseSchema.Words;
 import com.anadol.mindpalace.view.Activities.GroupDetailActivity;
 import com.anadol.mindpalace.view.Dialogs.SortDialog;
+import com.anadol.rememberwords.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -93,9 +93,9 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     }
 
     private void saveData(@NonNull Bundle outState) {
-        outState.putBoolean(KEY_SELECT_MODE, mAdapter.isSelectableMode());
+        outState.putBoolean(KEY_SELECT_MODE, mAdapter != null && mAdapter.isSelectableMode());
         outState.putParcelableArrayList(KEY_GROUP_SAVE, mGroupsList);
-        selectedStringArray = mAdapter.getSelectedStringArray();
+        selectedStringArray = mAdapter == null ? null : mAdapter.getSelectedStringArray();
         outState.putStringArrayList(KEY_SELECT_LIST, selectedStringArray);
         outState.putString(KEY_SEARCH_QUERY, searchQuery);
     }
@@ -415,7 +415,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
 
     private void setupAdapter() {
 //        addAlphaAnim();
-        mAdapter = new MyListAdapter<>(getActivity(),GroupListFragment.this, mGroupsList, MyListAdapter.GROUP_HOLDER, selectedStringArray, selectable);
+        mAdapter = new MyListAdapter<>(getActivity(), GroupListFragment.this, mGroupsList, MyListAdapter.GROUP_HOLDER, selectedStringArray, selectable);
         mRecyclerView.setAdapter(mAdapter);
     }
 

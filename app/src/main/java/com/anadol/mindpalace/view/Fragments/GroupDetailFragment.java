@@ -115,8 +115,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     private void saveData(@NonNull Bundle outState) {
         outState.putParcelable(GROUP, mGroup);
         outState.putParcelableArrayList(WORD_SAVE, mWords);
-        outState.putBoolean(GroupListFragment.KEY_SELECT_MODE, mAdapter.isSelectableMode());
-        selectStringArray = mAdapter.getSelectedStringArray();
+        outState.putBoolean(GroupListFragment.KEY_SELECT_MODE, mAdapter != null && mAdapter.isSelectableMode());
+        selectStringArray = mAdapter == null ? null : mAdapter.getSelectedStringArray();
         outState.putStringArrayList(KEY_SELECT_LIST, selectStringArray);
         outState.putString(KEY_SEARCH_QUERY, searchQuery);
     }
