@@ -98,6 +98,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
 
     private WordBackground background;
     private LearnStartBottomSheet learnDialog;
+    private SettingsBottomSheet settingsDialog;
 
     public static GroupDetailFragment newInstance(Group group) {
 
@@ -492,9 +493,11 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     }
 
     private void createBottomSheetSettingDialog() {
-        SettingsBottomSheet settingsDialog = SettingsBottomSheet.newInstance(mGroup);
-        settingsDialog.setTargetFragment(this, REQUEST_UPDATE_GROUP);
-        settingsDialog.show(getFragmentManager(), SettingsBottomSheet.class.getName());
+        if (settingsDialog == null || !settingsDialog.isVisible()) {
+            settingsDialog = SettingsBottomSheet.newInstance(mGroup);
+            settingsDialog.setTargetFragment(this, REQUEST_UPDATE_GROUP);
+            settingsDialog.show(getFragmentManager(), SettingsBottomSheet.class.getName());
+        }
     }
 
     private void saveGroup() {

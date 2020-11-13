@@ -106,7 +106,7 @@ public class NotificationWorker extends Worker {
                 .setContentTitle(mGroup.getName())
                 .setContentText(contentText)
                 .setAutoCancel(true)
-                .addAction(android.R.drawable.ic_media_play, resources.getString(R.string.repeat), pi)
+//                .addAction(android.R.drawable.ic_media_play, resources.getString(R.string.repeat), pi)
                 .build();
 
         notificationManager.notify(nId, notification);
