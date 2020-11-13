@@ -97,6 +97,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     private String searchQuery;
 
     private WordBackground background;
+    private LearnStartBottomSheet learnDialog;
 
     public static GroupDetailFragment newInstance(Group group) {
 
@@ -236,7 +237,16 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     @Override
     public void onResume() {
         super.onResume();
+        if (mWords != null && !mWords.isEmpty()) {
+            updateStatusWord();
+        }
         // TODO_начало ошибки removeEmptyWords (updateWordCount();)
+    }
+
+    private void updateStatusWord() {
+        UpdateExamWordsBackground examWordsBackground =
+                new UpdateExamWordsBackground(getContext(), mWords, () -> mAdapter.notifyDataSetChanged());
+        examWordsBackground.execute();
     }
 
     @Override
@@ -417,11 +427,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                 break;
 
             case REQUEST_UPDATE_WORDS:
-
-                UpdateExamWordsBackground examWordsBackground =
-                        new UpdateExamWordsBackground(getContext(), mWords, () -> mAdapter.notifyDataSetChanged());
-                examWordsBackground.execute();
-
+                updateStatusWord();
                 break;
 
             case REQUEST_SORT:
@@ -476,11 +482,13 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
             Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
             return;
         }
-        showLoadingDialog();
-        LearnStartBottomSheet learnDialog = LearnStartBottomSheet.newInstance(mGroup.getType(), words);
-        learnDialog.setTargetFragment(this, REQUEST_UPDATE_WORDS);
-        learnDialog.show(getFragmentManager(), LearnStartBottomSheet.class.getName());
-        hideLoadingDialog();
+        if (learnDialog == null || !learnDialog.isVisible()) {
+            showLoadingDialog();
+            learnDialog = LearnStartBottomSheet.newInstance(mGroup.getType(), words);
+            learnDialog.setTargetFragment(this, REQUEST_UPDATE_WORDS);
+            learnDialog.show(getFragmentManager(), LearnStartBottomSheet.class.getName());
+            hideLoadingDialog();
+        }
     }
 
     private void createBottomSheetSettingDialog() {

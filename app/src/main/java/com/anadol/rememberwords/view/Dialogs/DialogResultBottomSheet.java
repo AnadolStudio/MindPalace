@@ -33,8 +33,10 @@ import com.anadol.rememberwords.presenter.Question;
 import com.anadol.rememberwords.view.Activities.LearnActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import static com.anadol.rememberwords.presenter.NotificationWorker.WORDS_ID;
@@ -60,26 +62,34 @@ public class DialogResultBottomSheet extends BottomSheetDialogFragment {
 
     private void createService(Context context, ArrayList<Word> words) {
         String[] ids = new String[words.size()];
-        int minCount = -1;
+        int count;
         Word word;
 
+        HashMap<String, Integer> map = new HashMap<>();
         for (int i = 0; i < words.size(); i++) {
             word = words.get(i);
             ids[i] = word.getUUIDString();
-            // Поиск самого малаго промежутка для повторения
+
+            count = word.getCountLearn() - 1;
+            map.put(Integer.toString(count), count);
+            /*// Поиск самого малаго промежутка для повторения
             if (minCount == -1 || minCount > word.getCountLearn()) {
                 minCount = word.getCountLearn() - 1;// Данный countLearn уже новый, а счет должен идти по старому
-            }
+            }*/
         }
 
         Data data = new Data.Builder().putStringArray(WORDS_ID, ids).build();
         OneTimeWorkRequest oneTimeWorkRequest =
-                new OneTimeWorkRequest.Builder(NotificationWorker.class)
-                        .setInitialDelay(Word.repeatTime(minCount), TimeUnit.MILLISECONDS)
+                null;
+        ArrayList<Integer> values = new ArrayList<>(map.values());
+
+        for (Integer i : values) {
+            oneTimeWorkRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class)
+                    .setInitialDelay(Word.repeatTime(i), TimeUnit.MILLISECONDS)
 //                        .setInitialDelay(20, TimeUnit.MINUTES)
-                        .setInputData(data)
-                        .build();
-        oneTimeWorkRequest.getId();
+                    .setInputData(data)
+                    .build();
+        }
 
         WorkManager.getInstance(context).enqueue(oneTimeWorkRequest);
 //        WorkManager.getInstance(context).getWorkInfoById(oneTimeWorkRequest.getId());

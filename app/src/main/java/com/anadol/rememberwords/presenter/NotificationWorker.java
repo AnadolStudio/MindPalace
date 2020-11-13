@@ -42,7 +42,9 @@ public class NotificationWorker extends Worker {
     public static int createNotificationId(ArrayList<Word> words) {
         StringBuilder builder = new StringBuilder();
         for (Word w : words) {
-            builder.append(w.getTableId());
+            if (w.isRepeatable()) {
+                builder.append(w.getTableId());
+            }
         }
         return builder.toString().hashCode();
         // Можно было бы прсото использовать Integer.parse(), но что если число будет слишком большим для Integer?
