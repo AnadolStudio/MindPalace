@@ -116,8 +116,10 @@ public class StatisticFragment extends MyFragment {
             learned += items.get(i).getLearned();
         }
         updateTexts(needToLearn, learning, learned, (needToLearn + learning + learned));
-        setDataChartGeneral(new int[]{needToLearn, learning, learned}, getWordsLabels());
-        setDataChartDetail(items);
+        if (!items.isEmpty()) {
+            setDataChartGeneral(new int[]{needToLearn, learning, learned}, getWordsLabels());
+            setDataChartDetail(items);
+        }
     }
 
     private void updateTexts(int needToLearn, int learning, int learned, int total) {
@@ -351,10 +353,14 @@ public class StatisticFragment extends MyFragment {
             }
 
             Log.i(TAG, "doInBackground: " + arrayList.toString());
-            myCursor.close();
 
-            assert cursor != null;
-            cursor.close();
+            if (myCursor != null) {
+                myCursor.close();
+            }
+
+            if (cursor != null) {
+                cursor.close();
+            }
             return arrayList;
         }
 
