@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment;
 import com.anadol.mindpalace.model.Group;
 import com.anadol.mindpalace.view.Fragments.GroupDetailFragment;
 import com.anadol.mindpalace.view.Fragments.IOnBackPressed;
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 
 
 public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pager

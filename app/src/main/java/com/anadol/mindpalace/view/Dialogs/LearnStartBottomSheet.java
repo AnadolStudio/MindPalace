@@ -26,7 +26,7 @@ import com.anadol.mindpalace.presenter.MyRandom;
 import com.anadol.mindpalace.presenter.NeverExamComparator;
 import com.anadol.mindpalace.presenter.PriorityComparator;
 import com.anadol.mindpalace.presenter.UpdateExamWordsBackground;
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.model.Word;
 import com.anadol.mindpalace.view.Activities.LearnActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;

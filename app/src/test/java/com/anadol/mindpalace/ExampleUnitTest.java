@@ -1,4 +1,4 @@
-package com.anadol.rememberwords;
+package com.anadol.mindpalace;
 
 import org.junit.Test;
 

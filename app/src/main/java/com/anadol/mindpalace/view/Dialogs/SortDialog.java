@@ -17,7 +17,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.anadol.mindpalace.model.SettingsPreference;
 import com.anadol.mindpalace.presenter.ComparatorMaker;
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 
 import static android.app.Activity.RESULT_OK;
 

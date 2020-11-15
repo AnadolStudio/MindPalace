@@ -27,7 +27,7 @@ import com.anadol.mindpalace.model.CreatorValues;
 import com.anadol.mindpalace.model.MyCursorWrapper;
 import com.anadol.mindpalace.presenter.NotificationWorker;
 import com.anadol.mindpalace.presenter.Question;
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.model.DataBaseSchema;
 import com.anadol.mindpalace.model.Word;
 import com.anadol.mindpalace.view.Activities.LearnActivity;

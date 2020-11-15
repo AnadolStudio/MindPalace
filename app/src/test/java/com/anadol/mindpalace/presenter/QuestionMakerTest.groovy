@@ -1,4 +1,4 @@
-package com.anadol.rememberwords.presenter
+package com.anadol.mindpalace.presenter
 
 
 import org.junit.Test

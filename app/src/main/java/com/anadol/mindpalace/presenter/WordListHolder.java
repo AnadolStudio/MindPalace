@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 
 import com.anadol.mindpalace.model.Group;
 import com.anadol.mindpalace.model.SimpleParent;
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.model.Word;
 import com.anadol.mindpalace.view.Fragments.GroupDetailFragment;
 

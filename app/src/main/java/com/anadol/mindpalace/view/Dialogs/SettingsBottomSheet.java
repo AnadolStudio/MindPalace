@@ -26,7 +26,7 @@ import androidx.core.content.ContextCompat;
 
 import com.anadol.mindpalace.model.Group;
 import com.anadol.mindpalace.view.Fragments.GroupDetailFragment;
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;

@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.anadol.mindpalace.presenter.MyPercentFormatter;
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.YAxis;

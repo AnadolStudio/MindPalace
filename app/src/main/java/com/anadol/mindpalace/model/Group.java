@@ -11,7 +11,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.UUID;

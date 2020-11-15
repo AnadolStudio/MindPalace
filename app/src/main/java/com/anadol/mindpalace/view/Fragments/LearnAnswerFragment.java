@@ -20,7 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.anadol.mindpalace.presenter.Question;
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.view.Activities.LearnActivity;
 import com.anadol.mindpalace.view.Dialogs.DialogResultBottomSheet;
 

@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.anadol.mindpalace.model.SimpleParent;
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.view.Fragments.FragmentAdapter;
 
 import java.util.ArrayList;

@@ -12,7 +12,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;

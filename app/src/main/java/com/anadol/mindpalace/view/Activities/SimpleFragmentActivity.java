@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 
 public abstract class SimpleFragmentActivity extends AppCompatActivity {
     private Fragment mFragment;

@@ -1,4 +1,4 @@
-package com.anadol.rememberwords;
+package com.anadol.mindpalace;
 
 import android.content.Context;
 import androidx.test.platform.app.InstrumentationRegistry;

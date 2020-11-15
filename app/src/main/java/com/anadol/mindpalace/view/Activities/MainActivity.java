@@ -12,7 +12,7 @@ import com.anadol.mindpalace.view.Fragments.GroupListFragment;
 import com.anadol.mindpalace.view.Fragments.IOnBackPressed;
 import com.anadol.mindpalace.view.Fragments.InfoFragment;
 import com.anadol.mindpalace.view.Fragments.StatisticFragment;
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {

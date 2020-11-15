@@ -19,7 +19,7 @@ import androidx.work.WorkerParameters;
 
 import com.anadol.mindpalace.model.Group;
 import com.anadol.mindpalace.model.MyCursorWrapper;
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.model.DataBaseSchema;
 import com.anadol.mindpalace.model.Word;
 import com.anadol.mindpalace.view.Activities.GroupDetailActivity;

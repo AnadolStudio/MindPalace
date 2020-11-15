@@ -39,7 +39,7 @@ import com.anadol.mindpalace.presenter.MyListAdapter;
 import com.anadol.mindpalace.presenter.SlowGridLayoutManager;
 import com.anadol.mindpalace.view.Activities.GroupDetailActivity;
 import com.anadol.mindpalace.view.Dialogs.SortDialog;
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;

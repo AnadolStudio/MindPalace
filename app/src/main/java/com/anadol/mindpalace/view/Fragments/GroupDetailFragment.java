@@ -31,20 +31,21 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.model.CreatorValues;
+import com.anadol.mindpalace.model.DataBaseSchema.Groups;
+import com.anadol.mindpalace.model.DataBaseSchema.Words;
 import com.anadol.mindpalace.model.Group;
 import com.anadol.mindpalace.model.MyCursorWrapper;
 import com.anadol.mindpalace.model.SettingsPreference;
+import com.anadol.mindpalace.model.Word;
 import com.anadol.mindpalace.presenter.ComparatorMaker;
 import com.anadol.mindpalace.presenter.MyListAdapter;
+import com.anadol.mindpalace.presenter.PriorityComparator;
 import com.anadol.mindpalace.presenter.SlowLinearLayoutManager;
 import com.anadol.mindpalace.presenter.UpdateExamWordsBackground;
 import com.anadol.mindpalace.presenter.WordItemHelperCallBack;
 import com.anadol.mindpalace.view.Dialogs.LearnStartBottomSheet;
-import com.anadol.rememberwords.R;
-import com.anadol.mindpalace.model.DataBaseSchema.Groups;
-import com.anadol.mindpalace.model.DataBaseSchema.Words;
-import com.anadol.mindpalace.model.Word;
 import com.anadol.mindpalace.view.Dialogs.SettingsBottomSheet;
 import com.anadol.mindpalace.view.Dialogs.SortDialog;
 import com.google.android.material.button.MaterialButton;
@@ -347,6 +348,8 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                 return true;
             case R.id.menu_sort:
                 createDialogSort(this, SortDialog.Types.WORD);
+//                Collections.sort(mWords,new PriorityComparator());
+//                mAdapter.notifyDataSetChanged();
                 return true;
             case R.id.menu_select_all:
                 boolean selectAllItems = !mAdapter.isAllItemSelected();

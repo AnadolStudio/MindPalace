@@ -21,7 +21,7 @@ import com.anadol.mindpalace.model.MyCursorWrapper;
 import com.anadol.mindpalace.presenter.GroupNameAxisFormatter;
 import com.anadol.mindpalace.presenter.GroupStatisticItem;
 import com.anadol.mindpalace.presenter.IntegerFormatter;
-import com.anadol.rememberwords.R;
+import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.model.DataBaseSchema;
 import com.anadol.mindpalace.model.DataBaseSchema.Words;
 import com.github.mikephil.charting.animation.Easing;
