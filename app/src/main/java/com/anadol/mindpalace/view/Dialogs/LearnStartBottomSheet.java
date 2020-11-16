@@ -68,7 +68,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
     private ChipGroup mChipGroupObjectTest;
     private Chip examChip;
     private EditText mEditText;
-    private SwitchCompat mSwitch;
+    private SwitchCompat mSwitchAuto;
     private LinearLayout linearOptions;
 
     private ArrayList<Word> mWords;
@@ -171,7 +171,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         mChipGroupObjectTest = view.findViewById(R.id.object_test);
         mEditText = view.findViewById(R.id.count_word_edit_text);
         startButton = view.findViewById(R.id.button_start_to_learn_fragment);
-        mSwitch = view.findViewById(R.id.auto_switch);
+        mSwitchAuto = view.findViewById(R.id.auto_switch);
         linearOptions = view.findViewById(R.id.ll_options);
         examChip = view.findViewById(R.id.exam_chip);
 
@@ -232,7 +232,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
 
         startButton.setOnClickListener(this);
 
-        mSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        mSwitchAuto.setOnCheckedChangeListener((buttonView, isChecked) -> {
             SettingsPreference.setAuto(getContext(), isChecked);
             if (isChecked) {
                 linearOptions.setVisibility(View.GONE);
@@ -247,7 +247,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
     private void bindDataWithView() {
         title.setText(R.string.learn);
         mEditText.setHint(Integer.toString(mWords.size()));
-        mSwitch.setChecked(SettingsPreference.isAuto(getContext()));
+        mSwitchAuto.setChecked(SettingsPreference.isAuto(getContext()));
     }
 
     @Override
@@ -278,7 +278,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
     private boolean isAllReady() {
         boolean isAllReady = true;
 
-        if (mSwitch.isChecked()) {
+        if (mSwitchAuto.isChecked()) {
             autoOptions();
         } else {
             typeTest = getTypeTest();
@@ -339,7 +339,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         ArrayList<Word> learnList = new ArrayList<>();
         String s;
 
-        if (mSwitch.isChecked()) {
+        if (mSwitchAuto.isChecked()) {
             autoOptions();
         } else {
             typeTest = getTypeTest();
