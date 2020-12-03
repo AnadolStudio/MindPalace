@@ -21,13 +21,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 
+import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.model.SettingsPreference;
+import com.anadol.mindpalace.model.Word;
 import com.anadol.mindpalace.presenter.MyRandom;
 import com.anadol.mindpalace.presenter.NeverExamComparator;
 import com.anadol.mindpalace.presenter.PriorityComparator;
 import com.anadol.mindpalace.presenter.UpdateExamWordsBackground;
-import com.anadol.mindpalace.R;
-import com.anadol.mindpalace.model.Word;
 import com.anadol.mindpalace.view.Activities.LearnActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
@@ -35,6 +35,7 @@ import com.google.android.material.chip.ChipGroup;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -89,15 +90,18 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
     }
 
     public static int getRouteTest(ArrayList<Word> words) {
-        int count = 0;
+        /*int count = 0;
         for (Word w : words) {
 
-            if (w.getCountLearn() % 2 == 0) {
+//            if (w.getCountLearn() % 2 == 0) {
+            if (w.getCountLearn() > 2) {
                 count++;
             }
         }
 
-        return count > words.size() / 2 ? FORWARD : INVERSE;
+        return count > words.size() / 2 ? FORWARD : INVERSE;*/
+        boolean b = new Random().nextBoolean();
+        return b ? FORWARD : INVERSE;
     }
 
     public static String getTypeTest(ArrayList<Word> words) {
@@ -126,20 +130,21 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
     }
 
     private static boolean hasWordToExam(ArrayList<Word> words) {
-        int count = 0;
-        for (Word word : words) {
-            if (readyToExam(word)) count++;
-        }
-        return count >= MIN_COUNT_WORDS;
+        return getWordsToExam(words).size() >= MIN_COUNT_WORDS;
     }
 
-    private static boolean readyToExam(Word word) {
-        int countLearn = word.getCountLearn();
-//        boolean neverExam = word.isExam();
-
-//        boolean isRep = Word.isRepeatable(word.getTime(), System.currentTimeMillis(), countLearn);
-//        return countLearn > 3 && isRep || countLearn > 4;
-        return countLearn >= 4;
+    private static ArrayList<Word> getWordsToExam(ArrayList<Word> words) {
+        //Сортирует таким образом что ни разу не проходящие екзамен слова будут в начале списка
+        Collections.sort(words, new NeverExamComparator());
+        Log.i(TAG, "updateUI: words"+ words);
+        ArrayList<Word> arrayList = new ArrayList<>();
+        Word w;
+        for (int i = 0; i < Math.min(words.size(), 20); i++) {
+            w = words.get(i);
+            if (w.readyToExam()) arrayList.add(w);
+        }
+        Log.i(TAG, "getWordsToExam: "+ arrayList);
+        return arrayList;
     }
 
     public void updateUI() {
@@ -156,7 +161,6 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         mWords = getArguments().getParcelableArrayList(WORDS);
         setListeners();
         bindDataWithView();
-        updateUI();
         /*if (savedInstanceState == null) {
             mChipGroupObjectTest.check(R.id.auto_chip);
         }*/
@@ -174,7 +178,6 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         mSwitchAuto = view.findViewById(R.id.auto_switch);
         linearOptions = view.findViewById(R.id.ll_options);
         examChip = view.findViewById(R.id.exam_chip);
-
     }
 
     private void routeAndObjectGroupSetEnabled(boolean enable) {
@@ -221,10 +224,9 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
             switch (actionId) {
                 default:
                     return false;
-                case EditorInfo
-                        .IME_ACTION_DONE:
+                case EditorInfo.IME_ACTION_DONE:
                     if (isAllReady()) {
-                        startLearn();
+                        manualStart();
                     }
                     return true;
             }
@@ -272,7 +274,6 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
     private void updateWords() {
         UpdateExamWordsBackground background = new UpdateExamWordsBackground(getContext(), mWords, this::updateUI);
         background.execute();
-        Log.i(TAG, "updateWords was successful");
     }
 
     private boolean isAllReady() {
@@ -328,38 +329,30 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
 
     @Override
     public void onClick(View v) {
-        if (!examChip.isChecked()) {
-            startLearn();
+        if (!mSwitchAuto.isChecked()) {
+            manualStart();
         } else {
-            startExam();
+            autoStart();
         }
     }
 
-    private void startLearn() {
-        ArrayList<Word> learnList = new ArrayList<>();
+    private void manualStart() {
         String s;
+        int count;
+        ArrayList<Word> learnList = new ArrayList<>();
 
-        if (mSwitchAuto.isChecked()) {
-            autoOptions();
-        } else {
-            typeTest = getTypeTest();
-            routeTest = getRouteTest();
-            objectTest = getObjectTest();
+        typeTest = getTypeTest();
+        routeTest = getRouteTest();
+        objectTest = getObjectTest();
+
+        if (examChip.isChecked()) {
+            //StartExam
+            ArrayList<Word> toExam = getWordsToExam(mWords);
+            startExam(toExam);
+            return;
         }
 
-        int count;
-
         switch (objectTest) {
-            case AUTO:
-                count = Math.min(mWords.size(), 20);
-
-                ArrayList<Word> toExam = getWordsToExam(mWords);
-                if (toExam.size() >= MIN_COUNT_WORDS) {
-                    learnList = toExam;
-                } else {
-                    learnList = getWordsForPriority(mWords, count);
-                }
-                break;
             case RANDOM:
                 s = mEditText.getText().toString();
                 count = Integer.parseInt(s);
@@ -400,13 +393,30 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
                 learnList = MyRandom.getRandomArrayList(learnList, learnList.size());
                 break;
         }
+        startLearn(learnList, typeTest, routeTest);
+    }
+
+    private void autoStart() {
+        autoOptions();
+        int count;
+        count = Math.min(mWords.size(), 20);
+
+        ArrayList<Word> toExam = getWordsToExam(mWords);
+        if (toExam.size() >= MIN_COUNT_WORDS) {
+            startExam(toExam);
+        } else {
+            startLearn(getWordsForPriority(mWords, count), typeTest, routeTest);
+        }
+    }
+
+    private void startLearn(ArrayList<Word> learnList, String type, int route) {
 
         Intent intent = LearnActivity.newIntent( // Тут предаются выбратнные атрибуты для начала теста
                 getContext(),
                 learnList,
                 typeGroup,
-                typeTest,
-                routeTest);
+                type,
+                route);
 
         startActivity(intent);
     }
@@ -423,30 +433,18 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         return priority;
     }
 
-    private void startExam() {
+    private void startExam(ArrayList<Word> examList) {
         typeTest = getTypeTest();
         routeTest = getRouteTest();
 
         Intent intent = LearnActivity.newIntent( // Тут предаются выбратнные атрибуты для начала теста
                 getContext(),
-                getWordsToExam(mWords),
+                examList,
                 typeGroup,
                 typeTest,
                 routeTest);
 
         startActivity(intent);
-    }
-
-    private ArrayList<Word> getWordsToExam(ArrayList<Word> words) {
-        //Сортирует таким образом что ни разу не проходящие екзамен слова будут в начале списка
-        Collections.sort(words, new NeverExamComparator());
-        ArrayList<Word> arrayList = new ArrayList<>();
-        Word w;
-        for (int i = 0; i < Math.min(words.size(), 20); i++) {
-            w = words.get(i);
-            if (readyToExam(w)) arrayList.add(w);
-        }
-        return arrayList;
     }
 
     private boolean findingRandomError(int count) {

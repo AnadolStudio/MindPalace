@@ -23,6 +23,7 @@
     <string name="home">Home</string>
     <string name="statistic">Statistic</string>
     <string name="settings">Settings</string>
+    <string name="settings_group">Group\'s settings</string>
     <string name="new_group">New Group</string>
     <string name="deleting_was_successful">Deleting was successful</string>
     <string name="sort_ascending" translatable="false">Sort ascending</string>
@@ -114,12 +115,13 @@
     <string name="sort_name">Name</string>
     <string name="repeat">Repeat</string>
     <string name="unknown">Unknown</string>
-<!--    TODO необходимо проверить на грамматику эти предложений> -->
+    <!--    TODO необходимо проверить на грамматику эти предложений> -->
     <string name="introduction">For effective memorization of information, a person created mnemonics.
         The word "mnemonic" is derived from the Ancient Greek word μνημονικός (mnēmonikos), meaning "of memory, or relating to memory"
         \n
         \nMind Palace will help you master this art.</string>
-    <string name="header_basic">The basics</string>
+    <string name="header_types">The types</string>
+    <string name="basics">The basics</string>
     <string name="body_basic">In the Mind Palace, there are 4 types of associative groups:
         \n
         \n • Number;
@@ -131,7 +133,7 @@
         After creating a group, you need to create your own associations. And then start learning them.</string>
     <string name="header_learning">The learning</string>
     <string name="body_learning1">When you have at least 10 associations, you can start studying them.
-        The learning process is based on the forgetting Curve (Ebbinghaus curve), i.e., the repetition of the material at certain intervals.</string>
+        The learning process is based on the \"Forgetting Curve\" (Ebbinghaus curve), i.e., the repetition of the material at certain intervals.</string>
     <string name="body_repeat">\"Repetition\" is independent and error-free reproduction of information.</string>
     <string name="additional">\"%1$s\"- current status of the Association;\n\"%2$d\" - number of repetitions;\n"%3$s\ " - time of the next repetition.</string>
     <string name="body_learning2">After the 4th successful repetition of at least 10 associations,
@@ -139,7 +141,7 @@
     <string name="forgetting_curve">Forgetting curve</string>
     <string name="forgetting_curve_additional">Our brain erases unnecessary information for itself, so that this does not happen,
         you need to \"explain\" to the brain that this information is important. To do this, repeat the information at the following intervals:</string>
-    <string name="period_example">30 min -> 2 hours -> 8 hours -> 32 hours - > 5 days - > 20 days - > 80 days, etc.</string>
+    <string name="period_example">30 min > 2 hours > 8 hours > 32 hours > 5 days > 20 days > 80 days, etc.</string>
     <string name="forgetting_curve_additional2">These boundaries are the minimum period between repetitions. You can move them up to 50%.</string>
     <string name="description_forget">In the first hour, up to 60% of the information is forgotten, i.e. only 40% remains in memory, and in 10 hours - 35%.
         Then forgetting slows down, after 6 days there is 20%, and the same amount remains in a month.</string>
@@ -148,5 +150,92 @@
     <string name="exaple_original" translatable="false">43</string>
     <string name="exaple_association">fear</string>
     <string name="exaple_translate" translatable="false">43</string>
+
+    <string name="introduction_title">Introduction</string>
+    <string name="training">Training</string>
+    <string name="for_the_curious">For the curious</string>
+    <string name="how_to_repeat_correctly">How to repeat correctly?</string>
+    <string name="what_is_an_association">What is an association?</string>
+
+    <string name="association_intro">80% of the information a person receives visually.
+        \n
+        \nBefore we touch, smell, or taste, we see an object.</string>
+    <string name="association_intro1">Therefore, an Association is a visual representation of various objects.</string>
+    <string name="which_associations_are_best_remembered">Which associations are best remembered?</string>
+    <string name="which_associations_are_best_remembered_body_text">Absurdity, pretentiousness, and strangeness are the best signs of Association.
+        \n
+        \nThe more unusual it is, the better. So don\'t limit yourself, let your imagination run wild.</string>
+    <string name="you_can_control_the_associations">You can control the associations</string>
+    <string name="you_can_control_the_associations_body_text">Close your eyes, imagine a wooden table, rotate it, take it apart, put it back together.
+        \nYou can change its structure. Imagine that now it has become a metal, glass, made of inflatable balls.
+        </string>
+    <string name="you_can_control_the_associations_body_text1">Your associations are limited only by your imagination.</string>
+    <string name="was_upload">Was upload</string>
+    <string name="is_already_upload">Is already uploaded</string>
+    <string name="upload">Upload</string>
+
+    <string name="code_header" translatable="false">Буквенно-цифровой код</string>
+    <string name="code_body" translatable="false">Для запоминания чисел был придуман буквенно-цифровой код (БЦК).
+        Базируется он на том, что в словах лучше всего запоминаются согласные звуки.
+        \n
+        \nДля каждой цифры есть несколько своих согласных звуков.
+        Так можно закодировать числа под слова-образы, что в разы улучшит запоминаемость чисел.</string>
+    <string name="code">Code</string>
+    <string name="code_table" translatable="false">
+        0 – НЛ (НоЛь);
+        \n1 – ГК (Г – визуально похожа на единицу, К – парный звук для Г);
+        \n2 – БХЦ (Б – вторая буква в алфавите, Х – состоит из двух палочек, Ц – от немецкого «Цвайн», т.е. два);
+        \n3 – ТЗ (Три, З – визуально похожа на тройку);
+        \n4 – ЧР (ЧетыРе);
+        \n5 – П (Пять);
+        \n6 – ЖШЩ (Ш – шесть, Ж – парный звук, Щ – в составе звука есть Ш);
+        \n7 – СМ (СеМь);
+        \n8 – ВФ (Восемь, Ф –парный звук);
+        \n9 – Д (Девять).
+    </string>
+
+    <string name="texts_intro" translatable="false">Для запоминания текста, необходимо выделить опорные образы,
+        придумать для них ассоциации и связать, тем самым создавая историю из ассоциаций.
+        \n
+        \nЧтобы связать две ассоциации необходимо использовать глагол-связку.
+    </string>
+    <string name="texts_verb_bind" translatable="false">Глаголом-связкой может вступать любой простой глагол,
+        который физически взаимодействует с ассоциацией:
+        упал, ударил, врезался, сломал, взял, превратил, облил, испугал и т.д.
+    </string>
+    <string name="hard_words_header" translatable="false">Сложные слова</string>
+    <string name="hard_words_body" translatable="false">Не для всех слов легко подобрать ассоциацию.
+        В таких случаях следует разделить слово на несколько составляющих и придумать ассоциации для них.</string>
+    <string name="examples_header" translatable="false">Примеры</string>
+    <string name="examples_texts_body" translatable="false">
+        1) Текст:
+        \n
+        \nМоя душа, я помню, с детских лет чудесного искала.
+        \n
+        \nОпорные образы: душа, детских лет, чудесного.
+        \n
+        \nАссоциации по опорным образам: душа > ребенок > чудо (йогурт «Чудо»).
+        \n
+        \nИстория из ассоциаций: душа пугает ребёнка, ребёнок падает на чудо.
+        \n
+        \n2) (Сложные слова)
+        \n
+        \nСтереотип = Стерео колонки падают на подозрительного Типа
+    </string>
+    <string name="dates_intro" translatable="false">Для запоминания дат используются принципы из предыдущих двух уроков.
+        Буквенно-цифровой код объединяется с текстом.
+    </string>
+    <string name="examples_dates_body" translatable="false">
+        Лермонтов родился 15 октября 1814 года.
+        \n
+        \nАссоциации: Ларек Мамонтов (по звучанию схоже с Лермонтов) > младенец > капа > Ленин (октябристы) > кофе > гиря.
+        \n
+        \nИстория из ассоциаций: в ларек мамонтов прыгнул младенец достал из кармана капу и вручил ее Ленину,
+        Ленин выпил чашку кофе и кинул ее в гирю.
+    </string>
+
+
+
+
 
 </resources>

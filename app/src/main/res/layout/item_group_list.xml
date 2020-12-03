@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_margin="@dimen/margin_small"
     android:clickable="true"
     android:focusable="true"
     android:orientation="vertical"
     android:stateListAnimator="@animator/item_card"
-    app:cardCornerRadius="6dp"
-    app:cardElevation="4dp">
+    app:cardCornerRadius="@dimen/radius8">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -19,17 +19,18 @@
         <ImageView
             android:id="@+id/image_group"
             android:layout_width="match_parent"
-            android:layout_height="156dp"
+            android:layout_height="168dp"
+            android:foreground="@drawable/ripple_light_gray_item"
             android:minWidth="128dp"
             android:scaleType="centerCrop" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
+            android:layout_gravity="top"
+            android:layout_margin="@dimen/margin_small"
             android:background="@drawable/shadow_background"
             android:orientation="vertical"
-            android:layout_gravity="top"
             android:padding="8dp">
 
             <TextView
@@ -40,10 +41,10 @@
                 android:fontFamily="serif"
                 android:includeFontPadding="false"
                 android:singleLine="true"
-                android:text="Name Group"
+                tools:text="Name Group"
                 android:textAppearance="?attr/textAppearanceBody1"
                 android:textColor="@color/colorWhite"
-                android:textSize="16dp" />
+                android:textSize="@dimen/text_subtitle" />
 
         </LinearLayout>
 

@@ -15,7 +15,7 @@ import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.view.Fragments.GroupListFragment;
 
 public class GroupListHolder extends MySimpleHolder implements View.OnClickListener, View.OnLongClickListener {
-    private static MyListAdapter<? extends SimpleParent> sAdapter;
+    private MyListAdapter<? extends SimpleParent> sAdapter;
     private Group mGroup;
     private TextView mTextView;
     private ImageView mImageView;

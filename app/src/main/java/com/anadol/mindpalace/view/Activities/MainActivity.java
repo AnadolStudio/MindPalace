@@ -8,11 +8,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.view.Fragments.GroupListFragment;
 import com.anadol.mindpalace.view.Fragments.IOnBackPressed;
-import com.anadol.mindpalace.view.Fragments.InfoFragment;
+import com.anadol.mindpalace.view.Fragments.SettingsFragment;
 import com.anadol.mindpalace.view.Fragments.StatisticFragment;
-import com.anadol.mindpalace.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             currentId = savedInstanceState.getInt(CURRENT_ID);
         }
-
     }
 
     @Override
@@ -66,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.navigation_home:
                         return addFragment(GroupListFragment.newInstance());
                     case R.id.navigation_settings:
-                        return addFragment(InfoFragment.newInstance());
+                        return addFragment(SettingsFragment.newInstance());
                 }
             }
 

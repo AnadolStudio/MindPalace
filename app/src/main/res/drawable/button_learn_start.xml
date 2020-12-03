@@ -5,5 +5,5 @@
         android:drawable="@color/colorError"
         android:state_enabled="false" />
     <item
-        android:drawable="@color/colorAccent" />
+        android:drawable="@color/colorSecondary" />
 </selector>

@@ -28,13 +28,13 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/Theme.MaterialComponents.Bridge">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
-            app:elevation="4dp"
+            app:elevation="@dimen/elevation_normal"
             app:title="@string/app_name"
             app:titleTextAppearance="@style/TitleTextAppearance"
             />

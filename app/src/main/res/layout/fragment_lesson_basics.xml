@@ -20,14 +20,14 @@
 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_margin="@dimen/margin_normal"
                 app:cardCornerRadius="@dimen/radius16"
-                app:cardElevation="4dp">
+                app:cardElevation="@dimen/elevation_normal">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
+                    android:layout_margin="@dimen/margin_large"
                     android:orientation="vertical">
 
                     <TextView
@@ -43,7 +43,7 @@
                         style="@style/Information.HeaderText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/header_basic" />
+                        android:text="@string/header_types" />
 
                     <TextView
                         android:id="@+id/bodyBasic_textView"
@@ -66,15 +66,6 @@
                         android:layout_height="wrap_content"
                         android:text="@string/body_learning1" />
 
-                    <TextView
-                        android:id="@+id/repeat_textView"
-                        style="@style/Information.BodyText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/body_repeat"
-                        android:textColor="@color/colorAccent" />
-
                     <include layout="@layout/item_preview_words_list" />
 
                     <TextView
@@ -83,64 +74,22 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="@dimen/margin_large"
+                        android:layout_marginTop="@dimen/margin_xsmall"
+                        android:layout_marginEnd="@dimen/margin_large"
                         android:text="@string/additional"
-                        android:textColor="@color/colorAccent"
-                        android:textSize="12sp" />
+                        android:textColor="@color/colorSecondary"
+                        android:textSize="@dimen/text_caption" />
 
                     <TextView
                         android:id="@+id/bodyLearning2_textView"
                         style="@style/Information.BodyText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="@dimen/margin_normal"
                         android:text="@string/body_learning2" />
 
-                    <TextView
-                        android:id="@+id/headerChart_textView"
-                        style="@style/Information.HeaderText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/forgetting_curve" />
 
-                    <com.github.mikephil.charting.charts.LineChart
-                        android:id="@+id/chart_forget"
-                        android:layout_width="match_parent"
-                        android:layout_height="200dp" />
-
-                    <TextView
-                        style="@style/Information.BodyText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/description_forget"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/bodyChart_textView"
-                        style="@style/Information.BodyText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/forgetting_curve_additional" />
-
-                    <TextView
-                        android:id="@+id/periodExample_textView"
-                        style="@style/Information.BodyText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/period_example"
-                        android:textColor="@color/colorAccent" />
-
-                    <TextView
-                        android:id="@+id/bodyChart_textView2"
-                        style="@style/Information.BodyText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/forgetting_curve_additional2" />
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
@@ -149,17 +98,19 @@
 
     </ScrollView>
 
+
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/Theme.MaterialComponents.Bridge">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
-            app:elevation="4dp"
-            app:title="@string/app_name"
+            app:elevation="@dimen/elevation_normal"
+            app:navigationIcon="@drawable/abc_ic_ab_back_material"
+            app:title="@string/introduction_title"
             app:titleTextAppearance="@style/TitleTextAppearance" />
 
     </com.google.android.material.appbar.AppBarLayout>

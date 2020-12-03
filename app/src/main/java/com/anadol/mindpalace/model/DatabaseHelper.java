@@ -10,7 +10,7 @@ import com.anadol.mindpalace.model.DataBaseSchema.Words;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final int DB_VERSION = 9;
-    public static final String DB_NAME = "rememberWords";
+    public static final String DB_NAME = "rememberWords";// TODO Rename
     private static final String TAG = "DatabaseHelper";
 
     public DatabaseHelper(Context context) {

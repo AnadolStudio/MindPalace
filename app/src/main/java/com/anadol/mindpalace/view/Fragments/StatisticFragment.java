@@ -47,7 +47,7 @@ import java.util.List;
  * Use the {@link StatisticFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class StatisticFragment extends MyFragment {
+public class StatisticFragment extends SimpleFragment {
     private static final Typeface TYPEFACE = Typeface.SERIF;
     private static final String TAG = StatisticFragment.class.getName();
 

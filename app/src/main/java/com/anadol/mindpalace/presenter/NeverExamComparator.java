@@ -9,10 +9,20 @@ public class NeverExamComparator implements Comparator<Word> {
 
     @Override
     public int compare(Word o1, Word o2) {
-        boolean b1 = o1.isExam();
-        boolean b2 = o2.isExam();
+        boolean b1 = o1.readyToExam();
+        boolean b2 = o2.readyToExam();
+
         // Возрастание = false > true, убывание = true > false
-        //        Log.i(TAG, "compareTime: " + b1 + " " + b2);
-        return Boolean.compare(b1, b2);
+        int compare = Boolean.compare(b2, b1);
+
+        if (compare == 0) {
+            compare = Boolean.compare(o1.isExam(), o2.isExam());
+        }
+        if (compare == 0) {
+            compare = Integer.compare(o2.getCountLearn(), o1.getCountLearn());
+        }
+
+
+        return compare;
     }
 }

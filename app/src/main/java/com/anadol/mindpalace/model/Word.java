@@ -84,7 +84,7 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
         setCountLearn(countLearn);
         this.time = time;
         this.isExam = isExam;
-        Log.i(TAG, dataToString());
+//        Log.i(TAG, dataToString());
     }
 
     public static boolean isRepeatable(long lastRepeat, long currentTime, int countLearn) {
@@ -171,7 +171,12 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
     }
 
     public boolean isExam() {
+
         return isExam;
+    }
+
+    public boolean readyToExam() {
+        return countLearn >= 4;
     }
 
     public void setExam(boolean exam) {

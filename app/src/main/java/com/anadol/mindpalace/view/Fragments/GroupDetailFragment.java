@@ -27,7 +27,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -41,15 +40,17 @@ import com.anadol.mindpalace.model.SettingsPreference;
 import com.anadol.mindpalace.model.Word;
 import com.anadol.mindpalace.presenter.ComparatorMaker;
 import com.anadol.mindpalace.presenter.MyListAdapter;
-import com.anadol.mindpalace.presenter.PriorityComparator;
 import com.anadol.mindpalace.presenter.SlowLinearLayoutManager;
 import com.anadol.mindpalace.presenter.UpdateExamWordsBackground;
 import com.anadol.mindpalace.presenter.WordItemHelperCallBack;
 import com.anadol.mindpalace.view.Dialogs.LearnStartBottomSheet;
 import com.anadol.mindpalace.view.Dialogs.SettingsBottomSheet;
 import com.anadol.mindpalace.view.Dialogs.SortDialog;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,7 +69,7 @@ import static com.anadol.mindpalace.view.Fragments.GroupDetailFragment.WordBackg
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
+public class GroupDetailFragment extends SimpleFragment implements IOnBackPressed {
     public static final String GROUP = "group";
     public static final String WORD_SAVE = "word_save";
     private static final String TAG = GroupDetailFragment.class.getName();
@@ -81,6 +82,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
     private ImageView imageView;
     private TextView typeGroup;
     private TextView countWordsTextView;
+    private AppBarLayout mAppBarLayout;
     private Toolbar mToolbar;
     private FloatingActionButton fabAdd;
     private MaterialButton mButtonLearnStart;
@@ -134,10 +136,10 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         View view = inflater.inflate(R.layout.fragment_groups_detail, container, false);
         bind(view);
         getData(savedInstanceState);
-        setListeners();
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(mToolbar);
+        setListeners();
 
 
         if (savedInstanceState != null) {
@@ -152,10 +154,10 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         mAdapter = new MyListAdapter<>(getActivity(), this, mWords, MyListAdapter.WORD_HOLDER, selectStringArray, selectable, mGroup.getType());
         mRecyclerView.setAdapter(mAdapter);
 
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), RecyclerView.VERTICAL);
-        dividerItemDecoration.setDrawable(getResources().getDrawable(R.drawable.divider));
+//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), RecyclerView.VERTICAL);
+//        dividerItemDecoration.setDrawable(getResources().getDrawable(R.drawable.divider));
 
-        mRecyclerView.addItemDecoration(dividerItemDecoration);
+//        mRecyclerView.addItemDecoration(dividerItemDecoration);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new WordItemHelperCallBack(mAdapter));
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
@@ -165,10 +167,12 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         mRecyclerView = view.findViewById(R.id.recycler_view);
         typeGroup = view.findViewById(R.id.type_group);
         countWordsTextView = view.findViewById(R.id.count_text);
+        mAppBarLayout = view.findViewById(R.id.appbar_layout);
         mToolbar = view.findViewById(R.id.toolbar);
         fabAdd = view.findViewById(R.id.fab_add);
         titleToolbar = view.findViewById(R.id.name_group);
         mButtonLearnStart = view.findViewById(R.id.button_startLearn);
+
     }
 
     private void getData(Bundle savedInstanceState) {
@@ -215,7 +219,11 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         mButtonLearnStart.setOnClickListener(v -> {
             createBottomSheetLearnDialog();
         });
-
+        KeyboardVisibilityEvent.setEventListener(getActivity(), b -> {
+            if (b) mAppBarLayout.setExpanded(false);// Сжать AppBar при исп. клавиатуры
+            setVisibleFab(!b);
+        });
+        mToolbar.setNavigationOnClickListener(v-> onBackPressed());
     }
 
     private void setVisibleFab(boolean show) {
@@ -226,11 +234,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         } else {
             fabAdd.hide();
         }
-    }
-
-    public void editTextOnClick(boolean visible) {
-        // TODO переделать на слушателя поднятия клавиатуры
-        setVisibleFab(visible);
     }
 
     @Override
@@ -246,11 +249,6 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         UpdateExamWordsBackground examWordsBackground =
                 new UpdateExamWordsBackground(getContext(), mWords, () -> mAdapter.notifyDataSetChanged());
         examWordsBackground.execute();
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
@@ -270,8 +268,10 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         switch (mode) {
             case MODE_SELECT:
                 inflater.inflate(R.menu.menu_group_detail_selected, menu);
-                MenuItem select = menu.findItem(R.id.menu_select_all);
 
+                mToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_material);
+
+                MenuItem select = menu.findItem(R.id.menu_select_all);
                 if (mAdapter != null && mAdapter.isAllItemSelected()) {
                     select.setIcon(R.drawable.ic_menu_select_all_on);
                 } else if (mAdapter == null) {
@@ -284,6 +284,9 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
 
             default: // MODE_NORMAL
                 inflater.inflate(R.menu.fragment_group_detail, menu);
+
+                mToolbar.setNavigationIcon(null);
+
                 MenuItem menuSearch = menu.findItem(R.id.menu_search_detail);
 
                 searchView = (SearchView) menuSearch.getActionView();
@@ -296,8 +299,11 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                     searchView.setQuery(searchQuery, true);
                 }
                 break;
-
         }
+        MenuItem menuLearn = menu.findItem(R.id.menu_learn);
+
+        boolean visible = getResources().getConfiguration().orientation == ORIENTATION_LANDSCAPE;
+        menuLearn.setVisible(visible);
     }
 
     private void setMenuItemsListeners() {
@@ -348,7 +354,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
                 return true;
             case R.id.menu_sort:
                 createDialogSort(this, SortDialog.Types.WORD);
-//                Collections.sort(mWords,new PriorityComparator());
+//                Collections.sort(mWords,new NeverExamComparator());
 //                mAdapter.notifyDataSetChanged();
                 return true;
             case R.id.menu_select_all:
@@ -453,11 +459,9 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
             if (searchView != null && !searchView.isIconified()) {
                 searchView.onActionViewCollapsed();
             }
-            fabAdd.hide();
         } else {
             mode = MODE_NORMAL;
             mAdapter.setSelectableMode(false);
-            fabAdd.show();
         }
         Log.i(TAG, "changeSelectableMode");
         updateActionBarTitle();
@@ -469,6 +473,7 @@ public class GroupDetailFragment extends MyFragment implements IOnBackPressed {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setResult(RESULT_OK, intent);
         activity.finish();
+
     }
 
     private void createBottomSheetLearnDialog() {

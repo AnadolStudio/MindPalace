@@ -18,18 +18,21 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 
+import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.model.Group;
 import com.anadol.mindpalace.view.Fragments.GroupDetailFragment;
-import com.anadol.mindpalace.R;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.slider.LabelFormatter;
+import com.google.android.material.slider.Slider;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -42,6 +45,9 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
     private static final String URI = "uri";
     private static final String[] STORAGE_PERMISSION = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE};
+
+
+    private NestedScrollView mScrollView;
     private ImageButton cancelButton;
     private EditText mEditText;
     private ChipGroup typeChipGroup;
@@ -51,9 +57,9 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
     private ImageButton photoButton;
     private Button applyButton;
     private LinearLayout llColorPicker;
-    private SeekBar red;
-    private SeekBar green;
-    private SeekBar blue;
+    private Slider red;
+    private Slider green;
+    private Slider blue;
 
     private Group mGroup;
     private int type;
@@ -106,9 +112,10 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
         photoButton = view.findViewById(R.id.imagePhoto);
         applyButton = view.findViewById(R.id.applyButton);
         llColorPicker = view.findViewById(R.id.ll_color_picker);
-        red = view.findViewById(R.id.red_seekBar);
-        green = view.findViewById(R.id.green_seekBar);
-        blue = view.findViewById(R.id.blue_seekBar);
+        red = view.findViewById(R.id.red_slider);
+        green = view.findViewById(R.id.green_slider);
+        blue = view.findViewById(R.id.blue_slider);
+        mScrollView = view.findViewById(R.id.scrollView);
     }
 
     private void setListeners() {
@@ -130,7 +137,13 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
             }
         });
         colorsChipGroup.setOnCheckedChangeListener((chipGroup, i) -> {
-            Log.i(TAG, "setListeners: chip id"+ i);
+            Log.i(TAG, "setListeners: chip id" + i);
+
+            if (colorsGradient == null){
+                Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
+                return;// Однажды была ошибка, выявить не смог
+            }
+
             switch (i) {
                 case R.id.color_one:
                     setValueSeekBars(colorsGradient[0]);
@@ -145,7 +158,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
         });
         gradientButton.setOnClickListener(v -> {
             if (colorsGradient == null) {
-                llColorPicker.setVisibility(View.VISIBLE);
+                setVisibleColorPicker();
 
                 uriPhoto = null;
                 colorsGradient = mGroup.getColors();
@@ -170,9 +183,10 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
         applyButton.setOnClickListener(v -> save());
 
         MySeekBarChangeListener mSeekBarChangeListener = new MySeekBarChangeListener();
-        red.setOnSeekBarChangeListener(mSeekBarChangeListener);
-        green.setOnSeekBarChangeListener(mSeekBarChangeListener);
-        blue.setOnSeekBarChangeListener(mSeekBarChangeListener);
+
+        red.addOnChangeListener(mSeekBarChangeListener);
+        green.addOnChangeListener(mSeekBarChangeListener);
+        blue.addOnChangeListener(mSeekBarChangeListener);
     }
 
     private void createPhotoPickerIntent() {
@@ -197,9 +211,9 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void setValueSeekBars(int color) {
-        red.setProgress(Color.red(color));
-        green.setProgress(Color.green(color));
-        blue.setProgress(Color.blue(color));
+        red.setValue(Color.red(color));
+        green.setValue(Color.green(color));
+        blue.setValue(Color.blue(color));
     }
 
     private void getData(@Nullable Bundle savedInstanceState) {
@@ -236,9 +250,20 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
         if (colorsGradient == null) {
             llColorPicker.setVisibility(View.GONE);
         } else {
-            llColorPicker.setVisibility(View.VISIBLE);
+            setVisibleColorPicker();
             updateAllColorChips();
         }
+
+        RealFormatter formatter = new RealFormatter();
+
+        red.setLabelFormatter(formatter);
+        green.setLabelFormatter(formatter);
+        blue.setLabelFormatter(formatter);
+    }
+
+    private void setVisibleColorPicker() {
+        llColorPicker.setVisibility(View.VISIBLE);
+        //TODO опускание вниз scrollView
     }
 
     private void save() {
@@ -311,14 +336,24 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
         }
     }
 
-    class MySeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
-        int iRed;
-        int iGreen;
-        int iBlue;
+    private static class RealFormatter implements LabelFormatter {
+        @NonNull
+        @Override
+        public String getFormattedValue(float value) {
+            int i = Math.round(value);
+            return Integer.toString(i);
+        }
+    }
+
+    class MySeekBarChangeListener implements Slider.OnChangeListener {
         int i = 0;
 
         @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
+            int iRed = Color.red(colorsGradient[i]);
+            int iGreen = Color.green(colorsGradient[i]);
+            int iBlue = Color.blue(colorsGradient[i]);
+
             int id = colorsChipGroup.getCheckedChipId();
             switch (id) {
                 default:
@@ -333,32 +368,23 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
                     break;
             }
 
-            switch (seekBar.getId()) {
-                case R.id.red_seekBar:
-                    iRed = progress;
+            switch (slider.getId()) {
+                case R.id.red_slider:
+                    iRed = Math.round(value);
                     break;
-                case R.id.green_seekBar:
-                    iGreen = progress;
+                case R.id.green_slider:
+                    iGreen = Math.round(value);
                     break;
-                case R.id.blue_seekBar:
-                    iBlue = progress;
+                case R.id.blue_slider:
+                    iBlue = Math.round(value);
                     break;
             }
             colorsGradient[i] = Color.rgb(iRed, iGreen, iBlue);
             updateChip((Chip) colorsChipGroup.getChildAt(i), colorsGradient[i]);
             mImageView.setImageDrawable(new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colorsGradient));
-        }
 
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-            iRed = Color.red(colorsGradient[i]);
-            iGreen = Color.green(colorsGradient[i]);
-            iBlue = Color.blue(colorsGradient[i]);
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
             mGroup.setColors(colorsGradient);
         }
+
     }
 }

@@ -33,6 +33,7 @@ import com.anadol.mindpalace.model.DataBaseSchema.Words;
 import com.anadol.mindpalace.model.Group;
 import com.anadol.mindpalace.model.MyCursorWrapper;
 import com.anadol.mindpalace.model.SettingsPreference;
+import com.anadol.mindpalace.model.Word;
 import com.anadol.mindpalace.presenter.ComparatorMaker;
 import com.anadol.mindpalace.presenter.MyAnimations;
 import com.anadol.mindpalace.presenter.MyListAdapter;
@@ -58,7 +59,7 @@ import static com.anadol.mindpalace.view.Fragments.GroupListFragment.GroupBackgr
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GroupListFragment extends MyFragment implements IOnBackPressed {
+public class GroupListFragment extends SimpleFragment implements IOnBackPressed {
     public static final String KEY_SELECT_MODE = "select_mode";
     public static final String CHANGED_ITEM = "changed_item";
     public static final int REQUIRED_CHANGE = 1;
@@ -111,10 +112,10 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
         View view = inflater.inflate(R.layout.fragment_group_list, container, false);
         bind(view);
         getData(savedInstanceState);
-        setListeners();
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(mToolbar);
+        setListeners();
 
         if (savedInstanceState != null) {
             setupAdapter();
@@ -164,6 +165,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                 fab.show();
             }
         });
+        mToolbar.setNavigationOnClickListener(v-> onBackPressed());
     }
 
     private SlowGridLayoutManager createGridLayoutManager() {
@@ -205,6 +207,8 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                 inflater.inflate(R.menu.fragment_group_list, menu);
                 MenuItem menuSearch = menu.findItem(R.id.menu_search_list);
 
+                mToolbar.setNavigationIcon(null);
+
                 searchView = (SearchView) menuSearch.getActionView();
                 searchView.setImeOptions(EditorInfo.IME_FLAG_NO_EXTRACT_UI); // тоже что и textNoSuggestions
                 searchView.setQueryHint(getResources().getString(R.string.search));
@@ -221,6 +225,8 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
 
                 inflater.inflate(R.menu.menu_group_list_selected, menu);
                 MenuItem select = menu.findItem(R.id.menu_select_all);
+
+                mToolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_material);
 
                 if (mAdapter != null && mAdapter.isAllItemSelected()) {
                     select.setIcon(R.drawable.ic_menu_select_all_on);
@@ -308,6 +314,7 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
     }
 
     public void startDetailActivity(Group group) {
+        Log.i(TAG, "startDetailActivity: group UUID " + group.getUUIDString());
         showLoadingDialog();
 
         Intent intent = GroupDetailActivity.newIntent(getActivity(), group, this::hideLoadingDialog);
@@ -505,10 +512,8 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                     case DELETE_GROUP:
                         groupsListToRemove = mAdapter.getSelectedItems();
                         String uuidString;
-                        String nameGroup;
                         for (Group g : groupsListToRemove) {
                             uuidString = g.getUUIDString();
-                            nameGroup = g.getName();
                             // Удаляю Группу и слова этой группы
                             contentResolver.delete(
                                     Groups.CONTENT_URI,
@@ -516,8 +521,8 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                                     new String[]{uuidString});
                             contentResolver.delete(
                                     Words.CONTENT_URI,
-                                    Groups.UUID + " = ?",
-                                    new String[]{nameGroup});
+                                    Words.UUID_GROUP + " = ?",
+                                    new String[]{uuidString});
                         }
                         return true;
                 }
@@ -547,11 +552,11 @@ public class GroupListFragment extends MyFragment implements IOnBackPressed {
                     updateActionBarTitle();
                     break;
                 case INSERT_GROUP:
-                    mAdapter.add(mGroupTemp);
+                    mAdapter.add(0, mGroupTemp);
                     // Скролит к последнему
-                    position = mAdapter.getItemCount();
-                    mAdapter.notifyItemChanged(position);
-                    mRecyclerView.smoothScrollToPosition(position);
+//                    position = mAdapter.getItemCount();
+                    mAdapter.notifyItemInserted(0);
+                    mRecyclerView.smoothScrollToPosition(0);
                     break;
                 case GET_GROUPS:
                     setupAdapter();

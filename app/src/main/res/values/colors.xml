@@ -2,8 +2,8 @@
 <resources>
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#42A5F5</color>
-    <color name="colorAccentLight">#29B6F6</color>
+    <color name="colorSecondary">#42A5F5</color>
+    <color name="colorSelect">#A6D7D7D7</color>
     <color name="background">#F6F6F6</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorDarkWhite">#D7D7D7</color>
@@ -18,12 +18,15 @@
     <color name="colorCheckBackground">#4D373737</color>
     <color name="colorTrue">#689F38</color>
     <color name="colorFalse">#B71C1C</color>
-    
+
     <color name="colorLearned">#18AAEC</color>
     <color name="colorLearning">#4CAF50</color>
     <color name="colorNeedToLearn">#BABABA</color>
 
     <color name="colorGray">#CCCCCC</color>
+    <color name="colorLightGray">#80E6E6E6</color>
     <color name="colorReadyRepeat">#419646</color>
     <color name="colorNotReadyRepeat">#D32F2F</color>
+
+    <color name="scrollBarThumbLight">#BEA7A7A7</color>
 </resources>

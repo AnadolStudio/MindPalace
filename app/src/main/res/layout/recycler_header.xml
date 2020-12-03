@@ -24,13 +24,13 @@
         android:id="@+id/count_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="4dp"
+        android:layout_margin="@dimen/margin_xsmall"
         android:fontFamily="serif"
         android:includeFontPadding="false"
         android:text="@string/associations_count"
         android:textColor="@color/colorWhite"
-        android:textSize="16sp" />
+        android:textSize="@dimen/text_subtitle" />
 
 
-</LinearLayout><!--    android:layout_marginTop="32dp"-->
-    <!--    android:layout_marginBottom="32dp"-->
+</LinearLayout><!--    android:layout_marginTop="@dimen/margin_xlarge"-->
+    <!--    android:layout_marginBottom="@dimen/margin_xlarge"-->

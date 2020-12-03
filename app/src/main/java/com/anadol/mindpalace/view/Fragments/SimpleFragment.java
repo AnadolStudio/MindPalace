@@ -11,7 +11,7 @@ import com.anadol.mindpalace.view.Dialogs.LoadingDialog;
 import com.anadol.mindpalace.view.Dialogs.LoadingView;
 import com.anadol.mindpalace.view.Dialogs.SortDialog;
 
-public abstract class MyFragment extends Fragment implements FragmentAdapter {
+public abstract class SimpleFragment extends Fragment implements FragmentAdapter {
     public static final String MODE = "mode";
     public static final int MODE_NORMAL = 0;
     public static final int MODE_SEARCH = 1;
@@ -67,7 +67,7 @@ public abstract class MyFragment extends Fragment implements FragmentAdapter {
         if (mLoadingView != null) mLoadingView.hideLoadingIndicator();
     }
 
-    protected void createDialogSort(MyFragment fragment, SortDialog.Types type) {
+    protected void createDialogSort(SimpleFragment fragment, SortDialog.Types type) {
         SortDialog sortDialog = SortDialog.newInstance(type);
         sortDialog.setTargetFragment(fragment, REQUEST_SORT);
         sortDialog.show(getFragmentManager(), SortDialog.class.getName());

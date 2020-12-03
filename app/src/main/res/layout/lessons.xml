@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/SettingsCardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:ignore="UseCompoundDrawables">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin_large"
+            android:layout_marginTop="@dimen/margin_normal"
+            android:layout_marginBottom="@dimen/margin_normal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/for_the_curious"
+                android:textColor="@color/colorSecondary"
+                android:textSize="@dimen/text_subtitle"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lesson_1"
+            style="@style/SettingsItemStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/margin_normal"
+                android:src="@drawable/ic_lesson_1" />
+
+            <TextView
+                style="@style/SettingsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/basics" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="@dimen/margin.56"
+            android:layout_marginEnd="@dimen/margin_xlarge"
+            android:background="@color/colorDivider" />
+
+        <LinearLayout
+            android:id="@+id/lesson_2"
+            style="@style/SettingsItemStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/margin_normal"
+                android:src="@drawable/ic_lesson_2" />
+
+            <TextView
+                style="@style/SettingsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/what_is_an_association" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="@dimen/margin.56"
+            android:layout_marginEnd="@dimen/margin_xlarge"
+            android:background="@color/colorDivider" />
+
+
+        <LinearLayout
+            android:id="@+id/lesson_3"
+            style="@style/SettingsItemStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/margin_normal"
+                android:src="@drawable/ic_lesson_3" />
+
+            <TextView
+
+                style="@style/SettingsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/how_to_repeat_correctly" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="@dimen/margin.56"
+            android:layout_marginEnd="@dimen/margin_xlarge"
+            android:background="@color/colorDivider" />
+
+
+        <LinearLayout
+            android:id="@+id/lesson_4"
+            style="@style/SettingsItemStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/margin_normal"
+                android:src="@drawable/ic_lesson_4" />
+
+            <TextView
+                style="@style/SettingsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/numbers" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="@dimen/margin.56"
+            android:layout_marginEnd="@dimen/margin_xlarge"
+            android:background="@color/colorDivider" />
+
+        <LinearLayout
+            android:id="@+id/lesson_5"
+            style="@style/SettingsItemStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/margin_normal"
+                android:src="@drawable/ic_lesson_5" />
+
+            <TextView
+                style="@style/SettingsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/texts" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="@dimen/margin.56"
+            android:layout_marginEnd="@dimen/margin_xlarge"
+            android:background="@color/colorDivider" />
+
+        <LinearLayout
+            android:id="@+id/lesson_6"
+            style="@style/SettingsItemStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/margin_normal"
+                android:src="@drawable/ic_lesson_6" />
+
+            <TextView
+                style="@style/SettingsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dates" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="@dimen/margin.56"
+            android:layout_marginEnd="@dimen/margin_xlarge"
+            android:background="@color/colorDivider"
+            android:visibility="gone"/>
+
+        <LinearLayout
+            android:id="@+id/lesson_7"
+            style="@style/SettingsItemStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/margin_normal"
+                android:src="@drawable/ic_lesson_7"
+                />
+
+            <TextView
+                style="@style/SettingsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/link"
+                />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

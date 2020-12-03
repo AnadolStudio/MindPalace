@@ -104,7 +104,7 @@
     <string name="introduction">Для эффективного запоминания информации человек создал мнемотехнику (др.-греч. μνημονικόν — искусство запоминания).
         \n
         \nMind Palace поможет вам освоить это искусство.</string>
-    <string name="header_basic">Основы</string>
+    <string name="header_types">Типы</string>
     <string name="body_basic">В Mind Palace существует 4 типа ассоциативных групп:
         \n
         \n • Числа;
@@ -116,17 +116,43 @@
         После создания группы вам нужно придумать собственные ассоциации.
         А затем начать их изучать.</string>
     <string name="header_learning">Изучение</string>
-    <string name="body_learning1">Когда наберется по меньшей мере 10 ассоциаций, вы сможите приступить к их узучению.
-        Процесс изучения основывается на Кривой забывания (кривая Эббингауза). Т.е. на повторении материала через определенные промежутки времени.</string>
+    <string name="body_learning1">Когда наберется по меньшей мере 10 ассоциаций, вы сможете приступить к их изучению.
+        Процесс изучения основывается на \"Кривой забывания\" (кривая Эббингауза). Т.е. на повторении материала через определенные промежутки времени.</string>
     <string name="body_repeat">\"Повторение\" - это самостоятельное и безошибочное воспроизведение информации.</string>
     <string name="additional">\"%1$s\" - текущий статус ассоциации;\n\"%2$d\" - количество повторений;\n\"%3$s\" - время следующего повторения.</string>
     <string name="forgetting_curve">Кривая забывания</string>
     <string name="body_learning2">После 4-го успешного повторения, по меньшей мере, 10 ассоциаций вы сможете сдать экзамен, чтобы подтвердить, что выучили их.</string>
     <string name="forgetting_curve_additional">Наш мозг стирает ненужную для себя информацию, чтобы это не происходило, нужно \"объяснить\" мозгу, что эта информация является важной.
         Для этого необходимо повторять информацию через следующие промежутки:</string>
-    <string name="period_example">30 мин -> 2 часа -> 8 часов -> 32 часа -> 5 дней -> 20 дней -> 80 дней и т.д.</string>
+    <string name="period_example">30 мин > 2 часа > 8 часов > 32 часа > 5 дней > 20 дней > 80 дней и т.д.</string>
     <string name="forgetting_curve_additional2">Данные границы являются минимальным периодом между повторениями. Допускается их сдвигать в большую сторну до 50%.</string>
     <string name="description_forget">В первый час забывается до 60% информации, т.е. в памяти остается всего 40%, через 10 часов - 35%.
         Далее забывание замедляется, через 6 дней остаётся 20 %, столько же остаётся и через месяц.</string>
     <string name="exaple_association">роза</string>
+    <string name="introduction_title">Введение</string>
+    <string name="training">Обучение</string>
+    <string name="for_the_curious">Для любознательных</string>
+    <string name="settings_group">Настройки группы</string>
+    <string name="basics">Основы</string>
+    <string name="how_to_repeat_correctly">Как правильно повторять?</string>
+    <string name="what_is_an_association">Что такое ассоциация?</string>
+
+    <string name="association_intro">80% информации человек получает визуально.
+        \n
+        \nПрежде чем потрогать, почувствовать запах или вкус, мы видим предмет.</string>
+    <string name="association_intro1">Поэтому ассоциация – это визуальное представление различных объектов.</string>
+    <string name="which_associations_are_best_remembered">Какие ассоциации запоминаются лучше?</string>
+    <string name="which_associations_are_best_remembered_body_text">Абсурд, вычурность, необычность – лучшие признаки ассоциации.
+        \n
+        \nЧем она необычнее, тем лучше. Поэтому не ограничивайте себя, дайте волю воображению.</string>
+    <string name="you_can_control_the_associations">Вы можете управлять ассоциациями</string>
+    <string name="you_can_control_the_associations_body_text">Закройте глаза, представьте деревянный стол, повращайте его, разберите на составляющие, соберите обратно.
+        \nВы можете изменить его структуру. Представьте, что теперь он стал металлическим, стеклянным, сделанным из надувных шариков.
+      </string>
+    <string name="you_can_control_the_associations_body_text1">Ваши ассоциации ограничиваются только вашим воображением.</string>
+    <string name="was_upload">Загружено</string>
+    <string name="is_already_upload">Уже загружено</string>
+    <string name="upload">Загрузить</string>
+    <string name="code">Код</string>
+
 </resources>

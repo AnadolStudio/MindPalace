@@ -9,16 +9,16 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar_layout"
         android:layout_width="match_parent"
-        android:layout_height="256dp"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:layout_height="280dp"
+        android:elevation="@dimen/elevation_normal"
+        android:theme="@style/Theme.MaterialComponents.Bridge">
         <!--        android:layout_height="256dp"-->
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:elevation="4dp"
+            android:elevation="@dimen/elevation_normal"
             app:contentScrim="@color/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
@@ -28,6 +28,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="@drawable/ripple_gray_item"
                 app:layout_collapseMode="parallax" />
 
 
@@ -37,10 +40,10 @@
                 android:layout_height="70dp"
                 android:layout_gravity="bottom"
                 android:background="@color/colorPrimary"
-                android:elevation="4dp"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                android:elevation="@dimen/elevation_normal"
+                android:theme="@style/Theme.MaterialComponents.Bridge"
                 app:layout_collapseMode="pin"
-                app:menu="@menu/fragment_group_list">
+                app:menu="@menu/fragment_group_detail">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -56,7 +59,7 @@
                         android:marqueeRepeatLimit="marquee_forever"
                         android:scrollHorizontally="true"
                         android:singleLine="true"
-                        tools:text="Name">
+                        tools:text="Очень длинный текст">
 
                     </TextView>
                 </LinearLayout>
@@ -73,10 +76,10 @@
         android:id="@+id/recycler_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="@dimen/margin_normal"
+        android:layout_marginEnd="@dimen/margin_normal"
         android:focusableInTouchMode="true"
-        app:cardElevation="4dp"
+        app:cardElevation="@dimen/elevation_normal"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <LinearLayout
@@ -96,7 +99,6 @@
                 android:scrollbarSize="4dp"
                 android:scrollbars="vertical"
                 tools:itemCount="12"
-                android:background="@color/background"
                 tools:listitem="@layout/item_words_list" />
 
         </LinearLayout>
@@ -108,22 +110,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
         android:contentDescription="@string/create_association"
         android:src="@drawable/ic_add"
-        app:backgroundTint="@color/colorAccent"
-        app:elevation="6dp" />
+        app:elevation="@dimen/elevation_large" />
 
     <Button
         android:id="@+id/button_startLearn"
-        android:layout_width="200dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="8dp"
-        android:elevation="4dp"
+        android:layout_marginBottom="@dimen/margin_normal"
+        android:elevation="@dimen/elevation_normal"
         android:stateListAnimator="@animator/start_learn_fab"
         android:text="@string/learn"
-        android:textSize="16sp"
+        android:textSize="@dimen/text_subtitle"
+        android:paddingStart="@dimen/margin.56"
+        android:paddingEnd="@dimen/margin.56"
         app:cornerRadius="20dp"
         app:layout_anchor="@id/toolbar"
         app:layout_anchorGravity="bottom|center_horizontal" />

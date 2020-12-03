@@ -13,11 +13,11 @@
         android:id="@+id/cardView2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginStart="@dimen/margin_normal"
+        android:layout_marginTop="@dimen/margin_large"
+        android:layout_marginEnd="@dimen/margin_normal"
         app:cardCornerRadius="@dimen/radius8"
-        app:cardElevation="4dp"
+        app:cardElevation="@dimen/elevation_normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/include">
@@ -26,8 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="4dp"
-            android:minHeight="56dp"
-
+            android:minHeight="48dp"
             android:scrollbarFadeDuration="1"
             android:scrollbarSize="2dp"
             android:scrollbars="vertical">
@@ -37,9 +36,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_margin="4dp"
-                app:chipSpacingVertical="8dp"
-                app:chipSpacingHorizontal="2dp"
                 >
 
             </com.google.android.material.chip.ChipGroup>
@@ -54,9 +50,9 @@
         android:id="@+id/cardView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_margin="@dimen/margin_large"
         app:cardCornerRadius="@dimen/radius8"
-        app:cardElevation="4dp"
+        app:cardElevation="@dimen/elevation_normal"
         app:layout_constraintBottom_toTopOf="@+id/next_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -76,9 +72,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_margin="4dp"
+                android:layout_margin="@dimen/margin_xsmall"
                 android:minHeight="48dp"
-                app:chipSpacingVertical="8dp">
+                app:chipSpacingVertical="2dp">
 
             </com.google.android.material.chip.ChipGroup>
 
@@ -90,9 +86,9 @@
         android:id="@+id/next_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="@dimen/margin_normal"
+        android:layout_marginEnd="@dimen/margin_normal"
+        android:layout_marginBottom="@dimen/margin_normal"
         android:text="@string/next"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -1,24 +1,20 @@
 package com.anadol.mindpalace.view.Fragments;
 
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.TimeZone;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.widget.Toolbar;
 
-import com.anadol.mindpalace.presenter.MyPercentFormatter;
 import com.anadol.mindpalace.R;
+import com.anadol.mindpalace.presenter.MyPercentFormatter;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.YAxis;
@@ -30,25 +26,14 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link InfoFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class InfoFragment extends MyFragment {
+public class LessonRepeatingFragment extends LessonFragment {
     private ScrollView mScrollView;
-    private TextView additionalText;
-    private TextView originalText;
-    private TextView associationText;
-    private TextView translateText;
-    private TextView countRepsText;
     private LineChart mChart;
 
-    public static InfoFragment newInstance() {
-        InfoFragment fragment = new InfoFragment();
+    public static LessonRepeatingFragment newInstance() {
+        LessonRepeatingFragment fragment = new LessonRepeatingFragment();
         return fragment;
     }
-
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -59,7 +44,7 @@ public class InfoFragment extends MyFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_info, container, false);
+        View view = inflater.inflate(R.layout.fragment_lesson_repeating, container, false);
 
         bind(view);
         getData(savedInstanceState);
@@ -69,45 +54,14 @@ public class InfoFragment extends MyFragment {
 
     private void bind(View view) {
         mScrollView = view.findViewById(R.id.scrollView);
-        originalText = view.findViewById(R.id.original_textView);
-        associationText = view.findViewById(R.id.association_textView);
-        translateText = view.findViewById(R.id.translate_textView);
-        additionalText = view.findViewById(R.id.additional_textView);
-        countRepsText = view.findViewById(R.id.count_reps);
         mChart = view.findViewById(R.id.chart_forget);
+
+        Toolbar toolbar = view.findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener((v) -> getActivity().onBackPressed());
     }
 
     private void bindDataWithView() {
-        originalText.setText(getString(R.string.exaple_original));
-        associationText.setText(getString(R.string.exaple_association));
-        translateText.setText(getString(R.string.exaple_translate));
-
-        String isLearned = getString(R.string.learning);
-        String date = getDate();
-        int countLearned = 1;
-
-        additionalText.setText(getString(R.string.additional, isLearned, countLearned, date));
-        countRepsText.setText(getStatus(isLearned, date, countLearned));
-
         setupChart(mChart, getLineData());
-    }
-
-    private SpannableString getStatus(String isLearned, String date, int countLearned) {
-        Resources resources = getResources();
-
-        String s = resources.getString(R.string.reps,
-                isLearned, countLearned, date);
-
-        SpannableString info = new SpannableString(s);
-
-        int colorTimeRepeat = resources.getColor(R.color.colorNotReadyRepeat);
-        int colorStatus = resources.getColor(R.color.colorLearning);
-
-        int indexDate = s.indexOf(date);
-        int indexStatus = s.indexOf(isLearned);
-        info.setSpan(new ForegroundColorSpan(colorTimeRepeat), indexDate, indexDate + date.length(), 0);
-        info.setSpan(new ForegroundColorSpan(colorStatus), indexStatus, indexStatus + isLearned.length(), 0);
-        return info;
     }
 
     private LineData getLineData() {
@@ -127,7 +81,7 @@ public class InfoFragment extends MyFragment {
         set1.setLineWidth(1.75f);
         set1.setCircleRadius(5f);
         set1.setCircleHoleRadius(2.5f);
-        int colorAccent = getResources().getColor(R.color.colorAccent);
+        int colorAccent = getResources().getColor(R.color.colorSecondary);
         set1.setColor(colorAccent);
         set1.setCircleColor(colorAccent);
         set1.setHighLightColor(colorAccent);
@@ -182,14 +136,6 @@ public class InfoFragment extends MyFragment {
         chart.getAxisRight().setEnabled(false);
         chart.getXAxis().setEnabled(false);
 
-    }
-
-    private String getDate() {
-        long time = System.currentTimeMillis() + TimeUnit.HOURS.toMillis(2);
-        TimeZone timeZone = TimeZone.getDefault();
-        SimpleDateFormat format = new SimpleDateFormat("d MMM H:mm");
-        format.setTimeZone(timeZone);
-        return format.format(time);
     }
 
     private void getData(Bundle savedInstanceState) {

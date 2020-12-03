@@ -3,6 +3,7 @@ package com.anadol.mindpalace.presenter;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.anadol.mindpalace.model.MyCursorWrapper;
 import com.anadol.mindpalace.model.DataBaseSchema;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 
 public class UpdateExamWordsBackground extends AsyncTask<Word, Void, Boolean> {
 
+    private static final String TAG = UpdateExamWordsBackground.class.getName();
     private ContentResolver contentResolver;
     private ArrayList<Word> mWords;
     private OnPost mPost;
@@ -67,6 +69,7 @@ public class UpdateExamWordsBackground extends AsyncTask<Word, Void, Boolean> {
         if (mPost != null){
             mPost.doOnPost();
         }
+        Log.i(TAG, "updateWords was successful");
     }
 }
 

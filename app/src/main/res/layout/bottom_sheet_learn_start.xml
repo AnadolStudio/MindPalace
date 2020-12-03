@@ -20,7 +20,7 @@
             style="@style/TitleTextAppearance"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="@dimen/margin_large"
             android:layout_weight="1"
             android:gravity="start|center_vertical"
             android:singleLine="true"
@@ -60,8 +60,8 @@
                     android:id="@+id/auto_switch"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_margin="8dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_margin="@dimen/margin_normal"
+                    android:layout_marginTop="@dimen/margin_normal"
                     android:text="@string/auto" />
             </LinearLayout>
 
@@ -69,7 +69,7 @@
                 android:id="@+id/ll_options"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
+                android:layout_margin="@dimen/margin_normal"
                 android:orientation="vertical"
                 android:visibility="visible">
 
@@ -87,7 +87,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_margin="6dp"
+                    android:layout_marginStart="@dimen/margin_large"
+                    android:layout_marginTop="@dimen/margin_normal"
+                    android:layout_marginEnd="@dimen/margin_large"
                     android:clipToPadding="false"
                     android:scrollbarFadeDuration="1"
                     android:scrollbarSize="4dp">
@@ -95,8 +97,7 @@
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/type_test"
                         android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:layout_marginBottom="4dp"
+                        android:layout_height="wrap_content"
                         app:singleLine="true"
                         app:singleSelection="true">
 
@@ -104,21 +105,21 @@
                             android:id="@+id/quiz_chip"
                             style="@style/MyChipChoice"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:text="@string/quiz" />
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/puzzle_chip"
                             style="@style/MyChipChoice"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:text="@string/puzzle" />
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/answerQuestion_chip"
                             style="@style/MyChipChoice"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:text="@string/answer" />
 
 
@@ -126,7 +127,7 @@
                             android:id="@+id/exam_chip"
                             style="@style/MyChipChoice"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:text="@string/exam" />
 
                     </com.google.android.material.chip.ChipGroup>
@@ -137,7 +138,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="@dimen/margin_normal"
                     android:gravity="start|center_vertical"
                     android:text="@string/route"
                     android:textColor="@color/colorSecondaryText"
@@ -146,26 +147,25 @@
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/route_test"
                     android:layout_width="wrap_content"
-                    android:layout_height="36dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="@dimen/margin_large"
+                    android:layout_marginTop="@dimen/margin_normal"
+                    android:layout_marginEnd="@dimen/margin_large"
                     app:singleSelection="true">
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/forward_chip"
                         style="@style/MyChipChoice"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:text="@string/forward" />
 
                     <com.google.android.material.chip.Chip
                         android:id="@+id/inverse_chip"
                         style="@style/MyChipChoice"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:text="@string/inverse" />
 
 
@@ -174,7 +174,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="@dimen/margin_normal"
                     android:gravity="start|center_vertical"
                     android:text="@string/object"
                     android:textColor="@color/colorSecondaryText"
@@ -192,8 +192,8 @@
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/object_test"
                         android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:layout_marginBottom="4dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/margin_xsmall"
                         app:singleLine="true"
                         app:singleSelection="true">
 
@@ -211,14 +211,14 @@
                             android:id="@+id/random_chip"
                             style="@style/MyChipChoice"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:text="@string/random" />
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/diapason_chip"
                             style="@style/MyChipChoice"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:text="@string/diapason" />
 
 
@@ -241,10 +241,10 @@
                 android:id="@+id/button_start_to_learn_fragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="32dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginStart="@dimen/margin_xlarge"
+                android:layout_marginTop="@dimen/margin_normal"
+                android:layout_marginEnd="@dimen/margin_xlarge"
+                android:layout_marginBottom="@dimen/margin_normal"
                 android:text="@string/start" />
 
         </LinearLayout>

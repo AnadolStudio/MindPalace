@@ -1,6 +1,5 @@
 package com.anadol.mindpalace.model;
 
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -76,7 +75,7 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
     }
 
     public static int[] getDefaultColors() {
-        return new int[]{Color.BLACK, Color.BLUE, Color.BLACK};
+        return new int[]{0xFF000000, 0xFF004064, 0xFF0080E1};
     }
 
     @Override
@@ -132,9 +131,9 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
         drawable = getColorsStringFromInts(colors);
     }
 
-    private int[] getColorsFromString(@Nullable String colors) {
-        if (drawable.contains("content")) {
-            throw new IllegalArgumentException(drawable + " is not colors");
+    public static int[] getColorsFromString(@Nullable String colors) {
+        if (colors == null || colors.contains("content")) {
+            return getDefaultColors();
         }
 
         String[] strings = colors.split(";");
@@ -152,9 +151,12 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
     public void getImage(ImageView imageView) {
 //        Log.i(TAG, "getImage: " + drawable);
         if (drawable.contains("content")) {
+            Drawable placeholder = createDrawable(getDefaultColors());
+
             Picasso.get()
                     .load(drawable)
-                    .error(createDrawable(getDefaultColors()))
+                    .error(placeholder)
+                    .placeholder(placeholder)
                     .fit()
                     .centerCrop()
                     .into(imageView);

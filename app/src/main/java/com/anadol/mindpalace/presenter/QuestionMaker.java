@@ -27,7 +27,7 @@ public class QuestionMaker {
         mWords = MyRandom.getRandomArrayList(mWords, mWords.size());
 
         int size = mWords.size();
-        Question[] questions = new Question[size];// Количество вопросов будет равно size + 5-10 (максимум 40)
+        Question[] questions = new Question[size];
 
         Word word;
         for (int i = 0; i < size; i++) {
@@ -43,7 +43,7 @@ public class QuestionMaker {
         return questions;
     }
 
-    // Возвращает количество неправельных слов в зависимости от количества успешных повторений слова (3/5/7)
+    // Возвращает количество неправильных слов в зависимости от количества успешных повторений слова (3/5/7)
     private Word[] getWordsForFalseAnswers(ArrayList<Word> wordArrayList, Word trueAnswer) {
         int length;
         Word.Difficult difficult = trueAnswer.getDifficult();
@@ -116,13 +116,11 @@ public class QuestionMaker {
                     if (isMultiAssociation) {
                         a = wordsForFalseAnswers[i].getRandomAssociation();
                         falseAnswers[i] = string.replace(word.getRandomAssociation(), a);
-//                        Log.i(TAG, "buildFalseAnswers: a=" + a + "falseAnswer[" + i + "]=" + falseAnswers[i]);
                     } else {
                         falseAnswers[i] = wordsForFalseAnswers[i].getAssociation();
                     }
                     break;
                 case INVERSE:
-                    // Потому что questionString станет AnswerString
                     falseAnswers[i] = buildQuestion(typeGroup, wordsForFalseAnswers[i]);
                     break;
             }
