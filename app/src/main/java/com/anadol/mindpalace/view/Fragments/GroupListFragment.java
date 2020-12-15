@@ -1,14 +1,10 @@
 package com.anadol.mindpalace.view.Fragments;
 
 
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,48 +20,41 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.anadol.mindpalace.model.CreatorValues;
-import com.anadol.mindpalace.model.DataBaseSchema.Groups;
-import com.anadol.mindpalace.model.DataBaseSchema.Words;
+import com.anadol.mindpalace.R;
+import com.anadol.mindpalace.model.BackgroundSingleton;
 import com.anadol.mindpalace.model.Group;
-import com.anadol.mindpalace.model.MyCursorWrapper;
-import com.anadol.mindpalace.model.SettingsPreference;
-import com.anadol.mindpalace.model.Word;
 import com.anadol.mindpalace.presenter.ComparatorMaker;
 import com.anadol.mindpalace.presenter.MyAnimations;
 import com.anadol.mindpalace.presenter.MyListAdapter;
 import com.anadol.mindpalace.presenter.SlowGridLayoutManager;
 import com.anadol.mindpalace.view.Activities.GroupDetailActivity;
 import com.anadol.mindpalace.view.Dialogs.SortDialog;
-import com.anadol.mindpalace.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.UUID;
+
+import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
 
 import static android.app.Activity.RESULT_OK;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DELETE_GROUPS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.GET_GROUPS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.GET_GROUP_ITEM;
+import static com.anadol.mindpalace.model.BackgroundSingleton.INSERT_GROUP;
 import static com.anadol.mindpalace.view.Dialogs.SortDialog.ORDER_SORT;
 import static com.anadol.mindpalace.view.Dialogs.SortDialog.TYPE_SORT;
-import static com.anadol.mindpalace.view.Fragments.GroupListFragment.GroupBackground.DELETE_GROUP;
-import static com.anadol.mindpalace.view.Fragments.GroupListFragment.GroupBackground.GET_GROUPS;
-import static com.anadol.mindpalace.view.Fragments.GroupListFragment.GroupBackground.GET_GROUP_ITEM;
-import static com.anadol.mindpalace.view.Fragments.GroupListFragment.GroupBackground.INSERT_GROUP;
 
+public class GroupListFragment extends SimpleFragment implements IOnBackPressed, IStartGroupDetail {
+    private static final String TAG = GroupListFragment.class.getName();
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class GroupListFragment extends SimpleFragment implements IOnBackPressed {
-    public static final String KEY_SELECT_MODE = "select_mode";
     public static final String CHANGED_ITEM = "changed_item";
-    public static final int REQUIRED_CHANGE = 1;
     public static final String KEY_GROUP_SAVE = "group_save";
-    private static final String TAG = "GroupListFragment";
     private static final String KEY_SEARCH_QUERY = "search_query";
+    public static final int REQUIRED_CHANGE = 1;
+
     private RecyclerView mRecyclerView;
     private SearchView searchView;
     private FloatingActionButton fab;
@@ -74,11 +63,11 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed 
     private ArrayList<Group> mGroupsList;
     private MyListAdapter<Group> mAdapter;
     private ArrayList<String> selectedStringArray;
-    private GroupBackground background;
 
     private String searchQuery;
     private boolean selectable;
 
+    private CompositeDisposable mCompositeDisposable;
 
     public static GroupListFragment newInstance() {
         Bundle args = new Bundle();
@@ -117,11 +106,10 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed 
         activity.setSupportActionBar(mToolbar);
         setListeners();
 
-        if (savedInstanceState != null) {
+        if (mGroupsList != null) {
             setupAdapter();
-        } else {
-            MyAnimations.addTranslationAnim(mRecyclerView);
         }
+
         mRecyclerView.setLayoutManager(createGridLayoutManager());
 
         return view;
@@ -141,17 +129,15 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed 
             selectedStringArray = savedInstanceState.getStringArrayList(KEY_SELECT_LIST);
             selectable = savedInstanceState.getBoolean(KEY_SELECT_MODE);
         } else {
-            mGroupsList = new ArrayList<>();
             doInBackground(GET_GROUPS);
             searchQuery = "";
             selectable = false;
         }
     }
 
-    private void doInBackground(String insertWord) {
-        Log.i(TAG, "doInBackground: " + insertWord);
-        background = new GroupBackground();
-        background.execute(insertWord);
+    private void doInBackground(String action) {
+        GroupBackground mBackground = new GroupBackground();
+        mBackground.subscribeToObservable(action);
     }
 
     private void setListeners() {
@@ -165,7 +151,27 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed 
                 fab.show();
             }
         });
-        mToolbar.setNavigationOnClickListener(v-> onBackPressed());
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        ArrayMap<String, Boolean> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
+        if (lastAction.size() > 0 && mCompositeDisposable == null) {
+            GroupBackground background = new GroupBackground();
+            for (int i = lastAction.size() - 1; i >= 0; i--) {
+                background.subscribeToObservable(lastAction.keyAt(i));
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mCompositeDisposable != null) {
+            mCompositeDisposable.dispose();
+        }
     }
 
     private SlowGridLayoutManager createGridLayoutManager() {
@@ -188,20 +194,12 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed 
     }
 
     @Override
-    public void onStop() {
-        if (background != null && !background.isCancelled()) {
-            background.cancel(false);
-            Log.i(TAG, "onStop: doInBackground was canceled");
-        }
-        super.onStop();
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu = mToolbar.getMenu();
         super.onCreateOptionsMenu(menu, inflater);
-        Log.i(TAG, "onCreateOptionsMenu: " + mode);
-        switch (mode) {
+        Log.i(TAG, "onCreateOptionsMenu: " + fragmentsMode);
+
+        switch (fragmentsMode) {
             case MODE_NORMAL:
             case MODE_SEARCH:
                 inflater.inflate(R.menu.fragment_group_list, menu);
@@ -240,29 +238,14 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed 
         }
     }
 
-/*
-    private void setScrollFlags(boolean isSelected) {
-        LayoutParams layoutParams = (LayoutParams) mToolbar.getLayoutParams();
-        if (!isSelected) {
-            layoutParams.setScrollFlags(LayoutParams.SCROLL_FLAG_SCROLL
-                    | LayoutParams.SCROLL_FLAG_SNAP
-                    | LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
-        } else {
-            layoutParams.setScrollFlags(LayoutParams.SCROLL_FLAG_ENTER_ALWAYS);
-        }
-        mToolbar.setLayoutParams(layoutParams);
-    }
-*/
-
     private void setMenuItemsListeners() {
         Log.i(TAG, "setMenuItemsListeners");
         searchView.setOnSearchClickListener(v -> {
-            mode = MODE_SEARCH;
-//            setActionBarTitle("");
+            searchMode();
         });
 
         searchView.setOnCloseListener(() -> {
-            mode = MODE_NORMAL;
+            normalMode();
             setActionBarTitle(getString(R.string.app_name));
             return false;
         });
@@ -286,7 +269,7 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed 
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_remove:
-                doInBackground(DELETE_GROUP);
+                doInBackground(DELETE_GROUPS);
                 return true;
             case R.id.menu_select_all:
                 boolean selectAllItems = !mAdapter.isAllItemSelected();
@@ -307,13 +290,13 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed 
         searchView.setQuery(chars, false);
     }
 
-
     void selectAll(boolean select) {
         mAdapter.setAllItemSelected(select);
         updateActionBarTitle();
     }
 
-    public void startDetailActivity(Group group) {
+    @Override
+    public void startGroupDetail(Group group) {
         Log.i(TAG, "startDetailActivity: group UUID " + group.getUUIDString());
         showLoadingDialog();
 
@@ -326,9 +309,9 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed 
 
     @Override
     public boolean onBackPressed() {
-        switch (mode) {
+        switch (fragmentsMode) {
             case MODE_SEARCH:
-                mode = MODE_NORMAL;
+                normalMode();
                 getActivity().invalidateOptionsMenu();
                 setActionBarTitle(getString(R.string.app_name));
                 searchView.onActionViewCollapsed();
@@ -347,14 +330,14 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed 
 
     public void changeSelectableMode(boolean selectable) {
         if (selectable) {
-            mode = MODE_SELECT;
+            selectMode();
             if (searchView != null && !searchView.isIconified()) {
                 searchView.onActionViewCollapsed();
             }
             fab.hide();
         } else {
             mAdapter.setSelectableMode(false);
-            mode = MODE_NORMAL;
+            normalMode();
             fab.show();
         }
         updateActionBarTitle();
@@ -364,7 +347,7 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed 
     private void updateActionBarTitle() {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.invalidateOptionsMenu();
-        if (mode == MODE_SELECT) {
+        if (fragmentsMode == MODE_SELECT) {
             updateCountSelectedItems();
         } else {
             activity.getSupportActionBar().setTitle(getString(R.string.app_name));
@@ -387,16 +370,14 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed 
 
         switch (requestCode) {
             case REQUIRED_CHANGE:
-                //  Возможно группа будет обновлятся всегда, даже если изменения не происходили
                 int id = data.getIntExtra(CHANGED_ITEM, 0);
                 Log.i(TAG, "CHANGED_ITEM equal " + id);
                 if (id == 0) {
                     return;
                 }
 
-                background = new GroupBackground();
-                background.setGroupId(id);
-                background.execute(GET_GROUP_ITEM);
+                GroupBackground mBackground = new GroupBackground();
+                mBackground.getGroupItem(id);
 
                 break;
             case REQUEST_SORT:
@@ -421,156 +402,85 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed 
 
 
     private void setupAdapter() {
-//        addAlphaAnim();
         mAdapter = new MyListAdapter<>(getActivity(), GroupListFragment.this, mGroupsList, MyListAdapter.GROUP_HOLDER, selectedStringArray, selectable);
         mRecyclerView.setAdapter(mAdapter);
+        MyAnimations.addTranslationAnim(mRecyclerView);
     }
 
-    public class GroupBackground extends AsyncTask<String, Void, Boolean> {
-        static final String GET_GROUPS = "get_groups";
-        static final String GET_GROUP_ITEM = "group_item";
-        static final String DELETE_GROUP = "remove_group";
-        static final String INSERT_GROUP = "add_group";
+    class GroupBackground {
 
-        private ArrayList<Group> groupsListToRemove;
-        private String command;
-        private Group mGroupTemp;
-        private int itemId;
+        private void subscribeToObservable(String action) {
 
-
-        public void setGroupId(int id) {
-            itemId = id;
-        }
-
-        @Override
-        protected Boolean doInBackground(String... strings) {
-            this.command = strings[0];
-            MyCursorWrapper cursor = null;
-            try {
-
-                ContentResolver contentResolver = getContext().getContentResolver();
-                switch (command) {
-                    case GET_GROUPS:
-                        cursor = new MyCursorWrapper(
-                                contentResolver.query(
-                                        Groups.CONTENT_URI,
-                                        null, null, null, null));
-
-                        if (cursor.getCount() == 0) {
-                            Log.i(TAG, "doIn: нет Объектов");
-                            return true;
-                        }
-                        cursor.moveToFirst();
-
-                        if (!mGroupsList.isEmpty()) mGroupsList.clear();
-
-                        while (!cursor.isAfterLast()) {
-                            mGroupsList.add(cursor.getGroup());
-                            Log.i(TAG, "Id :" + cursor.getGroup().getTableId());
-                            cursor.moveToNext();
-                        }
-                        Collections.sort(mGroupsList, ComparatorMaker.getComparator(
-                                SettingsPreference.getGroupTypeSort(getContext()),
-                                SettingsPreference.getGroupOrderSort(getContext())));
-
-                        return true;
-
-                    case GET_GROUP_ITEM:
-                        cursor = new MyCursorWrapper(
-                                contentResolver.query(
-                                        ContentUris.withAppendedId(
-                                                Groups.CONTENT_URI,
-                                                itemId),
-                                        null, null, null, null));
-                        if (cursor.getCount() == 0) {
-                            Log.i(TAG, "doIn: нет Объектов");
-                            return true;
-                        }
-                        cursor.moveToFirst();
-                        mGroupTemp = cursor.getGroup();
-                        return true;
-
-                    case INSERT_GROUP:
-                        UUID uuid = UUID.randomUUID();
-                        String name = getString(R.string.new_group);
-
-                        String colors = Group.getColorsStringFromInts(Group.getDefaultColors());
-                        ContentValues values = CreatorValues.createGroupValues(
-                                uuid,
-                                name,
-                                colors,
-                                Group.TYPE_NUMBERS);
-                        Uri uri = contentResolver.insert(Groups.CONTENT_URI, values);
-
-                        // Это более правильный метод конвертации long в int
-                        Long l = (ContentUris.parseId(uri));
-                        int idNewGroup = Integer.valueOf(l.intValue());
-                        Log.i(TAG, "_ID new group : " + idNewGroup);
-                        mGroupTemp = new Group(idNewGroup, uuid, colors, name, Group.TYPE_NUMBERS);
-                        return true;
-
-                    case DELETE_GROUP:
-                        groupsListToRemove = mAdapter.getSelectedItems();
-                        String uuidString;
-                        for (Group g : groupsListToRemove) {
-                            uuidString = g.getUUIDString();
-                            // Удаляю Группу и слова этой группы
-                            contentResolver.delete(
-                                    Groups.CONTENT_URI,
-                                    Groups.UUID + " = ?",
-                                    new String[]{uuidString});
-                            contentResolver.delete(
-                                    Words.CONTENT_URI,
-                                    Words.UUID_GROUP + " = ?",
-                                    new String[]{uuidString});
-                        }
-                        return true;
-                }
-
-                if (cursor != null) cursor.close();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            return false;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean b) {
-
-            int position;
-            if (!b) {
-                Log.i(TAG, "onPost: что-то пошло не так");
-                return;
-            }
-
-            switch (command) {
-                case DELETE_GROUP:
-                    // Обновленный код
-                    mAdapter.remove(groupsListToRemove);
-                    Toast.makeText(getContext(), getString(R.string.deleting_was_successful), Toast.LENGTH_SHORT).show();
-//                    changeSelectableMode(false);
-                    updateActionBarTitle();
-                    break;
-                case INSERT_GROUP:
-                    mAdapter.add(0, mGroupTemp);
-                    // Скролит к последнему
-//                    position = mAdapter.getItemCount();
-                    mAdapter.notifyItemInserted(0);
-                    mRecyclerView.smoothScrollToPosition(0);
-                    break;
+            switch (action) {
                 case GET_GROUPS:
-                    setupAdapter();
+                    getGroups();
                     break;
                 case GET_GROUP_ITEM:
-                    position = mAdapter.getAdapterPosition(mGroupTemp.getTableId());
-                    if (position != -1) {
-                        mAdapter.updateItem(position, mGroupTemp);
-                        mRecyclerView.smoothScrollToPosition(position);
-                    }
-                    if (searchView == null) Log.i(TAG, "onPost: searchVIew == null");
+                    getGroupItem(BackgroundSingleton.get(getContext()).getLastItem());
+                    break;
+                case DELETE_GROUPS:
+                    deleteGroups();
+                    break;
+                case INSERT_GROUP:
+                    insertGroup();
                     break;
             }
+        }
 
+        private void initCompositeDisposable() {
+            if (mCompositeDisposable == null) {
+                mCompositeDisposable = new CompositeDisposable();
+            }
+        }
+
+        private void getGroups() {
+            initCompositeDisposable();
+            Observable<ArrayList<Group>> observable = BackgroundSingleton.get(getContext()).getGroups();
+            mCompositeDisposable.add(observable.subscribe(groups -> {
+                mGroupsList = groups;
+                setupAdapter();
+                Log.i(TAG, "GetGroups is done");
+            }));
+        }
+
+        private void getGroupItem(int itemId) {
+            initCompositeDisposable();
+            Observable<Group> observable = BackgroundSingleton.get(getContext()).getGroupItem(itemId);
+            mCompositeDisposable.add(observable.subscribe(group -> {
+                if (group == null) return;
+
+                int position = mAdapter.getAdapterPosition(group.getTableId());
+                if (position != -1) {
+                    mAdapter.updateItem(position, group);
+                    mRecyclerView.smoothScrollToPosition(position);
+                }
+                if (searchView == null) Log.i(TAG, "onPost: searchVIew == null");
+                Log.i(TAG, "GetGroupItem is done");
+            }));
+        }
+
+        private void insertGroup() {
+            initCompositeDisposable();
+            Observable<Group> observable = BackgroundSingleton.get(getContext()).insertGroup();
+            mCompositeDisposable.add(observable.subscribe(group -> {
+
+                mAdapter.add(0, group);
+                mAdapter.notifyItemInserted(0);
+                mRecyclerView.smoothScrollToPosition(0);
+                Log.i(TAG, "InsertGroup is done");
+            }));
+        }
+
+        private void deleteGroups() {
+            initCompositeDisposable();
+            Observable<ArrayList<Group>> observable = BackgroundSingleton.get(getContext()).deleteGroups(mAdapter.getSelectedItems());
+            mCompositeDisposable.add(observable.subscribe(groups -> {
+
+                mAdapter.remove(groups);
+                Toast.makeText(getContext(), getString(R.string.deleting_was_successful), Toast.LENGTH_SHORT).show();
+                updateActionBarTitle();
+                Log.i(TAG, "DeleteGroup is done");
+            }));
         }
     }
 }

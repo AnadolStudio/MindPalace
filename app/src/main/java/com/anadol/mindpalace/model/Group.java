@@ -1,5 +1,6 @@
 package com.anadol.mindpalace.model;
 
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -20,6 +21,31 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
     public static final int TYPE_DATES = R.string.dates;
     public static final int TYPE_TEXTS = R.string.texts;
     public static final int TYPE_LINK = R.string.link;
+
+    private static final int COLOR_BLUE_DARK = 0xFF004064;
+    private static final int COLOR_BLUE_LIGHT = 0xFF0080E1;
+    public static final int[] DEFAULT_COLORS = new int[]{Color.BLACK, COLOR_BLUE_DARK, COLOR_BLUE_LIGHT};
+
+    private static final String TAG = Group.class.getName();
+
+    private int tableId;
+    private UUID mId;
+    private String drawable;
+    private String mName;
+    private int type;
+
+    public Group(int tableId, UUID id, String drawable, String name, int type) {
+        this.tableId = tableId;
+        mId = id;
+        this.drawable = drawable;
+        mName = name;
+        setType(type);
+    }
+
+    public Group(Group group) {
+        this(group.getTableId(), group.getUUID(), group.getStringDrawable(), group.getName(), group.getType());
+    }
+
     public static final Parcelable.Creator<Group> CREATOR = new Parcelable.Creator<Group>() {
         @Override
         public Group createFromParcel(Parcel source) {
@@ -31,12 +57,6 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
             return new Group[size];
         }
     };
-    private static final String TAG = Group.class.getName();
-    private int tableId;
-    private UUID mId;
-    private String drawable;
-    private String mName;
-    private int type;
 
     private Group(Parcel in) {
         String[] data = new String[3];
@@ -51,33 +71,6 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
         type = ints[1];
     }
 
-    public Group(int tableId, UUID id, String drawable, String name, int type) {
-        this.tableId = tableId;
-        mId = id;
-        this.drawable = drawable;
-        mName = name;
-        setType(type);
-    }
-
-    public Group(Group group) {
-        this(group.getTableId(), group.getUUID(), group.getStringDrawable(), group.getName(), group.getType());
-    }
-
-    public static String getColorsStringFromInts(int[] colors) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < colors.length; i++) {
-
-            if (i != 0) stringBuilder.append(";");
-
-            stringBuilder.append(colors[i]);
-        }
-        return stringBuilder.toString();
-    }
-
-    public static int[] getDefaultColors() {
-        return new int[]{0xFF000000, 0xFF004064, 0xFF0080E1};
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -89,13 +82,14 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
         dest.writeIntArray(new int[]{tableId, type});
     }
 
-    private Drawable createDrawable(int[] colors) {
-        return new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{colors[0], colors[1], colors[2]});
-    }
-
     @Override
     public int compareTo(@NonNull Group o) {
         return mName.compareTo(o.getName());
+    }
+
+
+    public int getTableId() {
+        return tableId;
     }
 
     @Override
@@ -111,61 +105,21 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
         return mId;
     }
 
-    public int getTableId() {
-        return tableId;
-    }
-
     public String getUUIDString() {
         return mId.toString();
     }
 
-    public int[] getColors() {
-        if (!drawable.contains("content")) {
-            return getColorsFromString(drawable);
-        } else {
-            return getDefaultColors();
-        }
+    public void setStringDrawable(int[] colors) {
+        drawable = CreatorDrawable.getColorsStringFromInts(colors);
     }
 
-    public void setColors(int[] colors) {
-        drawable = getColorsStringFromInts(colors);
-    }
-
-    public static int[] getColorsFromString(@Nullable String colors) {
-        if (colors == null || colors.contains("content")) {
-            return getDefaultColors();
-        }
-
-        String[] strings = colors.split(";");
-        int[] ints = new int[strings.length];
-        for (int i = 0; i < strings.length; i++) {
-            ints[i] = Integer.parseInt(strings[i]);
-        }
-        return ints;
+    public void setStringDrawable(Uri uriPhoto) {
+        drawable = uriPhoto.toString();
     }
 
     public String getStringDrawable() {
         return drawable;
     }
-
-    public void getImage(ImageView imageView) {
-//        Log.i(TAG, "getImage: " + drawable);
-        if (drawable.contains("content")) {
-            Drawable placeholder = createDrawable(getDefaultColors());
-
-            Picasso.get()
-                    .load(drawable)
-                    .error(placeholder)
-                    .placeholder(placeholder)
-                    .fit()
-                    .centerCrop()
-                    .into(imageView);
-        } else {
-            int[] colors = getColorsFromString(drawable);
-            imageView.setImageDrawable(createDrawable(colors));
-        }
-    }
-
 
     public int getType() {
         return type;
@@ -185,16 +139,73 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
         }
     }
 
-    public void setPathPhoto(Uri uriPhoto) {
-        drawable = uriPhoto.toString();
-    }
-
-    public boolean isPhotoDrawable() {
-        return drawable.contains("content");
-    }
-
+    @NonNull
     @Override
     public String toString() {
         return getName();
+    }
+
+    public static class CreatorDrawable {
+
+        private CreatorDrawable() {
+        }
+
+        private static Drawable createDrawable(int[] colors) {
+            return new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{colors[0], colors[1], colors[2]});
+        }
+
+        private static boolean stringIsUri(String string) {
+            return string.contains("content");
+        }
+
+        public static int[] getColorsFromString(@Nullable String colors) {
+            if (colors == null || stringIsUri(colors)) {
+                return DEFAULT_COLORS;
+            }
+
+            String[] strings = colors.split(";");
+            int[] ints = new int[strings.length];
+            for (int i = 0; i < strings.length; i++) {
+                ints[i] = Integer.parseInt(strings[i]);
+            }
+            return ints;
+        }
+
+        public static int[] getColors(String drawable) {
+            if (!stringIsUri(drawable)) {
+                return getColorsFromString(drawable);
+            } else {
+                return DEFAULT_COLORS;
+            }
+        }
+
+        public static String getColorsStringFromInts(int[] colors) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < colors.length; i++) {
+
+                if (i != 0) stringBuilder.append(";");
+
+                stringBuilder.append(colors[i]);
+            }
+            return stringBuilder.toString();
+        }
+
+        public static void getImage(ImageView imageView, String drawable) {
+
+            if (stringIsUri(drawable)) {
+                Drawable placeholder = CreatorDrawable.createDrawable(DEFAULT_COLORS);
+
+                Picasso.get()
+                        .load(drawable)
+                        .error(placeholder)
+                        .placeholder(placeholder)
+                        .fit()
+                        .centerCrop()
+                        .into(imageView);
+            } else {
+                int[] colors = CreatorDrawable.getColorsFromString(drawable);
+                imageView.setImageDrawable(CreatorDrawable.createDrawable(colors));
+            }
+        }
     }
 }

@@ -4,8 +4,8 @@ import com.anadol.mindpalace.model.Word;
 
 import java.util.Comparator;
 
-public class NeverExamComparator implements Comparator<Word> {
-    private static final String TAG = NeverExamComparator.class.getName();
+public class ComparatorNeverExam implements Comparator<Word> {
+    private static final String TAG = ComparatorNeverExam.class.getName();
 
     @Override
     public int compare(Word o1, Word o2) {

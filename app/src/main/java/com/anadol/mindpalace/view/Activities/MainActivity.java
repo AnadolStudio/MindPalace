@@ -1,6 +1,7 @@
 package com.anadol.mindpalace.view.Activities;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

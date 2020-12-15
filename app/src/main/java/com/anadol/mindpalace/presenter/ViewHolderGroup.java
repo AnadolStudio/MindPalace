@@ -1,33 +1,35 @@
 package com.anadol.mindpalace.presenter;
 
 import android.content.res.Resources;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.recyclerview.widget.ItemTouchHelper;
 
 import com.anadol.mindpalace.model.Group;
 import com.anadol.mindpalace.model.SimpleParent;
 import com.anadol.mindpalace.R;
+import com.anadol.mindpalace.view.Fragments.FragmentListAdapter;
 import com.anadol.mindpalace.view.Fragments.GroupListFragment;
+import com.anadol.mindpalace.view.Fragments.IStartGroupDetail;
 
-public class GroupListHolder extends MySimpleHolder implements View.OnClickListener, View.OnLongClickListener {
-    private MyListAdapter<? extends SimpleParent> sAdapter;
+public class ViewHolderGroup extends MySimpleViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    private MyListAdapter<? extends SimpleParent> mAdapter;
     private Group mGroup;
     private TextView mTextView;
     private ImageView mImageView;
     private boolean isSelected;
 
-    public GroupListHolder(@NonNull View itemView, MyListAdapter<? extends SimpleParent> mAdapter) {
+    public ViewHolderGroup(@NonNull View itemView, MyListAdapter<? extends SimpleParent> mAdapter) {
         super(itemView);
         mTextView = itemView.findViewById(R.id.text_group);
         mImageView = itemView.findViewById(R.id.image_group);
         itemView.setOnClickListener(this);
         itemView.setOnLongClickListener(this);
-        sAdapter = mAdapter;
+        this.mAdapter = mAdapter;
     }
 
     @Override
@@ -43,21 +45,21 @@ public class GroupListHolder extends MySimpleHolder implements View.OnClickListe
         int position = getAdapterPosition();
         if (position == -1) return;
 
-        if (sAdapter.isSelectableMode()) {
+        if (mAdapter.isSelectableMode()) {
             isSelected = !isSelected;
-            sAdapter.putSelectedItem(mGroup.getUUIDString(), isSelected);
+            mAdapter.putSelectedItem(mGroup.getUUIDString(), isSelected);
             setDrawable(isSelected);
         } else {
-            startActivity();
+            startDetailActivity();
         }
     }
 
     @Override
     public boolean onLongClick(View v) {
-        if (!sAdapter.isSelectableMode()) {
+        if (!mAdapter.isSelectableMode()) {
             isSelected = true;
-            sAdapter.putSelectedItem(mGroup.getUUIDString(), true);
-            sAdapter.setSelectableMode(true);
+            mAdapter.putSelectedItem(mGroup.getUUIDString(), true);
+            mAdapter.setSelectableMode(true);
             setDrawable(isSelected);
             return true;
         }
@@ -66,28 +68,20 @@ public class GroupListHolder extends MySimpleHolder implements View.OnClickListe
 
     private void setDrawable(boolean selected) {
         if (selected) {
-            Resources resources = sAdapter.getResources();
+            Resources resources = itemView.getResources();
             mImageView.setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.check_group, null));
         } else {
-            mGroup.getImage(mImageView);
+            Group.CreatorDrawable.getImage(mImageView, mGroup.getStringDrawable());
         }
     }
 
-    @Override
-    public void itemTouch(int flag) {
-        switch (flag) {
-            case ItemTouchHelper.START:
+    private void startDetailActivity() {
+        FragmentListAdapter mFragment = mAdapter.getFragment();
 
-                break;
-
-            case ItemTouchHelper.END:
-
-                break;
+        if (mFragment instanceof IStartGroupDetail){
+            ((IStartGroupDetail)mFragment).startGroupDetail(mGroup);
+        }else {
+            Log.i(TAG, "startDetailActivity: fragment is not implement IStartGroupDetail");
         }
-    }
-
-    private void startActivity() {
-        GroupListFragment mFragment = (GroupListFragment) sAdapter.getFragment();
-        mFragment.startDetailActivity(mGroup);
     }
 }

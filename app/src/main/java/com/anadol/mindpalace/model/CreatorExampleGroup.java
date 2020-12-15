@@ -18,7 +18,7 @@ public class CreatorExampleGroup {
         void set() {
             setName("Буквенно-Цифровой код");
             setUuid("83a2b19f-f129-4047-83a5-7bae2164ac54");
-            setDrawableString(Group.getColorsStringFromInts(new int[]{0xFF6D004E, 0xFFAB006D, 0xFFC7004E}));
+            setDrawableString(Group.CreatorDrawable.getColorsStringFromInts(new int[]{0xFF6D004E, 0xFFAB006D, 0xFFC7004E}));
             setType(Group.TYPE_NUMBERS);
             setOriginals(new String[]{
                     "00", "01", "02", "03", "04", "05", "06", "07", "08", "09",
@@ -50,7 +50,7 @@ public class CreatorExampleGroup {
         void set() {
             setName("Игральные карты");
             setUuid("55c27522-7dd6-4ca2-a719-21ca702a8446");
-            setDrawableString(Group.getColorsStringFromInts(new int[]{0xFF550000, 0xFFAA0000, 0xFF550000}));
+            setDrawableString(Group.CreatorDrawable.getColorsStringFromInts(new int[]{0xFF550000, 0xFFAA0000, 0xFF550000}));
             setType(Group.TYPE_NUMBERS);
             setOriginals(new String[]{
                     "10 б", "10 к", "10 п", "10 ч", "2 б", "2 к", "2 п", "2 ч", "3 б", "3 к", "3 п", "3 ч", "4 б",
@@ -72,7 +72,7 @@ public class CreatorExampleGroup {
         void set() {
             setName("Месяцы");
             setUuid("66c27522-7dd6-4ca2-a719-21ca702a8446");
-            setDrawableString(Group.getColorsStringFromInts(new int[]{0xFF005500, 0xFF00AA00, 0xFF005500}));
+            setDrawableString(Group.CreatorDrawable.getColorsStringFromInts(new int[]{0xFF005500, 0xFF00AA00, 0xFF005500}));
             setType(Group.TYPE_TEXTS);
             setOriginals(new String[]{
                     "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"});

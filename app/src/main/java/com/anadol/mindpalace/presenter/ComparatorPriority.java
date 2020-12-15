@@ -1,17 +1,12 @@
 package com.anadol.mindpalace.presenter;
 
-import android.util.Log;
-
 import com.anadol.mindpalace.model.Word;
 
 import java.util.Comparator;
 
-import static com.anadol.mindpalace.model.Word.isRepeatable;
+public class ComparatorPriority implements Comparator<Word> {
 
-public class PriorityComparator implements Comparator<Word> {
-
-    private static final String TAG = PriorityComparator.class.getName();
-//    private final long currentTime = System.currentTimeMillis();
+    private static final String TAG = ComparatorPriority.class.getName();
 
     @Override
     public int compare(Word o1, Word o2) {

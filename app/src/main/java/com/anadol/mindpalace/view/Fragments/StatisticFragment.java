@@ -1,13 +1,10 @@
 package com.anadol.mindpalace.view.Fragments;
 
-import android.content.ContentResolver;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +14,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.anadol.mindpalace.model.MyCursorWrapper;
-import com.anadol.mindpalace.presenter.GroupNameAxisFormatter;
-import com.anadol.mindpalace.presenter.GroupStatisticItem;
-import com.anadol.mindpalace.presenter.IntegerFormatter;
 import com.anadol.mindpalace.R;
-import com.anadol.mindpalace.model.DataBaseSchema;
-import com.anadol.mindpalace.model.DataBaseSchema.Words;
+import com.anadol.mindpalace.model.BackgroundSingleton;
+import com.anadol.mindpalace.presenter.FormatterGroupNameAxis;
+import com.anadol.mindpalace.presenter.FormatterInteger;
+import com.anadol.mindpalace.presenter.GroupStatisticItem;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
@@ -40,6 +35,11 @@ import com.github.mikephil.charting.data.PieEntry;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+
+import static com.anadol.mindpalace.model.BackgroundSingleton.GET_GROUP_STATISTIC;
 
 
 /**
@@ -60,7 +60,7 @@ public class StatisticFragment extends SimpleFragment {
     private TextView learnedText;
     private TextView allLearnText;
     private ArrayList<GroupStatisticItem> mStatisticItems;
-    private StatisticBackground mBackground;
+    private Disposable mDisposable;
 
     public static StatisticFragment newInstance() {
         StatisticFragment fragment = new StatisticFragment();
@@ -89,8 +89,9 @@ public class StatisticFragment extends SimpleFragment {
             mStatisticItems = savedInstanceState.getParcelableArrayList(ITEMS);
             setData(mStatisticItems);
         } else {
-            mBackground = new StatisticBackground();
-            mBackground.execute();
+            mStatisticItems = new ArrayList<>();
+            StatisticBackground background = new StatisticBackground();
+            background.getStatistic();
         }
 
         return view;
@@ -129,6 +130,27 @@ public class StatisticFragment extends SimpleFragment {
         allLearnText.setText(getString(R.string.total_association, total));
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        ArrayMap<String, Boolean> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
+        if (lastAction.size() > 0 && mDisposable == null) {
+            StatisticBackground background = new StatisticBackground();
+            for (int i = lastAction.size() -1 ; i >= 0; i--) {
+                if (lastAction.keyAt(i).equals(GET_GROUP_STATISTIC)) {
+                    background.getStatistic();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mDisposable != null) {
+            mDisposable.dispose();
+        }
+    }
 
     private void setupChartDetail() {
         Resources resources = getResources();
@@ -176,7 +198,7 @@ public class StatisticFragment extends SimpleFragment {
             entries.add(new BarEntry(i,
                     items.get(i).getValues()));
         }
-        xAxis.setValueFormatter(new GroupNameAxisFormatter((names)));
+        xAxis.setValueFormatter(new FormatterGroupNameAxis((names)));
 
         BarDataSet dataSet = null;
 
@@ -186,7 +208,7 @@ public class StatisticFragment extends SimpleFragment {
 
         BarData data = new BarData(dataSet);
         data.setBarWidth(0.9f);
-        data.setValueFormatter(new IntegerFormatter());
+        data.setValueFormatter(new FormatterInteger());
         data.setValueTypeface(TYPEFACE);
         data.setValueTextSize(12f);
 
@@ -255,7 +277,7 @@ public class StatisticFragment extends SimpleFragment {
         dataSet.setColors(getColors());
 
         PieData data = new PieData(dataSet);
-        data.setValueFormatter(new IntegerFormatter());
+        data.setValueFormatter(new FormatterInteger());
         data.setValueTypeface(TYPEFACE);
         data.setValueTextSize(16f);
 
@@ -278,98 +300,16 @@ public class StatisticFragment extends SimpleFragment {
         return new int[]{needToLearn, learning, learned};
     }
 
-    public class StatisticBackground extends AsyncTask<String, Void, ArrayList<GroupStatisticItem>> {
+    public class StatisticBackground {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
+        public void getStatistic() {
             showLoadingDialog();
-        }
-
-        @Override
-        protected ArrayList<GroupStatisticItem> doInBackground(String... strings) {
-            ArrayList<GroupStatisticItem> arrayList = new ArrayList<>();
-
-            ContentResolver contentResolver = getActivity().getContentResolver();
-
-            MyCursorWrapper myCursor = new MyCursorWrapper(contentResolver.query(
-                    DataBaseSchema.Groups.CONTENT_URI,
-                    null, null, null, null));
-            Cursor cursor = null;
-
-            if (myCursor.getCount() != 0) {
-                myCursor.moveToFirst();
-
-                GroupStatisticItem item;
-                String name;
-                String uuidGroup;
-                int needToLearn = 0;
-                int learning = 0;
-                int learned = 0;
-
-
-                while (!myCursor.isAfterLast()) {
-                    name = myCursor.getString(myCursor.getColumnIndex(DataBaseSchema.Groups.NAME_GROUP));
-                    uuidGroup = myCursor.getString(myCursor.getColumnIndex(DataBaseSchema.Groups.UUID));
-                    // Need to learn
-                    cursor = contentResolver.query(
-                            Words.CONTENT_URI,
-                            new String[]{"COUNT(" + Words._ID + ") AS count"},
-                            Words.UUID_GROUP + " = ? AND (" + Words.TIME + " = ? OR " + Words.TIME + " IS NULL)",
-                            new String[]{uuidGroup, "0"}, null);
-
-                    if (cursor != null) {
-                        cursor.moveToFirst();
-                        needToLearn = cursor.getInt(0);
-                    }
-                    // Learning
-                    cursor = contentResolver.query(
-                            Words.CONTENT_URI,
-                            new String[]{"COUNT(" + Words._ID + ") AS count"},
-                            Words.UUID_GROUP + " = ? AND " + Words.TIME + " != ? AND " + Words.EXAM + " = ?",
-                            new String[]{uuidGroup, "0", "0"}, null);
-
-                    if (cursor != null) {
-                        cursor.moveToFirst();
-                        learning = cursor.getInt(0);
-                    }
-                    // Learned
-                    cursor = contentResolver.query(
-                            Words.CONTENT_URI,
-                            new String[]{"COUNT(" + Words._ID + ") AS count"},
-                            Words.UUID_GROUP + " = ? AND " + Words.EXAM + " = ?",
-                            new String[]{uuidGroup, "1"}, null);
-
-                    if (cursor != null) {
-                        cursor.moveToFirst();
-                        learned = cursor.getInt(0);
-                    }
-                    Log.i(TAG, "doInBackground: " + needToLearn + " " + learning + " " + learned);
-                    item = new GroupStatisticItem(name, needToLearn, learning, learned);
-                    arrayList.add(item);
-
-                    myCursor.moveToNext();
-                }
-            }
-
-            Log.i(TAG, "doInBackground: " + arrayList.toString());
-
-            if (myCursor != null) {
-                myCursor.close();
-            }
-
-            if (cursor != null) {
-                cursor.close();
-            }
-            return arrayList;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<GroupStatisticItem> groupStatisticItems) {
-            super.onPostExecute(groupStatisticItems);
-            mStatisticItems = groupStatisticItems;
-            setData(mStatisticItems);
-            hideLoadingDialog();
+            Observable<ArrayList<GroupStatisticItem>> statisticList = BackgroundSingleton.get(getContext()).getGroupStatistic();
+            mDisposable = statisticList.subscribe(groupStatisticItems -> {
+                mStatisticItems = groupStatisticItems;
+                setData(mStatisticItems);
+                hideLoadingDialog();
+            });
         }
     }
 }

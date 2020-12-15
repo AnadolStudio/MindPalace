@@ -1,14 +1,10 @@
 package com.anadol.mindpalace.view.Fragments;
 
 
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,17 +27,12 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.anadol.mindpalace.R;
-import com.anadol.mindpalace.model.CreatorValues;
-import com.anadol.mindpalace.model.DataBaseSchema.Groups;
-import com.anadol.mindpalace.model.DataBaseSchema.Words;
+import com.anadol.mindpalace.model.BackgroundSingleton;
 import com.anadol.mindpalace.model.Group;
-import com.anadol.mindpalace.model.MyCursorWrapper;
-import com.anadol.mindpalace.model.SettingsPreference;
 import com.anadol.mindpalace.model.Word;
 import com.anadol.mindpalace.presenter.ComparatorMaker;
 import com.anadol.mindpalace.presenter.MyListAdapter;
 import com.anadol.mindpalace.presenter.SlowLinearLayoutManager;
-import com.anadol.mindpalace.presenter.UpdateExamWordsBackground;
 import com.anadol.mindpalace.presenter.WordItemHelperCallBack;
 import com.anadol.mindpalace.view.Dialogs.LearnStartBottomSheet;
 import com.anadol.mindpalace.view.Dialogs.SettingsBottomSheet;
@@ -54,16 +45,19 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.UUID;
+
+import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DELETE_WORDS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.GET_WORDS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.INSERT_WORD;
+import static com.anadol.mindpalace.model.BackgroundSingleton.SAVE_GROUP_AND_WORDS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.UPDATE_WORD_EXAM;
 import static com.anadol.mindpalace.view.Dialogs.SortDialog.ORDER_SORT;
 import static com.anadol.mindpalace.view.Dialogs.SortDialog.TYPE_SORT;
-import static com.anadol.mindpalace.view.Fragments.GroupDetailFragment.WordBackground.DELETE_WORDS;
-import static com.anadol.mindpalace.view.Fragments.GroupDetailFragment.WordBackground.GET_WORDS;
-import static com.anadol.mindpalace.view.Fragments.GroupDetailFragment.WordBackground.INSERT_WORD;
-import static com.anadol.mindpalace.view.Fragments.GroupDetailFragment.WordBackground.UPDATE_GROUP;
 
 
 /**
@@ -96,9 +90,9 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
     private boolean selectable;
     private String searchQuery;
 
-    private WordBackground background;
     private LearnStartBottomSheet learnDialog;
     private SettingsBottomSheet settingsDialog;
+    private CompositeDisposable mCompositeDisposable;
 
     public static GroupDetailFragment newInstance(Group group) {
 
@@ -180,12 +174,12 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
         if (savedInstanceState != null) {
             mWords = savedInstanceState.getParcelableArrayList(WORD_SAVE);
             selectStringArray = savedInstanceState.getStringArrayList(KEY_SELECT_LIST);
-            selectable = savedInstanceState.getBoolean(GroupListFragment.KEY_SELECT_MODE);
+            selectable = savedInstanceState.getBoolean(KEY_SELECT_MODE);
             searchQuery = savedInstanceState.getString(KEY_SEARCH_QUERY);
             mGroup = savedInstanceState.getParcelable(GROUP);
         } else {
-            mWords = new ArrayList<>();
             mGroup = getArguments().getParcelable(GROUP);
+            mWords = new ArrayList<>();
             doInBackground(GET_WORDS);
             selectable = false;
             searchQuery = "";
@@ -223,7 +217,7 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
             if (b) mAppBarLayout.setExpanded(false);// Сжать AppBar при исп. клавиатуры
             setVisibleFab(!b);
         });
-        mToolbar.setNavigationOnClickListener(v-> onBackPressed());
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
     private void setVisibleFab(boolean show) {
@@ -237,35 +231,11 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if (mWords != null && !mWords.isEmpty()) {
-            updateStatusWord();
-        }
-        // TODO_начало ошибки removeEmptyWords (updateWordCount();)
-    }
-
-    private void updateStatusWord() {
-        UpdateExamWordsBackground examWordsBackground =
-                new UpdateExamWordsBackground(getContext(), mWords, () -> mAdapter.notifyDataSetChanged());
-        examWordsBackground.execute();
-    }
-
-    @Override
-    public void onStop() {
-        if (background != null && !background.isCancelled()) {
-            background.cancel(false);
-            Log.i(TAG, "onStop: background was canceled");
-        }
-        super.onStop();
-    }
-
-    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu = mToolbar.getMenu();
         super.onCreateOptionsMenu(menu, inflater);
 
-        switch (mode) {
+        switch (fragmentsMode) {
             case MODE_SELECT:
                 inflater.inflate(R.menu.menu_group_detail_selected, menu);
 
@@ -311,12 +281,12 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
         int orientation = configuration.orientation;
 
         searchView.setOnSearchClickListener(v -> {
-            mode = MODE_SEARCH;
+            fragmentsMode = MODE_SEARCH;
             if (orientation != ORIENTATION_LANDSCAPE) titleToolbar.setVisibility(View.GONE);
         });
 
         searchView.setOnCloseListener(() -> {
-            mode = MODE_NORMAL;
+            fragmentsMode = MODE_NORMAL;
             if (orientation != ORIENTATION_LANDSCAPE) titleToolbar.setVisibility(View.VISIBLE);
             return false;
         });
@@ -380,11 +350,39 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
         doInBackground(INSERT_WORD);
     }
 
-    private void doInBackground(String insertWord) {
-        if (insertWord.equals(GET_WORDS) | insertWord.equals(UPDATE_GROUP)) showLoadingDialog();
+    private void doInBackground(String action) {
+        WordBackground mBackground = new WordBackground();
+        mBackground.subscribeToObservable(action);
+    }
 
-        background = new WordBackground();
-        background.execute(insertWord);
+    @Override
+    public void onStart() {
+        super.onStart();
+        ArrayMap<String, Boolean> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
+        if (lastAction.size() > 0 && mCompositeDisposable == null) {
+            WordBackground mBackground = new WordBackground();
+            for (int i = lastAction.size() - 1; i >= 0; i--) {
+                mBackground.subscribeToObservable(lastAction.keyAt(i));
+            }
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        /*if (mWords != null && !mWords.isEmpty()) {
+            doInBackground(UPDATE_WORD_EXAM);
+        }*/
+        // TODO_начало ошибки removeEmptyWords (updateWordCount();)
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mCompositeDisposable != null) {
+            Log.i(TAG, "onDestroy: dispose");
+            mCompositeDisposable.dispose();
+        }
     }
 
     void selectAll(boolean select) {
@@ -394,9 +392,9 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
 
     @Override
     public boolean onBackPressed() {
-        switch (mode) {
+        switch (fragmentsMode) {
             case MODE_SEARCH:
-                mode = MODE_NORMAL;
+                fragmentsMode = MODE_NORMAL;
                 getActivity().invalidateOptionsMenu();
                 titleToolbar.setVisibility(View.VISIBLE);
                 searchView.onActionViewCollapsed();
@@ -426,6 +424,7 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
         switch (requestCode) {
             case REQUEST_UPDATE_GROUP:
 
+                // TODO ??? mGroup = data.getParcelableExtra(GROUP) ?
                 Group newGroup = data.getParcelableExtra(GROUP);
                 mGroup = new Group(newGroup);
                 updateGroup();
@@ -434,7 +433,7 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
                 break;
 
             case REQUEST_UPDATE_WORDS:
-                updateStatusWord();
+                doInBackground(UPDATE_WORD_EXAM);
                 break;
 
             case REQUEST_SORT:
@@ -448,19 +447,19 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
     }
 
     private void updateGroup() {
-        mGroup.getImage(imageView);
+        Group.CreatorDrawable.getImage(imageView, mGroup.getStringDrawable());
         titleToolbar.setText(mGroup.getName());
         typeGroup.setText(getString(mGroup.getType()));
     }
 
     public void changeSelectableMode(boolean selectable) {
         if (selectable) {
-            mode = MODE_SELECT;
+            fragmentsMode = MODE_SELECT;
             if (searchView != null && !searchView.isIconified()) {
                 searchView.onActionViewCollapsed();
             }
         } else {
-            mode = MODE_NORMAL;
+            fragmentsMode = MODE_NORMAL;
             mAdapter.setSelectableMode(false);
         }
         Log.i(TAG, "changeSelectableMode");
@@ -478,7 +477,7 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
 
     private void createBottomSheetLearnDialog() {
         ArrayList<Word> words;
-        if (mode == MODE_SELECT) {
+        if (fragmentsMode == MODE_SELECT) {
             words = removeEmptyWords(mAdapter.getSelectedItems());
         } else {
             words = removeEmptyWords(mWords);
@@ -506,19 +505,19 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
     }
 
     private void saveGroup() {
-        doInBackground(UPDATE_GROUP);
+        doInBackground(SAVE_GROUP_AND_WORDS);
     }
 
     public void updateWordCount() {
         int realCount = removeEmptyWords(mWords).size();
-        String stringCount = getResources().getString(R.string.associations_count, realCount, mWords.size());
+        String stringCount = getString(R.string.associations_count, realCount, mWords.size());
         countWordsTextView.setText(stringCount);
     }
 
     private void updateActionBarTitle() {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.invalidateOptionsMenu();
-        switch (mode) {
+        switch (fragmentsMode) {
 
             case MODE_SELECT:
                 updateCountSelectedItems();
@@ -568,183 +567,98 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
         return tempList;
     }
 
-    public class WordBackground extends AsyncTask<String, Void, Boolean> {
-        static final String GET_WORDS = "words";
-        static final String UPDATE_GROUP = "update_group";
-        static final String UPDATE_WORDS = "update_words";
-        static final String INSERT_WORD = "add_words";
-        static final String DELETE_WORDS = "delete_words";
+    class WordBackground {
 
-        private String cmd;
-        private ArrayList<Word> wordsListToRemove;
-        private Word mWordTemp;
+        private void subscribeToObservable(String action) {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Boolean doInBackground(String... strings) {
-            MyCursorWrapper cursor = null;
-            cmd = strings[0];
-
-            String original;
-            String translate;
-            String association;
-            String comment;
-            int countLearn;
-            long time;
-
-            ContentResolver contentResolver = getActivity().getContentResolver();
-
-            try {
-                switch (cmd) {
-                    case UPDATE_GROUP:
-                        ContentValues values = CreatorValues.createGroupValues(
-                                mGroup.getUUID(),
-                                mGroup.getName(),
-                                mGroup.getStringDrawable(),
-                                mGroup.getType());
-
-                        contentResolver.update(
-                                ContentUris.withAppendedId(Groups.CONTENT_URI, mGroup.getTableId()),
-                                values,
-                                null, null);
-                        // Сразу после SAVE_GROUP идёт SAVE_WORDS
-                    case UPDATE_WORDS:
-                        for (Word word : mWords) {
-                            contentResolver.update(Words.CONTENT_URI,
-                                    CreatorValues.createWordsValues(word),
-                                    Words.UUID + " = ?",
-                                    new String[]{word.getUUIDString()});
-                        }
-                        return true;
-
-                    case INSERT_WORD:
-                        UUID uuid = UUID.randomUUID();
-                        original = "";
-                        association = "";
-                        translate = "";
-                        comment = "";
-                        countLearn = 0;
-                        time = 0;
-
-
-                        Uri uri = contentResolver.insert(
-                                Words.CONTENT_URI,
-                                CreatorValues.createWordsValues(
-                                        uuid,
-                                        mGroup.getUUIDString(),
-                                        original,
-                                        translate,
-                                        association,
-                                        comment,
-                                        countLearn,
-                                        time,
-                                        false));
-
-                        Long l = (ContentUris.parseId(uri));
-                        int idNewWord = Integer.valueOf(l.intValue());
-                        Log.i(TAG, "_ID new word : " + idNewWord);
-
-                        mWordTemp = new Word(
-                                idNewWord,
-                                uuid,
-                                mGroup.getUUID(),
-                                original,
-                                association,
-                                translate,
-                                comment,
-                                countLearn,
-                                time,
-                                false);
-
-                        return true;
-
-                    case GET_WORDS:
-                        cursor = new MyCursorWrapper(contentResolver.query(
-                                Words.CONTENT_URI,
-                                null,
-                                Words.UUID_GROUP + " = ?",
-                                new String[]{mGroup.getUUIDString()}, null));
-
-                        Log.i(TAG, "doInBackground: cursor.getCount() " + cursor.getCount());
-                        if (cursor.getCount() != 0) {
-                            cursor.moveToFirst();
-                            //TODO: реализовать порционную (ленивую) загрузку
-                            ArrayList<Word> words = new ArrayList<>();
-                            while (!cursor.isAfterLast()) {
-                                words.add(cursor.getWord());
-                                cursor.moveToNext();
-                            }
-                            mWords.addAll(words);
-                            Collections.sort(mWords,
-                                    ComparatorMaker.getComparator(
-                                            SettingsPreference.getWordTypeSort(getContext()),
-                                            SettingsPreference.getWordOrderSort(getContext())));
-                        }
-                        return true;
-
-                    case DELETE_WORDS:
-                        wordsListToRemove = mAdapter.getSelectedItems();
-                        String uuidString;
-                        for (Word w : wordsListToRemove) {
-                            uuidString = w.getUUIDString();
-
-                            contentResolver.delete(Words.CONTENT_URI,
-                                    Groups.UUID + " = ?",
-                                    new String[]{uuidString});
-                        }
-                        return true;
-                }
-                if (cursor != null) {
-                    cursor.close();
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-
-            return false;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean b) {
-            super.onPostExecute(b);
-            if (!b) {
-                Log.i(TAG, "onPost: что-то пошло не так");
-                hideLoadingDialog();
-                return;
-            }
-            switch (cmd) {
-                case UPDATE_GROUP:
-                    dataIsChanged();
-                    hideLoadingDialog();
+            switch (action) {
+                case GET_WORDS:
+                    getWords();
+                    break;
+                case SAVE_GROUP_AND_WORDS:
+                    saveGroupAndWords();
+                    break;
+                case DELETE_WORDS:
+                    deleteWords();
                     break;
                 case INSERT_WORD:
-                    mRecyclerView.smoothScrollToPosition(0);
-                    mAdapter.add(0, mWordTemp);
-                    mAdapter.notifyItemInserted(0);//Добавит ввод в начало листа
-                    updateUI();
+                    insertWord();
                     break;
-
-                case DELETE_WORDS:
-                    boolean changeSM = mAdapter.getItemCount() == mAdapter.getItemCount();
-                    mAdapter.remove(wordsListToRemove);
-                    Toast.makeText(getContext(), getString(R.string.deleting_was_successful), Toast.LENGTH_SHORT).show();
-                    if (changeSM) {
-                        changeSelectableMode(false);
-                    }
-                    updateUI();
+                case UPDATE_WORD_EXAM:
+                    updateStatusWord();
                     break;
-
-                case GET_WORDS:
-                    setupAdapter();
-                    updateUI();
-                    hideLoadingDialog();
-                    break;
-
             }
         }
+
+        private void initCompositeDisposable() {
+            if (mCompositeDisposable == null) {
+                mCompositeDisposable = new CompositeDisposable();
+            }
+        }
+
+        private void getWords() {
+            initCompositeDisposable();
+            Log.i(TAG, "getWords");
+            showLoadingDialog();
+            Observable<ArrayList<Word>> observable = BackgroundSingleton.get(getContext()).getWords(mGroup.getUUIDString());
+            mCompositeDisposable.add(observable.subscribe(words -> {
+                mWords = words;
+                setupAdapter();
+                updateUI();
+                hideLoadingDialog();
+                Log.i(TAG, "GetWords is done");
+            }));
+        }
+
+        private void saveGroupAndWords() {
+            initCompositeDisposable();
+            showLoadingDialog();
+            Observable<Integer> observable = BackgroundSingleton.get(getContext()).saveGroupAndWords(mGroup, mWords);
+            mCompositeDisposable.add(observable.subscribe(integer -> {
+                dataIsChanged();
+                hideLoadingDialog();
+                Log.i(TAG, "SaveGroupAndWords is done");
+            }));
+        }
+
+        private void insertWord() {
+            initCompositeDisposable();
+            Observable<Word> observable = BackgroundSingleton.get(getContext()).insertWord(mGroup.getUUIDString());
+            mCompositeDisposable.add(observable.subscribe(word -> {
+                if (word == null) return;
+
+                mRecyclerView.smoothScrollToPosition(0);
+                mAdapter.add(0, word);
+                mAdapter.notifyItemInserted(0);//Добавит ввод в начало листа
+                updateUI();
+                Log.i(TAG, "InsertWord is done");
+            }));
+        }
+
+        private void deleteWords() {
+            initCompositeDisposable();
+            Observable<ArrayList<Word>> observable = BackgroundSingleton.get(getContext()).deleteWords(mAdapter.getSelectedItems());
+            mCompositeDisposable.add(observable.subscribe(words -> {
+                boolean changeSM = mAdapter.getCountSelectedItems() == mAdapter.getItemCount();
+                mAdapter.remove(words);
+                Toast.makeText(getContext(), getString(R.string.deleting_was_successful), Toast.LENGTH_SHORT).show();
+                if (changeSM) {
+                    changeSelectableMode(false);
+                }
+                updateUI();
+                Log.i(TAG, "DeleteWords is done");
+            }));
+        }
+
+        private void updateStatusWord() {
+            initCompositeDisposable();
+            Observable<ArrayList<Word>> observable = BackgroundSingleton.get(getContext()).updateWordsExam(mWords);
+            mCompositeDisposable.add(observable.subscribe(words -> {
+                mWords = words;
+                mAdapter.notifyDataSetChanged();
+                Log.i(TAG, "UpdateStatusWord is done");
+            }));
+        }
+
     }
 }

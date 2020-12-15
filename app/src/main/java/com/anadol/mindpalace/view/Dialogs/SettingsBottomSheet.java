@@ -161,7 +161,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
                 setVisibleColorPicker();
 
                 uriPhoto = null;
-                colorsGradient = mGroup.getColors();
+                colorsGradient = Group.CreatorDrawable.getColors(mGroup.getStringDrawable());
                 mImageView.setImageDrawable(new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colorsGradient));
 
                 if (colorsChipGroup.getCheckedChipId() == -1) {
@@ -230,7 +230,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
     private void bindDataWithView() {
         mEditText.setText(mGroup.getName());
         mEditText.setSelection(mEditText.length());
-        mGroup.getImage(mImageView);
+        Group.CreatorDrawable.getImage(mImageView, mGroup.getStringDrawable());
         int type = mGroup.getType();
         switch (type) {
             default:
@@ -290,9 +290,9 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
     private void saveGroup(String name) {
         mGroup.setName(name);
         if (uriPhoto != null) {
-            mGroup.setPathPhoto(uriPhoto);
+            mGroup.setStringDrawable(uriPhoto);
         } else if (colorsGradient != null) {
-            mGroup.setColors(colorsGradient);
+            mGroup.setStringDrawable(colorsGradient);
         }
         mGroup.setType(type);
     }
@@ -383,7 +383,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
             updateChip((Chip) colorsChipGroup.getChildAt(i), colorsGradient[i]);
             mImageView.setImageDrawable(new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, colorsGradient));
 
-            mGroup.setColors(colorsGradient);
+            mGroup.setStringDrawable(colorsGradient);
         }
 
     }

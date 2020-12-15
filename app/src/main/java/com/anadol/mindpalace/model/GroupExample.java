@@ -52,7 +52,7 @@ public abstract class GroupExample {
     }
 
     public Drawable getDrawable() {
-        return new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, Group.getColorsFromString(drawable));
+        return new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, Group.CreatorDrawable.getColorsFromString(drawable));
     }
 
     public String[] getOriginals() {

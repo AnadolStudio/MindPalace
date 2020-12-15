@@ -73,6 +73,7 @@ public class ComparatorMaker {
                 i1 = Integer.parseInt(o1.getName());
                 i2 = Integer.parseInt(o2.getName());
                 return i1.compareTo(i2);
+
             } else if (!(b1 || b2)) {
                 return o1.getName().compareTo(o2.getName());
             } else {
@@ -81,6 +82,7 @@ public class ComparatorMaker {
         }
 
         private boolean isInt(String s) {
+            // TODO это считается плохим тоном
             try {
                 Integer.parseInt(s);
                 return true;

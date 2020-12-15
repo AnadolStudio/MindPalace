@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.anadol.mindpalace.model.Group;
@@ -13,12 +14,12 @@ import com.anadol.mindpalace.view.Fragments.IOnBackPressed;
 import com.anadol.mindpalace.R;
 
 
-public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pager
+public class GroupDetailActivity extends SimpleFragmentActivity {
     public static final String CURRENT_GROUP = "current_group";
 
     private static final String TAG = "GroupDetailActivity";
-    private static final String POSITION = "position"; // При создание Activity запоминавет позицию
     private static CallBack mCallBack;
+
     // группы в List, а затем возвращает ее для обновления
     private Group mGroup;
 
@@ -55,7 +56,7 @@ public class GroupDetailActivity extends SimpleFragmentActivity {//будет Pa
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(CURRENT_GROUP, mGroup);
     }

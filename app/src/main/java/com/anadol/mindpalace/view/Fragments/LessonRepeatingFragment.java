@@ -2,8 +2,6 @@ package com.anadol.mindpalace.view.Fragments;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.icu.text.SimpleDateFormat;
-import android.icu.util.TimeZone;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import com.anadol.mindpalace.R;
-import com.anadol.mindpalace.presenter.MyPercentFormatter;
+import com.anadol.mindpalace.presenter.FormatterPercent;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.YAxis;
@@ -23,7 +21,6 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 
 public class LessonRepeatingFragment extends LessonFragment {
@@ -127,7 +124,7 @@ public class LessonRepeatingFragment extends LessonFragment {
         YAxis axisLeft = chart.getAxisLeft();
         axisLeft.setSpaceTop(40);
         axisLeft.setSpaceBottom(40);
-        axisLeft.setValueFormatter(new MyPercentFormatter());
+        axisLeft.setValueFormatter(new FormatterPercent());
         axisLeft.setTypeface(Typeface.SERIF);
         axisLeft.setTextSize(12);
         axisLeft.setAxisMaximum(100f);

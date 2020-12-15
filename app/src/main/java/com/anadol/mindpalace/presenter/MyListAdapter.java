@@ -16,18 +16,20 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.anadol.mindpalace.model.SimpleParent;
 import com.anadol.mindpalace.R;
-import com.anadol.mindpalace.view.Fragments.FragmentAdapter;
+import com.anadol.mindpalace.model.SimpleParent;
+import com.anadol.mindpalace.view.Fragments.FragmentListAdapter;
 
 import java.util.ArrayList;
 
-public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<MySimpleHolder> implements Filterable, ItemTouchHelperAdapter {
+import static com.anadol.mindpalace.model.Group.TYPE_NUMBERS;
+
+public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<MySimpleViewHolder> implements Filterable, ItemTouchHelperAdapter {
     public static final String TAG = MyListAdapter.class.getName();
     public static final int GROUP_HOLDER = R.layout.item_group_list;
     public static final int WORD_HOLDER = R.layout.item_words_list;
 
-    private FragmentAdapter mFragment;
+    private FragmentListAdapter mFragment;
     private ArrayList<T> mList;
     private ArrayList<T> mFilterList;
     private ArrayMap<String, Boolean> mSelectionsArray;
@@ -36,7 +38,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     private Context mContext;
     private int mTypeGroup;
 
-    public MyListAdapter(Context context, FragmentAdapter fragment, ArrayList<T> arrayList, @LayoutRes int layout,
+    public MyListAdapter(Context context, FragmentListAdapter fragment, ArrayList<T> arrayList, @LayoutRes int layout,
                          @Nullable ArrayList<String> selectedItems, boolean isSelectableMode) {
         Log.i(TAG, "MyListAdapter: was created");
         mList = arrayList;
@@ -48,7 +50,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         this.layout = layout;
     }
 
-    public MyListAdapter(Context context, FragmentAdapter fragment, ArrayList<T> arrayList, @LayoutRes int layout,
+    public MyListAdapter(Context context, FragmentListAdapter fragment, ArrayList<T> arrayList, @LayoutRes int layout,
                          @Nullable ArrayList<String> selectedItems, boolean isSelectableMode, int typeGroup) {
         this(context, fragment, arrayList, layout, selectedItems, isSelectableMode);
         mTypeGroup = typeGroup;
@@ -56,11 +58,10 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
 
     @Override
     public void onItemDismiss(RecyclerView.ViewHolder viewHolder, int flag) {
-        MySimpleHolder holder = (MySimpleHolder) viewHolder;
+        MySimpleViewHolder holder = (MySimpleViewHolder) viewHolder;
         holder.itemTouch(flag);
         switch (flag) {
             case ItemTouchHelper.START:
-
                 notifyItemChanged(holder.getAdapterPosition());
                 break;
             case ItemTouchHelper.END:
@@ -91,18 +92,17 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
 
     @NonNull
     @Override
-    public MySimpleHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view;
-        MySimpleHolder holder;
-//        Log.i(TAG, "onCreateViewHolder: was created " + temp++);
+    public MySimpleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
+
+        MySimpleViewHolder holder;
         switch (layout) {
             case GROUP_HOLDER:
-                view = LayoutInflater.from(parent.getContext()).inflate(GROUP_HOLDER, parent, false);
-                holder = new GroupListHolder(view, this);
+                holder = new ViewHolderGroup(view, this);
                 break;
+
             case WORD_HOLDER:
-                view = LayoutInflater.from(parent.getContext()).inflate(WORD_HOLDER, parent, false);
-                holder = new WordListHolder(view, this);
+                holder = new ViewHolderWord(view, this);
                 break;
             default:
                 throw new NullPointerException("Holder is null");
@@ -113,8 +113,8 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MySimpleHolder holder, int position) {
-        SimpleParent item = mFilterList.get(position);
+    public void onBindViewHolder(@NonNull MySimpleViewHolder holder, int position) {
+        T item = mFilterList.get(position);
         Log.i(TAG, "onBindViewHolder: position " + position + " mSelectionsArray.size(): " + mSelectionsArray.size() + " mList.size(): " + mList.size());
 
         holder.onBind(item, mSelectionsArray.containsKey(item.getUUIDString()));
@@ -125,13 +125,11 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     }
 
     public boolean isAllItemSelected() {
-        // getItemCount возращает size() у mFilterList, но в если используется MODE_SELECT, то
-        // MODE_SEARCH отключается, а значит mFilterList = mList
         Log.i(TAG, "isAllItemSelected: mSelectionsArray.size(): " + mSelectionsArray.size() + " mList.size(): " + mList.size());
         return getItemCount() == getCountSelectedItems();
     }
 
-    public int setAllItemSelected(boolean select) {
+    public void setAllItemSelected(boolean select) {
         int size = mList.size();
 
         if (select) {
@@ -145,14 +143,10 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
 
         }
         notifyDataSetChanged();
-        Log.i(TAG, "notifyDataSetChanged");
-        Log.i(TAG, "mSelectionsArray.size(): " + mSelectionsArray.size() + " mList.size(): " + mList.size());
-        return mSelectionsArray.size();
     }
 
     public void updateItem(int position, T item) {
         if (mFilterList != mList) {
-            Log.i(TAG, "getAdapterPosition : mFilterList != mList");
             for (int i = 0; i < mList.size(); i++) {
                 if (mList.get(i).getTableId() == item.getTableId()) {
                     mList.set(position, item);
@@ -188,18 +182,18 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         return selectedItems;
     }
 
-    public void remove(SimpleParent item) {
+    public void remove(T item) {
         int index = mList.indexOf(item);
         if (index != -1) {
             notifyItemRemoved(index);
+            mSelectionsArray.remove(item.getUUIDString());
+            mList.remove(item);
+            Log.i(TAG, "SimpleParent " + item.toString() + " was removed");
         }
-        Log.i(TAG, "SimpleParent " + item.toString() + "was removed");
-        mSelectionsArray.remove(item.getUUIDString());
-        mList.remove(item);
     }
 
-    public void remove(ArrayList<? extends SimpleParent> groups) {
-        for (SimpleParent g : groups) {
+    public void remove(ArrayList<? extends T> groups) {
+        for (T g : groups) {
             remove(g);
         }
     }
@@ -212,7 +206,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
         mList.add(position, item);
     }
 
-    public FragmentAdapter getFragment() {
+    public FragmentListAdapter getFragment() {
         return mFragment;
     }
 
@@ -246,7 +240,6 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     public void setSelectableMode(boolean selectableMode) {
         isSelectableMode = selectableMode;
         if (!selectableMode) {
-//            setSelectedValueToAllItems(selectableMode);
             setAllItemSelected(false);
         } else {
             mFragment.changeSelectableMode(true);
@@ -256,7 +249,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     public void setSelectableMode(boolean selectableMode, int position) {
         setSelectableMode(selectableMode);
         if (selectableMode) {
-//            int count = getItemCount();
+
             Log.i(TAG, "setSelectableMode: position " + position);
             if (position > 0) {
                 notifyItemRangeChanged(0, position);
@@ -266,7 +259,7 @@ public class MyListAdapter<T extends SimpleParent> extends RecyclerView.Adapter<
     }
 
     public int getTypeGroup() {
-        return mTypeGroup;
+        return mTypeGroup == 0 ? TYPE_NUMBERS : mTypeGroup;
     }
 
     public void setTypeGroup(int type) {

@@ -1,11 +1,7 @@
 package com.anadol.mindpalace.view.Fragments;
 
-import android.content.res.Resources;
-
-public interface FragmentAdapter {
+public interface FragmentListAdapter {
     void updateUI();
 
     void changeSelectableMode(boolean selected);
-
-    Resources myResources();
 }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,12 +23,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
 
 import com.anadol.mindpalace.R;
+import com.anadol.mindpalace.model.BackgroundSingleton;
 import com.anadol.mindpalace.model.SettingsPreference;
 import com.anadol.mindpalace.model.Word;
+import com.anadol.mindpalace.presenter.ComparatorNeverExam;
+import com.anadol.mindpalace.presenter.ComparatorPriority;
 import com.anadol.mindpalace.presenter.MyRandom;
-import com.anadol.mindpalace.presenter.NeverExamComparator;
-import com.anadol.mindpalace.presenter.PriorityComparator;
-import com.anadol.mindpalace.presenter.UpdateExamWordsBackground;
 import com.anadol.mindpalace.view.Activities.LearnActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
@@ -37,7 +38,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+
 import static android.app.Activity.RESULT_OK;
+import static com.anadol.mindpalace.model.BackgroundSingleton.UPDATE_WORD_EXAM;
 
 
 public class LearnStartBottomSheet extends BottomSheetDialogFragment implements View.OnClickListener, ChipGroup.OnCheckedChangeListener {
@@ -78,6 +83,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
     private String typeTest;
     private int routeTest;
     private String objectTest;
+    private Disposable mDisposable;
 
     public static LearnStartBottomSheet newInstance(int typeGroup, ArrayList<Word> mWords) {
 
@@ -135,15 +141,15 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
 
     private static ArrayList<Word> getWordsToExam(ArrayList<Word> words) {
         //Сортирует таким образом что ни разу не проходящие екзамен слова будут в начале списка
-        Collections.sort(words, new NeverExamComparator());
-        Log.i(TAG, "updateUI: words"+ words);
+        Collections.sort(words, new ComparatorNeverExam());
+        Log.i(TAG, "updateUI: words" + words);
         ArrayList<Word> arrayList = new ArrayList<>();
         Word w;
         for (int i = 0; i < Math.min(words.size(), 20); i++) {
             w = words.get(i);
             if (w.readyToExam()) arrayList.add(w);
         }
-        Log.i(TAG, "getWordsToExam: "+ arrayList);
+        Log.i(TAG, "getWordsToExam: " + arrayList);
         return arrayList;
     }
 
@@ -249,7 +255,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
     private void bindDataWithView() {
         title.setText(R.string.learn);
         mEditText.setHint(Integer.toString(mWords.size()));
-        mSwitchAuto.setChecked(SettingsPreference.isAuto(getContext()));
+        mSwitchAuto.setChecked(SettingsPreference.isAutoCreatorLearningTest(getContext()));
     }
 
     @Override
@@ -268,12 +274,33 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
     @Override
     public void onResume() {
         super.onResume();
-        updateWords();
+        ArrayMap<String, Boolean> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
+        if (lastAction.size() > 0 && mDisposable == null) {
+            for (int i = lastAction.size() - 1; i >= 0; i--) {
+                if (lastAction.keyAt(i).equals(UPDATE_WORD_EXAM)) {
+                    updateWords();
+                }
+            }
+        }else {
+            updateWords();
+        }
     }
 
     private void updateWords() {
-        UpdateExamWordsBackground background = new UpdateExamWordsBackground(getContext(), mWords, this::updateUI);
-        background.execute();
+        Observable<ArrayList<Word>> observable = BackgroundSingleton.get(getContext()).updateWordsExam(mWords);
+        mDisposable = observable.subscribe(words -> {
+            mWords = words;
+            updateUI();
+            Log.i(TAG, "UpdateStatusWord is done");
+        });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mDisposable != null) {
+            mDisposable.dispose();
+        }
     }
 
     private boolean isAllReady() {
@@ -423,7 +450,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
 
     private ArrayList<Word> getWordsForPriority(ArrayList<Word> words, int count) {
         ArrayList<Word> arrayList = new ArrayList<>(words);
-        Collections.sort(arrayList, new PriorityComparator());
+        Collections.sort(arrayList, new ComparatorPriority());
 
         ArrayList<Word> priority = new ArrayList<>();
         for (int i = 0; i < count; i++) {
