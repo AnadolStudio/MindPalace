@@ -51,11 +51,11 @@ import io.reactivex.disposables.CompositeDisposable;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
-import static com.anadol.mindpalace.model.BackgroundSingleton.DELETE_WORDS;
-import static com.anadol.mindpalace.model.BackgroundSingleton.GET_WORDS;
-import static com.anadol.mindpalace.model.BackgroundSingleton.INSERT_WORD;
-import static com.anadol.mindpalace.model.BackgroundSingleton.SAVE_GROUP_AND_WORDS;
-import static com.anadol.mindpalace.model.BackgroundSingleton.UPDATE_WORD_EXAM;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.DELETE_WORDS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.GET_WORDS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.INSERT_WORD;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.SAVE_GROUP_AND_WORDS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.UPDATE_WORD_EXAM;
 import static com.anadol.mindpalace.view.Dialogs.SortDialog.ORDER_SORT;
 import static com.anadol.mindpalace.view.Dialogs.SortDialog.TYPE_SORT;
 
@@ -331,7 +331,7 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
                 boolean selectAllItems = !mAdapter.isAllItemSelected();
                 selectAll(selectAllItems);
                 return true;
-            case R.id.menu_migrate:
+            case R.id.menu_migrate: // На текущий момент этот функционал отсутствует
                 //TODO migrate через диалог
                 Toast.makeText(getContext(), "Migrate", Toast.LENGTH_SHORT).show();
                 return true;
@@ -350,7 +350,7 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
         doInBackground(INSERT_WORD);
     }
 
-    private void doInBackground(String action) {
+    private void doInBackground(BackgroundSingleton.DatabaseApi action) {
         WordBackground mBackground = new WordBackground();
         mBackground.subscribeToObservable(action);
     }
@@ -358,7 +358,7 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
     @Override
     public void onStart() {
         super.onStart();
-        ArrayMap<String, Boolean> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
+        ArrayMap<String, Observable> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
         if (lastAction.size() > 0 && mCompositeDisposable == null) {
             WordBackground mBackground = new WordBackground();
             for (int i = lastAction.size() - 1; i >= 0; i--) {
@@ -567,9 +567,13 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
         return tempList;
     }
 
-    class WordBackground {
+    class WordBackground {// TODO: 06.07.2021 в GroupListFragment есть очень похожий внутренний класс. Как это оптимизировать?
 
         private void subscribeToObservable(String action) {
+            this.subscribeToObservable(BackgroundSingleton.DatabaseApi.valueOf(action));
+        }
+
+        private void subscribeToObservable(BackgroundSingleton.DatabaseApi action) {
 
             switch (action) {
                 case GET_WORDS:

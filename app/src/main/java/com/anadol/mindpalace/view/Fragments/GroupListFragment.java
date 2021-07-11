@@ -33,28 +33,31 @@ import com.anadol.mindpalace.view.Activities.GroupDetailActivity;
 import com.anadol.mindpalace.view.Dialogs.SortDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Observer;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableSingleObserver;
 
 import static android.app.Activity.RESULT_OK;
-import static com.anadol.mindpalace.model.BackgroundSingleton.DELETE_GROUPS;
-import static com.anadol.mindpalace.model.BackgroundSingleton.GET_GROUPS;
-import static com.anadol.mindpalace.model.BackgroundSingleton.GET_GROUP_ITEM;
-import static com.anadol.mindpalace.model.BackgroundSingleton.INSERT_GROUP;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.DELETE_GROUPS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.GET_GROUPS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.INSERT_GROUP;
 import static com.anadol.mindpalace.view.Dialogs.SortDialog.ORDER_SORT;
 import static com.anadol.mindpalace.view.Dialogs.SortDialog.TYPE_SORT;
 
 public class GroupListFragment extends SimpleFragment implements IOnBackPressed, IStartGroupDetail {
-    private static final String TAG = GroupListFragment.class.getName();
-
     public static final String CHANGED_ITEM = "changed_item";
     public static final String KEY_GROUP_SAVE = "group_save";
-    private static final String KEY_SEARCH_QUERY = "search_query";
     public static final int REQUIRED_CHANGE = 1;
-
+    private static final String TAG = GroupListFragment.class.getName();
+    private static final String KEY_SEARCH_QUERY = "search_query";
     private RecyclerView mRecyclerView;
     private SearchView searchView;
     private FloatingActionButton fab;
@@ -135,7 +138,7 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed,
         }
     }
 
-    private void doInBackground(String action) {
+    private void doInBackground(BackgroundSingleton.DatabaseApi action) {
         GroupBackground mBackground = new GroupBackground();
         mBackground.subscribeToObservable(action);
     }
@@ -157,7 +160,7 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed,
     @Override
     public void onStart() {
         super.onStart();
-        ArrayMap<String, Boolean> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
+        ArrayMap<String, Observable> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
         if (lastAction.size() > 0 && mCompositeDisposable == null) {
             GroupBackground background = new GroupBackground();
             for (int i = lastAction.size() - 1; i >= 0; i--) {
@@ -407,15 +410,20 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed,
         MyAnimations.addTranslationAnim(mRecyclerView);
     }
 
-    class GroupBackground {
+    class GroupBackground { // TODO: 06.07.2021 в GroupDetailFragment есть очень похожий внутренний класс. Как это оптимизировать?
 
         private void subscribeToObservable(String action) {
+            this.subscribeToObservable(BackgroundSingleton.DatabaseApi.valueOf(action));
+        }
+
+        private void subscribeToObservable(BackgroundSingleton.DatabaseApi action) {
 
             switch (action) {
                 case GET_GROUPS:
                     getGroups();
                     break;
                 case GET_GROUP_ITEM:
+                    // TODO: 06.07.2021 обязательно ли сохранять lastItem в BackgroundSingleton. Нельзя ли вернуть это значение из IntentExtra ?
                     getGroupItem(BackgroundSingleton.get(getContext()).getLastItem());
                     break;
                 case DELETE_GROUPS:

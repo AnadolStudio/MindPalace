@@ -39,8 +39,6 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 
-import static com.anadol.mindpalace.model.BackgroundSingleton.GET_GROUP_STATISTIC;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -133,13 +131,11 @@ public class StatisticFragment extends SimpleFragment {
     @Override
     public void onStart() {
         super.onStart();
-        ArrayMap<String, Boolean> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
+        ArrayMap<String, Observable> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
         if (lastAction.size() > 0 && mDisposable == null) {
             StatisticBackground background = new StatisticBackground();
-            for (int i = lastAction.size() -1 ; i >= 0; i--) {
-                if (lastAction.keyAt(i).equals(GET_GROUP_STATISTIC)) {
-                    background.getStatistic();
-                }
+            if (lastAction.containsKey(BackgroundSingleton.DatabaseApi.GET_GROUP_STATISTIC.name())) {
+                background.getStatistic();
             }
         }
     }

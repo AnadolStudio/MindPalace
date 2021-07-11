@@ -12,6 +12,9 @@ import com.anadol.mindpalace.model.DataBaseSchema.Groups;
 import java.util.UUID;
 
 public class CreatorExampleGroup {
+    // TODO: 08.07.2021
+    //  1) Это можно будет скачать с сервера
+    //  2) Тут используется AsyncTack, что явно плохо, т.к. он устаревший
 
     public static class AlphaNumericCode extends GroupExample {
         @Override
