@@ -11,14 +11,11 @@ import android.view.ViewGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.data.group.BackgroundSingleton;
-import com.anadol.mindpalace.domain.formatters.NameAxisFormatter;
-import com.anadol.mindpalace.domain.formatters.IntegerFormatter;
 import com.anadol.mindpalace.data.statistic.GroupStatisticItem;
+import com.anadol.mindpalace.domain.formatters.IntegerFormatter;
+import com.anadol.mindpalace.domain.formatters.NameAxisFormatter;
 import com.anadol.mindpalace.view.screens.SimpleFragment;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
@@ -37,6 +34,9 @@ import com.github.mikephil.charting.data.PieEntry;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 
@@ -289,10 +289,9 @@ public class StatisticFragment extends SimpleFragment {
     }
 
     private int[] getColors() {
-        Resources resources = getResources();
-        int needToLearn = resources.getColor(R.color.colorNeedToLearn);
-        int learning = resources.getColor(R.color.colorLearning);
-        int learned = resources.getColor(R.color.colorLearned);
+        int needToLearn = ContextCompat.getColor(requireContext(), R.color.colorNeedToLearn);
+        int learning = ContextCompat.getColor(requireContext(), R.color.colorLearning);
+        int learned = ContextCompat.getColor(requireContext(), R.color.colorLearned);
         return new int[]{needToLearn, learning, learned};
     }
 
