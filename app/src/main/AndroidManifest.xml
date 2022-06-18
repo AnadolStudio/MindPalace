@@ -15,32 +15,34 @@
         android:theme="@style/AppTheme">
 
         <provider
-            android:name="com.anadol.mindpalace.model.MyContentProvider"
+            android:name="com.anadol.mindpalace.data.group.MyContentProvider"
             android:authorities="ru.anadolstudio.mindplace"
             android:exported="false" />
 
         <activity
-            android:name="com.anadol.mindpalace.view.Activities.StartActivity"
-            android:theme="@style/SplashActivity">
+            android:name="com.anadol.mindpalace.view.SplashActivity"
+            android:theme="@style/SplashActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name="com.anadol.mindpalace.view.Activities.MainActivity"
+            android:name="com.anadol.mindpalace.view.screens.main.MainActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.anadol.mindpalace.view.Activities.GroupDetailActivity"
+            android:name="com.anadol.mindpalace.view.screens.groupdetail.GroupDetailActivity"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name="com.anadol.mindpalace.view.Activities.LearnActivity"
+            android:name="com.anadol.mindpalace.view.screens.learn.LearnActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name="com.anadol.mindpalace.view.Activities.LessonActivity"
-            android:parentActivityName=".view.Activities.MainActivity" />
+            android:name=".view.screens.main.lessons.LessonActivity"
+            android:parentActivityName=".view.screens.main.MainActivity" />
     </application>
 
 </manifest>
