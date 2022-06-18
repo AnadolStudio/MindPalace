@@ -22,8 +22,6 @@
             android:layout_height="168dp"
             android:foreground="@drawable/ripple_light_gray_item"
             android:minWidth="128dp"
-
-
             android:scaleType="centerCrop" />
 
         <LinearLayout
