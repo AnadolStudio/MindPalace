@@ -42,7 +42,6 @@ import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 
 import static android.app.Activity.RESULT_OK;
-import static com.anadol.mindpalace.model.BackgroundSingleton.UPDATE_WORD_EXAM;
 
 
 public class LearnStartBottomSheet extends BottomSheetDialogFragment implements View.OnClickListener, ChipGroup.OnCheckedChangeListener {
@@ -274,13 +273,22 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
     @Override
     public void onResume() {
         super.onResume();
-        ArrayMap<String, Boolean> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
+        ArrayMap<String, Observable> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
         if (lastAction.size() > 0 && mDisposable == null) {
-            for (int i = lastAction.size() - 1; i >= 0; i--) {
-                if (lastAction.keyAt(i).equals(UPDATE_WORD_EXAM)) {
+            if (lastAction.containsKey(BackgroundSingleton.DatabaseApiKeys.UPDATE_WORD_EXAM.name())) {
+                updateWords();
+            }
+
+            /*for (int i = lastAction.size() - 1; i >= 0; i--) {
+                // TODO: ?? Перепроверка каждого значения?
+                if (lastAction.keyAt(i).equals(BackgroundSingleton.DatabaseApi.UPDATE_WORD_EXAM.name())) {
                     updateWords();
                 }
-            }
+                if (lastAction.containsKey(BackgroundSingleton.DatabaseApi.UPDATE_WORD_EXAM.name())) {
+                    updateWords();
+                }
+
+            }*/
         }else {
             updateWords();
         }

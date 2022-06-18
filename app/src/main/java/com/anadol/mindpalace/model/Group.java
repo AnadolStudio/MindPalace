@@ -21,13 +21,21 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
     public static final int TYPE_DATES = R.string.dates;
     public static final int TYPE_TEXTS = R.string.texts;
     public static final int TYPE_LINK = R.string.link;
+    public static final Parcelable.Creator<Group> CREATOR = new Parcelable.Creator<Group>() {
+        @Override
+        public Group createFromParcel(Parcel source) {
+            return new Group(source);
+        }
 
+        @Override
+        public Group[] newArray(int size) {
+            return new Group[size];
+        }
+    };
     private static final int COLOR_BLUE_DARK = 0xFF004064;
     private static final int COLOR_BLUE_LIGHT = 0xFF0080E1;
     public static final int[] DEFAULT_COLORS = new int[]{Color.BLACK, COLOR_BLUE_DARK, COLOR_BLUE_LIGHT};
-
     private static final String TAG = Group.class.getName();
-
     private int tableId;
     private UUID mId;
     private String drawable;
@@ -45,18 +53,6 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
     public Group(Group group) {
         this(group.getTableId(), group.getUUID(), group.getStringDrawable(), group.getName(), group.getType());
     }
-
-    public static final Parcelable.Creator<Group> CREATOR = new Parcelable.Creator<Group>() {
-        @Override
-        public Group createFromParcel(Parcel source) {
-            return new Group(source);
-        }
-
-        @Override
-        public Group[] newArray(int size) {
-            return new Group[size];
-        }
-    };
 
     private Group(Parcel in) {
         String[] data = new String[3];
@@ -109,16 +105,16 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
         return mId.toString();
     }
 
+    public String getStringDrawable() {
+        return drawable;
+    }
+
     public void setStringDrawable(int[] colors) {
         drawable = CreatorDrawable.getColorsStringFromInts(colors);
     }
 
     public void setStringDrawable(Uri uriPhoto) {
         drawable = uriPhoto.toString();
-    }
-
-    public String getStringDrawable() {
-        return drawable;
     }
 
     public int getType() {

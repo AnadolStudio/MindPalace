@@ -40,21 +40,18 @@ import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 
 import static android.app.Activity.RESULT_OK;
-import static com.anadol.mindpalace.model.BackgroundSingleton.DELETE_GROUPS;
-import static com.anadol.mindpalace.model.BackgroundSingleton.GET_GROUPS;
-import static com.anadol.mindpalace.model.BackgroundSingleton.GET_GROUP_ITEM;
-import static com.anadol.mindpalace.model.BackgroundSingleton.INSERT_GROUP;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApiKeys.DELETE_GROUPS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApiKeys.GET_GROUPS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApiKeys.INSERT_GROUP;
 import static com.anadol.mindpalace.view.Dialogs.SortDialog.ORDER_SORT;
 import static com.anadol.mindpalace.view.Dialogs.SortDialog.TYPE_SORT;
 
 public class GroupListFragment extends SimpleFragment implements IOnBackPressed, IStartGroupDetail {
-    private static final String TAG = GroupListFragment.class.getName();
-
     public static final String CHANGED_ITEM = "changed_item";
     public static final String KEY_GROUP_SAVE = "group_save";
-    private static final String KEY_SEARCH_QUERY = "search_query";
     public static final int REQUIRED_CHANGE = 1;
-
+    private static final String TAG = GroupListFragment.class.getName();
+    private static final String KEY_SEARCH_QUERY = "search_query";
     private RecyclerView mRecyclerView;
     private SearchView searchView;
     private FloatingActionButton fab;
@@ -135,7 +132,7 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed,
         }
     }
 
-    private void doInBackground(String action) {
+    private void doInBackground(BackgroundSingleton.DatabaseApiKeys action) {
         GroupBackground mBackground = new GroupBackground();
         mBackground.subscribeToObservable(action);
     }
@@ -157,7 +154,7 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed,
     @Override
     public void onStart() {
         super.onStart();
-        ArrayMap<String, Boolean> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
+        ArrayMap<String, Observable> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
         if (lastAction.size() > 0 && mCompositeDisposable == null) {
             GroupBackground background = new GroupBackground();
             for (int i = lastAction.size() - 1; i >= 0; i--) {
@@ -308,6 +305,37 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed,
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        Log.i(TAG, "Result code: " + resultCode + " RequestCode: " + requestCode);
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+
+        switch (requestCode) {
+            case REQUIRED_CHANGE:
+                int id = data.getIntExtra(CHANGED_ITEM, 0);
+                Log.i(TAG, "CHANGED_ITEM equal " + id);
+                if (id == 0) {
+                    return;
+                }
+
+                GroupBackground mBackground = new GroupBackground();
+                mBackground.getGroupItem(id);
+
+                break;
+            case REQUEST_SORT:
+                int type = data.getIntExtra(TYPE_SORT, 0);
+                int order = data.getIntExtra(ORDER_SORT, 0);
+                Collections.sort(mGroupsList, ComparatorMaker.getComparator(type, order));
+                updateSearchView();
+                mAdapter.notifyDataSetChanged();
+                break;
+
+        }
+    }
+
+    @Override
     public boolean onBackPressed() {
         switch (fragmentsMode) {
             case MODE_SEARCH:
@@ -342,8 +370,8 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed,
         }
         updateActionBarTitle();
     }
-
     // Необходим для показа количества выбранных объектов (тут групп)
+
     private void updateActionBarTitle() {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.invalidateOptionsMenu();
@@ -358,37 +386,6 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed,
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         int selectCount = mAdapter.getCountSelectedItems();
         activity.getSupportActionBar().setTitle(String.valueOf(selectCount));
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        Log.i(TAG, "Result code: " + resultCode + " RequestCode: " + requestCode);
-        if (resultCode != RESULT_OK) {
-            return;
-        }
-
-        switch (requestCode) {
-            case REQUIRED_CHANGE:
-                int id = data.getIntExtra(CHANGED_ITEM, 0);
-                Log.i(TAG, "CHANGED_ITEM equal " + id);
-                if (id == 0) {
-                    return;
-                }
-
-                GroupBackground mBackground = new GroupBackground();
-                mBackground.getGroupItem(id);
-
-                break;
-            case REQUEST_SORT:
-                int type = data.getIntExtra(TYPE_SORT, 0);
-                int order = data.getIntExtra(ORDER_SORT, 0);
-                Collections.sort(mGroupsList, ComparatorMaker.getComparator(type, order));
-                updateSearchView();
-                mAdapter.notifyDataSetChanged();
-                break;
-
-        }
     }
 
     private void createGroup() {
@@ -407,15 +404,20 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed,
         MyAnimations.addTranslationAnim(mRecyclerView);
     }
 
-    class GroupBackground {
+    class GroupBackground { // TODO: 06.07.2021 в GroupDetailFragment есть очень похожий внутренний класс. Как это оптимизировать?
 
         private void subscribeToObservable(String action) {
+            this.subscribeToObservable(BackgroundSingleton.DatabaseApiKeys.valueOf(action));
+        }
+
+        private void subscribeToObservable(BackgroundSingleton.DatabaseApiKeys action) {
 
             switch (action) {
                 case GET_GROUPS:
                     getGroups();
                     break;
                 case GET_GROUP_ITEM:
+                    // TODO: 06.07.2021 обязательно ли сохранять lastItem в BackgroundSingleton. Нельзя ли вернуть это значение из IntentExtra ?
                     getGroupItem(BackgroundSingleton.get(getContext()).getLastItem());
                     break;
                 case DELETE_GROUPS:

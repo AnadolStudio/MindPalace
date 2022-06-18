@@ -22,7 +22,7 @@ public class MyAnimations {
                             v.setY(parent);
                             v.animate().translationY(1.0f)
                                     .setDuration(400)
-                                    .setStartDelay(i * 50)
+                                    .setStartDelay(i * 50L)
                                     .start();
                             v.animate().setStartDelay(0);//возвращаю дефолтное значение
                         }
