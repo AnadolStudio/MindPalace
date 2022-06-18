@@ -3,7 +3,7 @@ package com.anadol.mindpalace.view
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.anadol.mindpalace.view.Activities.MainActivity
+import com.anadol.mindpalace.view.screens.main.MainActivity
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {

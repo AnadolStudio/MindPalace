@@ -17,15 +17,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.anadol.mindpalace.R;
-import com.anadol.mindpalace.presenter.Question;
-import com.anadol.mindpalace.view.Activities.LearnActivity;
-import com.anadol.mindpalace.view.Dialogs.DialogResultBottomSheet;
+import com.anadol.mindpalace.data.question.Question;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
-import static com.anadol.mindpalace.view.Activities.LearnActivity.PROGRESS;
-import static com.anadol.mindpalace.view.Activities.LearnActivity.QUESTIONS;
-import static com.anadol.mindpalace.view.Activities.LearnActivity.REQUEST_RESULT;
+import static com.anadol.mindpalace.view.screens.learn.LearnActivity.PROGRESS;
+import static com.anadol.mindpalace.view.screens.learn.LearnActivity.QUESTIONS;
+import static com.anadol.mindpalace.view.screens.learn.LearnActivity.REQUEST_RESULT;
 
 public class LearnQuizFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = LearnQuizFragment.class.getName();

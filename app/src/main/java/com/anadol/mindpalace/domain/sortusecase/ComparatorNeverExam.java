@@ -1,6 +1,6 @@
 package com.anadol.mindpalace.domain.sortusecase;
 
-import com.anadol.mindpalace.model.Word;
+import com.anadol.mindpalace.data.group.Word;
 
 import java.util.Comparator;
 

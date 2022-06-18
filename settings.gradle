@@ -1,2 +1,3 @@
 include ':app'
-include ':androidcorebase'
+//include ':androidcorebase'
+include ':core-base'

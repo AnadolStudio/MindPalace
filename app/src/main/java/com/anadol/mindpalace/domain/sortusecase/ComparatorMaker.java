@@ -1,6 +1,6 @@
 package com.anadol.mindpalace.domain.sortusecase;
 
-import com.anadol.mindpalace.model.SimpleParent;
+import com.anadol.mindpalace.data.group.SimpleParent;
 
 import java.util.Comparator;
 

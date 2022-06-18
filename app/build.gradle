@@ -33,7 +33,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':androidcorebase')
+//    implementation project(':androidcorebase')
+    implementation project(':core-base')
 
     // Android base
     implementation 'androidx.appcompat:appcompat:1.4.2'
