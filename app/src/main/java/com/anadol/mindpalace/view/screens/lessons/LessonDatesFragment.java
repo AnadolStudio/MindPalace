@@ -1,13 +1,11 @@
-package com.anadol.mindpalace.view.Fragments;
+package com.anadol.mindpalace.view.screens.lessons;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
@@ -17,12 +15,12 @@ import com.anadol.mindpalace.model.CreatorExampleGroup;
 import com.anadol.mindpalace.model.GroupExample;
 
 
-public class LessonNumbersFragment extends LessonFragment {
+public class LessonDatesFragment extends LessonFragment {
     private ScrollView mScrollView;
     private Button uploadButton;
 
-    public static LessonNumbersFragment newInstance() {
-        LessonNumbersFragment fragment = new LessonNumbersFragment();
+    public static LessonDatesFragment newInstance() {
+        LessonDatesFragment fragment = new LessonDatesFragment();
         return fragment;
     }
 
@@ -35,34 +33,31 @@ public class LessonNumbersFragment extends LessonFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_lesson_numbers, container, false);
+        View view = inflater.inflate(R.layout.fragment_lesson_dates, container, false);
 
         bind(view);
         getData(savedInstanceState);
-
-        View code = view.findViewById(R.id.group_code);
-        GroupExample groupCode = new CreatorExampleGroup.AlphaNumericCode();
-        createGroup(code, groupCode);
-
-        View cards = view.findViewById(R.id.group_cards);
-        GroupExample groupCards = new CreatorExampleGroup.PlayingCard();
-        createGroup(cards, groupCards);
+        View cards = view.findViewById(R.id.group_months);
+        GroupExample groupMonth = new CreatorExampleGroup.Month();
+        createGroup(cards, groupMonth);
 
         uploadButton.setOnClickListener(v->{
             CreatorExampleGroup.Creator creator = new CreatorExampleGroup.Creator();
             creator.setContext(getContext());
-            creator.execute(groupCards, groupCode);
+            creator.execute(groupMonth);
         });
-
         return view;
     }
 
     private void bind(View view) {
         mScrollView = view.findViewById(R.id.scrollView);
+
         uploadButton = view.findViewById(R.id.upload_button);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener((v) -> getActivity().onBackPressed());
     }
+
+
 
     private void getData(Bundle savedInstanceState) {
         if (savedInstanceState != null) {

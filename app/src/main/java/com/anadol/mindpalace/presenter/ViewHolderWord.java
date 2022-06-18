@@ -22,7 +22,7 @@ import com.anadol.mindpalace.model.Group;
 import com.anadol.mindpalace.model.SimpleParent;
 import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.model.Word;
-import com.anadol.mindpalace.view.Fragments.GroupDetailFragment;
+import com.anadol.mindpalace.view.screens.grouplist.GroupListFragment;
 
 public class ViewHolderWord extends MySimpleViewHolder implements View.OnClickListener, View.OnLongClickListener{
     private MyListAdapter<? extends SimpleParent> mAdapter;
@@ -345,7 +345,7 @@ public class ViewHolderWord extends MySimpleViewHolder implements View.OnClickLi
         }
 
         private void updateWordCount() {
-            GroupDetailFragment fragment = (GroupDetailFragment) mAdapter.getFragment();
+            GroupListFragment.GroupDetailFragment fragment = (GroupListFragment.GroupDetailFragment) mAdapter.getFragment();
             fragment.updateWordCount();
         }
     }

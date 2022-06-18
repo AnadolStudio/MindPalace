@@ -1,4 +1,4 @@
-package com.anadol.mindpalace.view.Fragments;
+package com.anadol.mindpalace.view.screens.lessons;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.anadol.mindpalace.R;
-import com.anadol.mindpalace.view.Activities.LessonActivity;
+import com.anadol.mindpalace.view.Fragments.SimpleFragment;
 
 public class SettingsFragment extends SimpleFragment implements View.OnClickListener {
     private ScrollView mScrollView;
@@ -25,8 +25,7 @@ public class SettingsFragment extends SimpleFragment implements View.OnClickList
     private LinearLayout lesson7;
 
     public static SettingsFragment newInstance() {
-        SettingsFragment fragment = new SettingsFragment();
-        return fragment;
+        return new SettingsFragment();
     }
 
     @Override

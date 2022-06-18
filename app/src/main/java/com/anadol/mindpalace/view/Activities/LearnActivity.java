@@ -13,9 +13,9 @@ import com.anadol.mindpalace.presenter.MyRandom;
 import com.anadol.mindpalace.presenter.Question;
 import com.anadol.mindpalace.presenter.QuestionMaker;
 import com.anadol.mindpalace.view.Dialogs.LearnStartBottomSheet;
-import com.anadol.mindpalace.view.Fragments.LearnAnswerFragment;
-import com.anadol.mindpalace.view.Fragments.LearnPuzzleFragment;
-import com.anadol.mindpalace.view.Fragments.LearnQuizFragment;
+import com.anadol.mindpalace.view.screens.learn.LearnAnswerFragment;
+import com.anadol.mindpalace.view.screens.learn.LearnPuzzleFragment;
+import com.anadol.mindpalace.view.screens.learn.LearnQuizFragment;
 import com.anadol.mindpalace.model.Word;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.anadol.mindpalace.view.Fragments;
+package com.anadol.mindpalace.view.screens.lessons;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,26 +10,27 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import com.anadol.mindpalace.R;
+import com.anadol.mindpalace.view.Fragments.SimpleFragment;
 
 
-public class LessonAssociationFragment extends LessonFragment {
+public class LessonLinkFragment extends LessonFragment {
     private ScrollView mScrollView;
 
-    public static LessonAssociationFragment newInstance() {
-        LessonAssociationFragment fragment = new LessonAssociationFragment();
+    public static LessonLinkFragment newInstance() {
+        LessonLinkFragment fragment = new LessonLinkFragment();
         return fragment;
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putInt(SCROLL_POSITION, mScrollView.getScrollY());
+        outState.putInt(SimpleFragment.SCROLL_POSITION, mScrollView.getScrollY());
         super.onSaveInstanceState(outState);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_lesson_association, container, false);
+        View view = inflater.inflate(R.layout.fragment_lesson_link, container, false);
 
         bind(view);
         getData(savedInstanceState);
@@ -50,7 +51,7 @@ public class LessonAssociationFragment extends LessonFragment {
 
     private void getData(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            int position = savedInstanceState.getInt(SCROLL_POSITION);
+            int position = savedInstanceState.getInt(SimpleFragment.SCROLL_POSITION);
             mScrollView.setScrollY(position);
         }
     }

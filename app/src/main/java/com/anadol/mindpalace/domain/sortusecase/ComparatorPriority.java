@@ -1,4 +1,4 @@
-package com.anadol.mindpalace.presenter;
+package com.anadol.mindpalace.domain.sortusecase;
 
 import com.anadol.mindpalace.model.Word;
 

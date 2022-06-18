@@ -16,7 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.anadol.mindpalace.model.SettingsPreference;
-import com.anadol.mindpalace.presenter.ComparatorMaker;
+import com.anadol.mindpalace.domain.sortusecase.ComparatorMaker;
 import com.anadol.mindpalace.R;
 
 import static android.app.Activity.RESULT_OK;

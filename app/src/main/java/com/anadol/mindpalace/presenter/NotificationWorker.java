@@ -22,9 +22,9 @@ import com.anadol.mindpalace.model.MyCursorWrapper;
 import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.model.DataBaseSchema;
 import com.anadol.mindpalace.model.Word;
-import com.anadol.mindpalace.view.Activities.GroupDetailActivity;
 import com.anadol.mindpalace.view.Activities.LearnActivity;
 import com.anadol.mindpalace.view.Dialogs.LearnStartBottomSheet;
+import com.anadol.mindpalace.view.screens.grouplist.GroupListFragment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,7 +87,7 @@ public class NotificationWorker extends Worker {
                     LearnStartBottomSheet.getTypeTest(mWords),
                     LearnStartBottomSheet.getRouteTest(mWords));
         } else {
-            i = GroupDetailActivity.newIntent(context, mGroup);
+            i = GroupListFragment.GroupDetailActivity.newIntent(context, mGroup);
         }
 
         PendingIntent pi = PendingIntent.getActivity(context, nId, i, 0);

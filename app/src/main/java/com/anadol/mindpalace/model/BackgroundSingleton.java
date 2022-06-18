@@ -10,17 +10,15 @@ import android.util.ArrayMap;
 import android.util.Log;
 
 import com.anadol.mindpalace.R;
-import com.anadol.mindpalace.presenter.ComparatorMaker;
+import com.anadol.mindpalace.domain.sortusecase.ComparatorMaker;
 import com.anadol.mindpalace.presenter.GroupStatisticItem;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.schedulers.Schedulers;
 
 public class BackgroundSingleton {

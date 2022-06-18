@@ -20,26 +20,28 @@
             android:exported="false" />
 
         <activity
-            android:name="com.anadol.mindpalace.view.Activities.StartActivity"
-            android:theme="@style/SplashActivity">
+            android:name="com.anadol.mindpalace.view.SplashActivity"
+            android:theme="@style/SplashActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="com.anadol.mindpalace.view.Activities.MainActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name="com.anadol.mindpalace.view.Activities.GroupDetailActivity"
+            android:name="com.anadol.mindpalace.view.screens.grouplist.GroupListFragment$GroupDetailActivity"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
             android:name="com.anadol.mindpalace.view.Activities.LearnActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name="com.anadol.mindpalace.view.Activities.LessonActivity"
+            android:name="com.anadol.mindpalace.view.screens.lessons.LessonActivity"
             android:parentActivityName=".view.Activities.MainActivity" />
     </application>
 

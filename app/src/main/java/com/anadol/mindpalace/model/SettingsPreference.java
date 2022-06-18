@@ -5,8 +5,8 @@ import android.preference.PreferenceManager;
 
 import androidx.annotation.IdRes;
 
-import static com.anadol.mindpalace.presenter.ComparatorMaker.ORDER_ASC;
-import static com.anadol.mindpalace.presenter.ComparatorMaker.TYPE_NAME;
+import static com.anadol.mindpalace.domain.sortusecase.ComparatorMaker.ORDER_ASC;
+import static com.anadol.mindpalace.domain.sortusecase.ComparatorMaker.TYPE_NAME;
 
 public class SettingsPreference {
     public static final String TAG = "SettingsPreference";

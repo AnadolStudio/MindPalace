@@ -1,4 +1,4 @@
-package com.anadol.mindpalace.view.Fragments;
+package com.anadol.mindpalace.view.screens.learn;
 
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;

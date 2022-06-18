@@ -346,6 +346,7 @@ public class Word extends SimpleParent implements Parcelable, Comparable<Word> {
             difficult = Difficult.HARD;
         }
 
+
         return difficult;
     }
 

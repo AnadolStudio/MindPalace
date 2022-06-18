@@ -1,4 +1,4 @@
-package com.anadol.mindpalace.view.Fragments;
+package com.anadol.mindpalace.view.screens.lessons;
 
 import android.content.res.Resources;
 import android.icu.text.SimpleDateFormat;

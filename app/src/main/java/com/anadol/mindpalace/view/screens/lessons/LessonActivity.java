@@ -1,4 +1,4 @@
-package com.anadol.mindpalace.view.Activities;
+package com.anadol.mindpalace.view.screens.lessons;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,13 +7,7 @@ import androidx.annotation.LayoutRes;
 import androidx.fragment.app.Fragment;
 
 import com.anadol.mindpalace.R;
-import com.anadol.mindpalace.view.Fragments.LessonAssociationFragment;
-import com.anadol.mindpalace.view.Fragments.LessonBasicsFragment;
-import com.anadol.mindpalace.view.Fragments.LessonDatesFragment;
-import com.anadol.mindpalace.view.Fragments.LessonLinkFragment;
-import com.anadol.mindpalace.view.Fragments.LessonNumbersFragment;
-import com.anadol.mindpalace.view.Fragments.LessonRepeatingFragment;
-import com.anadol.mindpalace.view.Fragments.LessonTextsFragment;
+import com.anadol.mindpalace.view.Activities.SimpleFragmentActivity;
 
 public class LessonActivity extends SimpleFragmentActivity {
     private static final String ID_FRAGMENT = "id";

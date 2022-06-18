@@ -1,4 +1,4 @@
-package com.anadol.mindpalace.view.Fragments;
+package com.anadol.mindpalace.view.screens.lessons;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,11 +12,11 @@ import androidx.appcompat.widget.Toolbar;
 import com.anadol.mindpalace.R;
 
 
-public class LessonLinkFragment extends LessonFragment {
+public class LessonAssociationFragment extends LessonFragment {
     private ScrollView mScrollView;
 
-    public static LessonLinkFragment newInstance() {
-        LessonLinkFragment fragment = new LessonLinkFragment();
+    public static LessonAssociationFragment newInstance() {
+        LessonAssociationFragment fragment = new LessonAssociationFragment();
         return fragment;
     }
 
@@ -29,7 +29,7 @@ public class LessonLinkFragment extends LessonFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_lesson_link, container, false);
+        View view = inflater.inflate(R.layout.fragment_lesson_association, container, false);
 
         bind(view);
         getData(savedInstanceState);

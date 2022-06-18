@@ -13,7 +13,6 @@ import com.anadol.mindpalace.model.Group;
 import com.anadol.mindpalace.model.SimpleParent;
 import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.view.Fragments.FragmentListAdapter;
-import com.anadol.mindpalace.view.Fragments.GroupListFragment;
 import com.anadol.mindpalace.view.Fragments.IStartGroupDetail;
 
 public class ViewHolderGroup extends MySimpleViewHolder implements View.OnClickListener, View.OnLongClickListener {

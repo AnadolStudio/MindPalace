@@ -1,4 +1,4 @@
-package com.anadol.mindpalace.view.Fragments;
+package com.anadol.mindpalace.view.screens.statistic;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -19,6 +19,7 @@ import com.anadol.mindpalace.model.BackgroundSingleton;
 import com.anadol.mindpalace.presenter.FormatterGroupNameAxis;
 import com.anadol.mindpalace.presenter.FormatterInteger;
 import com.anadol.mindpalace.presenter.GroupStatisticItem;
+import com.anadol.mindpalace.view.Fragments.SimpleFragment;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.PieChart;
@@ -61,8 +62,7 @@ public class StatisticFragment extends SimpleFragment {
     private Disposable mDisposable;
 
     public static StatisticFragment newInstance() {
-        StatisticFragment fragment = new StatisticFragment();
-        return fragment;
+        return new StatisticFragment();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.anadol.mindpalace.view.Fragments;
+package com.anadol.mindpalace.view.screens.lessons;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.model.GroupExample;
+import com.anadol.mindpalace.view.Fragments.SimpleFragment;
 
 public class LessonFragment extends SimpleFragment {
 

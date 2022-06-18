@@ -27,7 +27,7 @@ import androidx.core.widget.NestedScrollView;
 
 import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.model.Group;
-import com.anadol.mindpalace.view.Fragments.GroupDetailFragment;
+import com.anadol.mindpalace.view.screens.grouplist.GroupListFragment;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -71,7 +71,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 
         Bundle args = new Bundle();
         Group g = new Group(group);
-        args.putParcelable(GroupDetailFragment.GROUP, g);
+        args.putParcelable(GroupListFragment.GroupDetailFragment.GROUP, g);
         SettingsBottomSheet fragment = new SettingsBottomSheet();
         fragment.setArguments(args);
         return fragment;
@@ -81,7 +81,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         saveGroup(mEditText.getText().toString());
-        outState.putParcelable(GroupDetailFragment.GROUP, mGroup);
+        outState.putParcelable(GroupListFragment.GroupDetailFragment.GROUP, mGroup);
         if (colorsGradient != null) {
             outState.putIntArray(COLORS, colorsGradient);
         }
@@ -218,9 +218,9 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
 
     private void getData(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState == null) {
-            mGroup = getArguments().getParcelable(GroupDetailFragment.GROUP);
+            mGroup = getArguments().getParcelable(GroupListFragment.GroupDetailFragment.GROUP);
         } else {
-            mGroup = savedInstanceState.getParcelable(GroupDetailFragment.GROUP);
+            mGroup = savedInstanceState.getParcelable(GroupListFragment.GroupDetailFragment.GROUP);
             colorsGradient = savedInstanceState.getIntArray(COLORS);
             String uri = savedInstanceState.getString(URI);
             if (uri != null) uriPhoto = Uri.parse(uri);
@@ -282,7 +282,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
         }
 
         Intent intent = new Intent();
-        intent.putExtra(GroupDetailFragment.GROUP, mGroup);
+        intent.putExtra(GroupListFragment.GroupDetailFragment.GROUP, mGroup);
         getTargetFragment().onActivityResult(getTargetRequestCode(), RESULT_OK, intent);
         dismiss();
     }

@@ -1,7 +1,8 @@
 package com.anadol.mindpalace.view.Activities;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,16 +11,21 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.anadol.mindpalace.R;
-import com.anadol.mindpalace.view.Fragments.GroupListFragment;
+import com.anadol.mindpalace.view.screens.grouplist.GroupListFragment;
 import com.anadol.mindpalace.view.Fragments.IOnBackPressed;
-import com.anadol.mindpalace.view.Fragments.SettingsFragment;
-import com.anadol.mindpalace.view.Fragments.StatisticFragment;
+import com.anadol.mindpalace.view.screens.lessons.SettingsFragment;
+import com.anadol.mindpalace.view.screens.statistic.StatisticFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
     private static final String CURRENT_ID = "id";
     private BottomNavigationView bottomNavigationView;
     private int currentId;
+
+    public static void startActivity(Context context) {
+        Intent intent = new Intent(context, MainActivity.class);
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
