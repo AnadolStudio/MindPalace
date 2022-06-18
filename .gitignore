@@ -11,3 +11,23 @@
 /build
 /captures
 .externalNativeBuild
+
+# Generated files
+bin/
+gen/
+
+# Gradle files
+.gradle/
+build/
+/*/build/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Log Files
+*.log
+.gradle
+.idea
+.DS_Store
+/captures
+*.iml

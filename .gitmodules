@@ -1,0 +1,3 @@
+[submodule "AndroidCoreBase"]
+	path = AndroidCoreBase
+	url = https://github.com/AnadolStudio/AndroidCoreBase
