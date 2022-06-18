@@ -275,7 +275,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         super.onResume();
         ArrayMap<String, Observable> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
         if (lastAction.size() > 0 && mDisposable == null) {
-            if (lastAction.containsKey(BackgroundSingleton.DatabaseApi.UPDATE_WORD_EXAM.name())) {
+            if (lastAction.containsKey(BackgroundSingleton.DatabaseApiKeys.UPDATE_WORD_EXAM.name())) {
                 updateWords();
             }
 

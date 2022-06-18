@@ -33,22 +33,16 @@ import com.anadol.mindpalace.view.Activities.GroupDetailActivity;
 import com.anadol.mindpalace.view.Dialogs.SortDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
-
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Observer;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.observers.DisposableSingleObserver;
 
 import static android.app.Activity.RESULT_OK;
-import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.DELETE_GROUPS;
-import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.GET_GROUPS;
-import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.INSERT_GROUP;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApiKeys.DELETE_GROUPS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApiKeys.GET_GROUPS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApiKeys.INSERT_GROUP;
 import static com.anadol.mindpalace.view.Dialogs.SortDialog.ORDER_SORT;
 import static com.anadol.mindpalace.view.Dialogs.SortDialog.TYPE_SORT;
 
@@ -138,7 +132,7 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed,
         }
     }
 
-    private void doInBackground(BackgroundSingleton.DatabaseApi action) {
+    private void doInBackground(BackgroundSingleton.DatabaseApiKeys action) {
         GroupBackground mBackground = new GroupBackground();
         mBackground.subscribeToObservable(action);
     }
@@ -311,6 +305,37 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed,
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        Log.i(TAG, "Result code: " + resultCode + " RequestCode: " + requestCode);
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+
+        switch (requestCode) {
+            case REQUIRED_CHANGE:
+                int id = data.getIntExtra(CHANGED_ITEM, 0);
+                Log.i(TAG, "CHANGED_ITEM equal " + id);
+                if (id == 0) {
+                    return;
+                }
+
+                GroupBackground mBackground = new GroupBackground();
+                mBackground.getGroupItem(id);
+
+                break;
+            case REQUEST_SORT:
+                int type = data.getIntExtra(TYPE_SORT, 0);
+                int order = data.getIntExtra(ORDER_SORT, 0);
+                Collections.sort(mGroupsList, ComparatorMaker.getComparator(type, order));
+                updateSearchView();
+                mAdapter.notifyDataSetChanged();
+                break;
+
+        }
+    }
+
+    @Override
     public boolean onBackPressed() {
         switch (fragmentsMode) {
             case MODE_SEARCH:
@@ -345,8 +370,8 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed,
         }
         updateActionBarTitle();
     }
-
     // Необходим для показа количества выбранных объектов (тут групп)
+
     private void updateActionBarTitle() {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.invalidateOptionsMenu();
@@ -361,37 +386,6 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed,
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         int selectCount = mAdapter.getCountSelectedItems();
         activity.getSupportActionBar().setTitle(String.valueOf(selectCount));
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        Log.i(TAG, "Result code: " + resultCode + " RequestCode: " + requestCode);
-        if (resultCode != RESULT_OK) {
-            return;
-        }
-
-        switch (requestCode) {
-            case REQUIRED_CHANGE:
-                int id = data.getIntExtra(CHANGED_ITEM, 0);
-                Log.i(TAG, "CHANGED_ITEM equal " + id);
-                if (id == 0) {
-                    return;
-                }
-
-                GroupBackground mBackground = new GroupBackground();
-                mBackground.getGroupItem(id);
-
-                break;
-            case REQUEST_SORT:
-                int type = data.getIntExtra(TYPE_SORT, 0);
-                int order = data.getIntExtra(ORDER_SORT, 0);
-                Collections.sort(mGroupsList, ComparatorMaker.getComparator(type, order));
-                updateSearchView();
-                mAdapter.notifyDataSetChanged();
-                break;
-
-        }
     }
 
     private void createGroup() {
@@ -413,10 +407,10 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed,
     class GroupBackground { // TODO: 06.07.2021 в GroupDetailFragment есть очень похожий внутренний класс. Как это оптимизировать?
 
         private void subscribeToObservable(String action) {
-            this.subscribeToObservable(BackgroundSingleton.DatabaseApi.valueOf(action));
+            this.subscribeToObservable(BackgroundSingleton.DatabaseApiKeys.valueOf(action));
         }
 
-        private void subscribeToObservable(BackgroundSingleton.DatabaseApi action) {
+        private void subscribeToObservable(BackgroundSingleton.DatabaseApiKeys action) {
 
             switch (action) {
                 case GET_GROUPS:

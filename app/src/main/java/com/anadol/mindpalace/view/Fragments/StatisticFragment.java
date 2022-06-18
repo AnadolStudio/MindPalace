@@ -134,7 +134,7 @@ public class StatisticFragment extends SimpleFragment {
         ArrayMap<String, Observable> lastAction = BackgroundSingleton.get(getContext()).getStackActions();
         if (lastAction.size() > 0 && mDisposable == null) {
             StatisticBackground background = new StatisticBackground();
-            if (lastAction.containsKey(BackgroundSingleton.DatabaseApi.GET_GROUP_STATISTIC.name())) {
+            if (lastAction.containsKey(BackgroundSingleton.DatabaseApiKeys.GET_GROUP_STATISTIC.name())) {
                 background.getStatistic();
             }
         }

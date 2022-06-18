@@ -49,6 +49,7 @@ public class ComparatorMaker {
     }
 
     static class StringIntegerComparator implements Comparator<SimpleParent> {
+        //
         int order;
 
         public StringIntegerComparator(int order) {

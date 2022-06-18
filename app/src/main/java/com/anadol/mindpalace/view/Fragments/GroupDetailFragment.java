@@ -51,11 +51,11 @@ import io.reactivex.disposables.CompositeDisposable;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
-import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.DELETE_WORDS;
-import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.GET_WORDS;
-import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.INSERT_WORD;
-import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.SAVE_GROUP_AND_WORDS;
-import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApi.UPDATE_WORD_EXAM;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApiKeys.DELETE_WORDS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApiKeys.GET_WORDS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApiKeys.INSERT_WORD;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApiKeys.SAVE_GROUP_AND_WORDS;
+import static com.anadol.mindpalace.model.BackgroundSingleton.DatabaseApiKeys.UPDATE_WORD_EXAM;
 import static com.anadol.mindpalace.view.Dialogs.SortDialog.ORDER_SORT;
 import static com.anadol.mindpalace.view.Dialogs.SortDialog.TYPE_SORT;
 
@@ -350,7 +350,7 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
         doInBackground(INSERT_WORD);
     }
 
-    private void doInBackground(BackgroundSingleton.DatabaseApi action) {
+    private void doInBackground(BackgroundSingleton.DatabaseApiKeys action) {
         WordBackground mBackground = new WordBackground();
         mBackground.subscribeToObservable(action);
     }
@@ -570,10 +570,10 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
     class WordBackground {// TODO: 06.07.2021 в GroupListFragment есть очень похожий внутренний класс. Как это оптимизировать?
 
         private void subscribeToObservable(String action) {
-            this.subscribeToObservable(BackgroundSingleton.DatabaseApi.valueOf(action));
+            this.subscribeToObservable(BackgroundSingleton.DatabaseApiKeys.valueOf(action));
         }
 
-        private void subscribeToObservable(BackgroundSingleton.DatabaseApi action) {
+        private void subscribeToObservable(BackgroundSingleton.DatabaseApiKeys action) {
 
             switch (action) {
                 case GET_WORDS:

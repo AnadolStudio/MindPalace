@@ -13,39 +13,23 @@ import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.presenter.ComparatorMaker;
 import com.anadol.mindpalace.presenter.GroupStatisticItem;
 
-import org.reactivestreams.Subscriber;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.schedulers.Schedulers;
 
 public class BackgroundSingleton {
 
     private static final String TAG = BackgroundSingleton.class.getName();
-
-    public enum  DatabaseApi {
-        GET_GROUPS,
-        GET_GROUP_ITEM,
-        DELETE_GROUPS,
-        INSERT_GROUP,
-        GET_WORDS,
-        SAVE_GROUP_AND_WORDS,
-        DELETE_WORDS,
-        INSERT_WORD,
-        GET_GROUP_STATISTIC,
-        UPDATE_WORD_EXAM
-    }
     private static BackgroundSingleton sBackground;
-
     private static Context mContext;
-
     private ArrayMap<String, Observable> stackActions = new ArrayMap<>();
     private int lastItem = -1;
-
     private BackgroundSingleton(Context context) {
         mContext = context.getApplicationContext();
     }
@@ -65,24 +49,22 @@ public class BackgroundSingleton {
         return lastItem;
     }
 
-    private void removeFromStack(DatabaseApi key) {
+    private void removeFromStack(DatabaseApiKeys key) {
         Log.i(TAG, "removeFromStack: " + key.name());
         stackActions.remove(key.name());
     }
 
-    private void addToStack(DatabaseApi key, Observable observable) {
+    private void addToStack(DatabaseApiKeys key, Observable observable) {
         stackActions.put(key.name(), observable);
     }
 
-
     public Observable<ArrayList<Group>> getGroups() {
-        Observable<ArrayList<Group>> getGroups = (Observable<ArrayList<Group>>) getStackActions().get(DatabaseApi.GET_GROUPS.name());
+        Observable<ArrayList<Group>> getGroups = (Observable<ArrayList<Group>>) getStackActions().get(DatabaseApiKeys.GET_GROUPS.name());
 
-        if (getGroups == null || !stackActions.containsKey(DatabaseApi.GET_GROUPS.name())) {
+        if (getGroups == null || !stackActions.containsKey(DatabaseApiKeys.GET_GROUPS.name())) {
 
 
             Log.i(TAG, "Observable GET_GROUPS: create");
-
             getGroups = Observable.create(emitter -> {
 
                 try {
@@ -104,6 +86,8 @@ public class BackgroundSingleton {
                             Log.i(TAG, "Id :" + cursor.getGroup().getTableId());
                             cursor.moveToNext();
                         }
+
+                        // Делается сортировка, изходя из последних настроек
                         Collections.sort(mGroupsList, ComparatorMaker.getComparator(
                                 SettingsPreference.getGroupTypeSort(mContext),
                                 SettingsPreference.getGroupOrderSort(mContext)));
@@ -119,27 +103,25 @@ public class BackgroundSingleton {
                 } catch (Exception e) {
                     emitter.onError(e);
                 }
-
             });
 
             getGroups = getGroups
                     .doOnComplete(() -> {
-                        removeFromStack(DatabaseApi.GET_GROUPS);
+                        removeFromStack(DatabaseApiKeys.GET_GROUPS);
                     })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .cache();
 
-            addToStack(DatabaseApi.GET_GROUPS, getGroups); // TODO: как работает ?
+            addToStack(DatabaseApiKeys.GET_GROUPS, getGroups);
         }
-
         return getGroups;
     }
 
     public Observable<Group> getGroupItem(int itemId) {
-        Observable<Group> getGroupItem = (Observable<Group>) getStackActions().get(DatabaseApi.GET_GROUP_ITEM.name());
+        Observable<Group> getGroupItem = (Observable<Group>) getStackActions().get(DatabaseApiKeys.GET_GROUP_ITEM.name());
 
-        if (getGroupItem == null || !stackActions.containsKey(DatabaseApi.GET_GROUP_ITEM.name())) {
+        if (getGroupItem == null || !stackActions.containsKey(DatabaseApiKeys.GET_GROUP_ITEM.name())) {
             lastItem = itemId;
 
             Log.i(TAG, "Observable GET_GROUP_ITEM: create");
@@ -177,24 +159,24 @@ public class BackgroundSingleton {
             getGroupItem = getGroupItem
                     .subscribeOn(Schedulers.io())
                     .doOnComplete(() -> {
-                        removeFromStack(DatabaseApi.GET_GROUP_ITEM);
+                        removeFromStack(DatabaseApiKeys.GET_GROUP_ITEM);
                         lastItem = -1;
                     })
                     .observeOn(AndroidSchedulers.mainThread())
                     .cache();
 
-            addToStack(DatabaseApi.GET_GROUP_ITEM, getGroupItem);
+            addToStack(DatabaseApiKeys.GET_GROUP_ITEM, getGroupItem);
         }
 
         return getGroupItem;
     }
 
     public Observable<Group> insertGroup() {
-        Observable<Group> insertGroupItem = (Observable<Group>) getStackActions().get(DatabaseApi.INSERT_GROUP.name());
+        Observable<Group> insertGroupItem = (Observable<Group>) getStackActions().get(DatabaseApiKeys.INSERT_GROUP.name());
         // TODO: 11.07.2021
         //  Возможно следует добавить проверку на правильное приведение типов.
 
-        if (insertGroupItem == null || !stackActions.containsKey(DatabaseApi.INSERT_GROUP.name())) {
+        if (insertGroupItem == null || !stackActions.containsKey(DatabaseApiKeys.INSERT_GROUP.name())) {
 
             Log.i(TAG, "Observable INSERT_GROUP: create");
 
@@ -233,20 +215,20 @@ public class BackgroundSingleton {
             insertGroupItem = insertGroupItem
                     .subscribeOn(Schedulers.io())
                     .doOnComplete(() -> {
-                        removeFromStack(DatabaseApi.INSERT_GROUP);
+                        removeFromStack(DatabaseApiKeys.INSERT_GROUP);
                     })
                     .observeOn(AndroidSchedulers.mainThread())
                     .cache();
-            addToStack(DatabaseApi.INSERT_GROUP, insertGroupItem);
+            addToStack(DatabaseApiKeys.INSERT_GROUP, insertGroupItem);
         }
 
         return insertGroupItem;
     }
 
     public Observable<ArrayList<Group>> deleteGroups(ArrayList<Group> groups) {
-        Observable<ArrayList<Group>> deleteGroups = (Observable<ArrayList<Group>>) getStackActions().get(DatabaseApi.DELETE_GROUPS.name());
+        Observable<ArrayList<Group>> deleteGroups = (Observable<ArrayList<Group>>) getStackActions().get(DatabaseApiKeys.DELETE_GROUPS.name());
 
-        if (deleteGroups == null || !stackActions.containsKey(DatabaseApi.DELETE_GROUPS.name())) {
+        if (deleteGroups == null || !stackActions.containsKey(DatabaseApiKeys.DELETE_GROUPS.name())) {
 
             Log.i(TAG, "Observable DELETE_GROUPS : create");
 
@@ -280,23 +262,22 @@ public class BackgroundSingleton {
             });
             deleteGroups = deleteGroups
                     .doOnComplete(() -> {
-                        removeFromStack(DatabaseApi.DELETE_GROUPS);
+                        removeFromStack(DatabaseApiKeys.DELETE_GROUPS);
                     })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .cache();
 
-            addToStack(DatabaseApi.DELETE_GROUPS, deleteGroups);
+            addToStack(DatabaseApiKeys.DELETE_GROUPS, deleteGroups);
         }
 
         return deleteGroups;
     }
 
-
     public Observable<ArrayList<Word>> getWords(String groupUUIDString) {
-        Observable<ArrayList<Word>> getWords = (Observable<ArrayList<Word>>) getStackActions().get(DatabaseApi.GET_WORDS.name());
+        Observable<ArrayList<Word>> getWords = (Observable<ArrayList<Word>>) getStackActions().get(DatabaseApiKeys.GET_WORDS.name());
 
-        if (getWords == null || !stackActions.containsKey(DatabaseApi.GET_WORDS.name())) {
+        if (getWords == null || !stackActions.containsKey(DatabaseApiKeys.GET_WORDS.name())) {
 
             Log.i(TAG, "Observable GET_WORDS: create");
 
@@ -342,22 +323,22 @@ public class BackgroundSingleton {
             });
             getWords = getWords
                     .doOnComplete(() -> {
-                        removeFromStack(DatabaseApi.GET_WORDS);
+                        removeFromStack(DatabaseApiKeys.GET_WORDS);
                     })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .cache();
 
-            addToStack(DatabaseApi.GET_WORDS, getWords);
+            addToStack(DatabaseApiKeys.GET_WORDS, getWords);
         }
 
         return getWords;
     }
 
     public Observable<Integer> saveGroupAndWords(Group group, ArrayList<Word> words) {
-        Observable<Integer> saveGroupAndWords = (Observable<Integer>) getStackActions().get(DatabaseApi.SAVE_GROUP_AND_WORDS.name());
+        Observable<Integer> saveGroupAndWords = (Observable<Integer>) getStackActions().get(DatabaseApiKeys.SAVE_GROUP_AND_WORDS.name());
 
-        if (saveGroupAndWords == null || !stackActions.containsKey(DatabaseApi.SAVE_GROUP_AND_WORDS.name())) {
+        if (saveGroupAndWords == null || !stackActions.containsKey(DatabaseApiKeys.SAVE_GROUP_AND_WORDS.name())) {
 
             Log.i(TAG, "Observable SAVE_GROUP_AND_WORDS: create");
 
@@ -394,21 +375,21 @@ public class BackgroundSingleton {
             saveGroupAndWords = saveGroupAndWords
                     .subscribeOn(Schedulers.io())
                     .doOnComplete(() -> {
-                        removeFromStack(DatabaseApi.SAVE_GROUP_AND_WORDS);
+                        removeFromStack(DatabaseApiKeys.SAVE_GROUP_AND_WORDS);
                     })
                     .observeOn(AndroidSchedulers.mainThread())
                     .cache();
 
-            addToStack(DatabaseApi.SAVE_GROUP_AND_WORDS, saveGroupAndWords);
+            addToStack(DatabaseApiKeys.SAVE_GROUP_AND_WORDS, saveGroupAndWords);
         }
 
         return saveGroupAndWords;
     }
 
     public Observable<Word> insertWord(String groupUUIDString) {
-        Observable<Word> insertWordItem = (Observable<Word>) getStackActions().get(DatabaseApi.INSERT_WORD.name());
+        Observable<Word> insertWordItem = (Observable<Word>) getStackActions().get(DatabaseApiKeys.INSERT_WORD.name());
 
-        if (insertWordItem == null || !stackActions.containsKey(DatabaseApi.INSERT_WORD.name())) {
+        if (insertWordItem == null || !stackActions.containsKey(DatabaseApiKeys.INSERT_WORD.name())) {
 
             Log.i(TAG, "Observable INSERT_WORD: create");
 
@@ -464,21 +445,21 @@ public class BackgroundSingleton {
             insertWordItem = insertWordItem
                     .subscribeOn(Schedulers.io())
                     .doOnComplete(() -> {
-                        removeFromStack(DatabaseApi.INSERT_WORD);
+                        removeFromStack(DatabaseApiKeys.INSERT_WORD);
                     })
                     .observeOn(AndroidSchedulers.mainThread())
                     .cache();
 
-            addToStack(DatabaseApi.INSERT_WORD, insertWordItem);
+            addToStack(DatabaseApiKeys.INSERT_WORD, insertWordItem);
         }
 
         return insertWordItem;
     }
 
     public Observable<ArrayList<Word>> deleteWords(ArrayList<Word> words) {
-        Observable<ArrayList<Word>> deleteWords = (Observable<ArrayList<Word>>) getStackActions().get(DatabaseApi.DELETE_WORDS.name());
+        Observable<ArrayList<Word>> deleteWords = (Observable<ArrayList<Word>>) getStackActions().get(DatabaseApiKeys.DELETE_WORDS.name());
 
-        if (deleteWords == null || !stackActions.containsKey(DatabaseApi.DELETE_WORDS.name())) {
+        if (deleteWords == null || !stackActions.containsKey(DatabaseApiKeys.DELETE_WORDS.name())) {
 
             Log.i(TAG, "Observable DELETE_GROUPS : create");
 
@@ -507,24 +488,23 @@ public class BackgroundSingleton {
 
             deleteWords = deleteWords
                     .doOnComplete(() -> {
-                        removeFromStack(DatabaseApi.DELETE_WORDS);
+                        removeFromStack(DatabaseApiKeys.DELETE_WORDS);
                     })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .cache();
 
-            addToStack(DatabaseApi.DELETE_WORDS, deleteWords);
+            addToStack(DatabaseApiKeys.DELETE_WORDS, deleteWords);
         }
 
         return deleteWords;
     }
 
-
     public Observable<ArrayList<GroupStatisticItem>> getGroupStatistic() {
 
-        Observable<ArrayList<GroupStatisticItem>> getGroupStatistic = (Observable<ArrayList<GroupStatisticItem>>) getStackActions().get(DatabaseApi.GET_GROUP_STATISTIC.name());
+        Observable<ArrayList<GroupStatisticItem>> getGroupStatistic = (Observable<ArrayList<GroupStatisticItem>>) getStackActions().get(DatabaseApiKeys.GET_GROUP_STATISTIC.name());
 
-        if (getGroupStatistic == null || !stackActions.containsKey(DatabaseApi.GET_GROUP_STATISTIC.name())) {
+        if (getGroupStatistic == null || !stackActions.containsKey(DatabaseApiKeys.GET_GROUP_STATISTIC.name())) {
 
             Log.i(TAG, "Observable GET_GROUP_STATISTIC: create");
 
@@ -612,13 +592,13 @@ public class BackgroundSingleton {
             });
             getGroupStatistic = getGroupStatistic
                     .doOnComplete(() -> {
-                        removeFromStack(DatabaseApi.GET_GROUP_STATISTIC);
+                        removeFromStack(DatabaseApiKeys.GET_GROUP_STATISTIC);
                     })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .cache();
 
-            addToStack(DatabaseApi.GET_GROUP_STATISTIC, getGroupStatistic);
+            addToStack(DatabaseApiKeys.GET_GROUP_STATISTIC, getGroupStatistic);
         }
 
         return getGroupStatistic;
@@ -626,9 +606,9 @@ public class BackgroundSingleton {
 
     public Observable<ArrayList<Word>> updateWordsExam(ArrayList<Word> mWords) {
 
-        Observable<ArrayList<Word>> updateWordExam = (Observable<ArrayList<Word>>) getStackActions().get(DatabaseApi.UPDATE_WORD_EXAM.name());
+        Observable<ArrayList<Word>> updateWordExam = (Observable<ArrayList<Word>>) getStackActions().get(DatabaseApiKeys.UPDATE_WORD_EXAM.name());
 
-        if (updateWordExam == null || !stackActions.containsKey(DatabaseApi.UPDATE_WORD_EXAM.name())) {
+        if (updateWordExam == null || !stackActions.containsKey(DatabaseApiKeys.UPDATE_WORD_EXAM.name())) {
 
             Log.i(TAG, "Observable UPDATE_WORD_EXAM: create");
 
@@ -664,24 +644,37 @@ public class BackgroundSingleton {
             });
             updateWordExam = updateWordExam
                     .doOnComplete(() -> {
-                        removeFromStack(DatabaseApi.UPDATE_WORD_EXAM);
+                        removeFromStack(DatabaseApiKeys.UPDATE_WORD_EXAM);
                     })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .cache();
 
-            addToStack(DatabaseApi.UPDATE_WORD_EXAM, updateWordExam);
+            addToStack(DatabaseApiKeys.UPDATE_WORD_EXAM, updateWordExam);
         }
 
         return updateWordExam;
     }
 
     // Для симмулирования сложной операции
-    private void delay() throws InterruptedException {
-        for (int i = 0; i < 5; i++) {
-            Thread.sleep(i * 500);
+    private void delay(int sec) throws InterruptedException {
+        for (int i = 0; i < sec; i++) {
+            Thread.sleep(i * 1000);
             Log.i(TAG, "" + i);
         }
+    }
+
+    public enum DatabaseApiKeys {
+        GET_GROUPS,
+        GET_GROUP_ITEM,
+        DELETE_GROUPS,
+        INSERT_GROUP,
+        GET_WORDS,
+        SAVE_GROUP_AND_WORDS,
+        DELETE_WORDS,
+        INSERT_WORD,
+        GET_GROUP_STATISTIC,
+        UPDATE_WORD_EXAM
     }
 
 }
