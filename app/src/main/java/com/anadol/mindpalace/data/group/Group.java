@@ -150,12 +150,12 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
             return new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, new int[]{colors[0], colors[1], colors[2]});
         }
 
-        private static boolean stringIsUri(String string) {
+        private static boolean isUri(String string) {
             return string.contains("content");
         }
 
         public static int[] getColorsFromString(@Nullable String colors) {
-            if (colors == null || stringIsUri(colors)) {
+            if (colors == null || isUri(colors)) {
                 return DEFAULT_COLORS;
             }
 
@@ -168,7 +168,7 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
         }
 
         public static int[] getColors(String drawable) {
-            if (!stringIsUri(drawable)) {
+            if (!isUri(drawable)) {
                 return getColorsFromString(drawable);
             } else {
                 return DEFAULT_COLORS;
@@ -188,7 +188,7 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
 
         public static void getImage(ImageView imageView, String drawable) {
 
-            if (stringIsUri(drawable)) {
+            if (isUri(drawable)) {
                 Drawable placeholder = CreatorDrawable.createDrawable(DEFAULT_COLORS);
 
                 Picasso.get()

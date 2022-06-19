@@ -209,11 +209,8 @@
         <item name="android:lines">1</item>
     </style>
 
-    <style name="SimpleCardView" parent="CardView">
-        <item name="android:layout_marginTop">@dimen/margin_small</item>
-        <item name="android:layout_marginBottom">@dimen/margin_small</item>
-        <item name="android:layout_marginStart">@dimen/margin_normal</item>
-        <item name="android:layout_marginEnd">@dimen/margin_normal</item>
+    <style name="StatisticCardView" parent="CardView">
+        <item name="android:layout_margin">@dimen/margin_large</item>
         <item name="cardCornerRadius">@dimen/radius16</item>
         <item name="cardElevation">8dp</item>
     </style>

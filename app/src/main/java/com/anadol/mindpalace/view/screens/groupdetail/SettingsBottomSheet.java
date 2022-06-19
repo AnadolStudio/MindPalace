@@ -181,7 +181,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
         });
         applyButton.setOnClickListener(v -> save());
 
-        MySeekBarChangeListener mSeekBarChangeListener = new MySeekBarChangeListener();
+        SeekBarChangeListener mSeekBarChangeListener = new SeekBarChangeListener();
 
         red.addOnChangeListener(mSeekBarChangeListener);
         green.addOnChangeListener(mSeekBarChangeListener);
@@ -344,7 +344,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
         }
     }
 
-    class MySeekBarChangeListener implements Slider.OnChangeListener {
+    class SeekBarChangeListener implements Slider.OnChangeListener {
         int i = 0;
 
         @Override
