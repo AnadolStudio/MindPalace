@@ -3,6 +3,7 @@ package com.anadol.mindpalace.data.group;
 import androidx.annotation.NonNull;
 
 public abstract class SimpleParent {
+
     public abstract String getName();
 
     @NonNull

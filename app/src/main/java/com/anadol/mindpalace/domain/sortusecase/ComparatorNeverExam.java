@@ -5,7 +5,6 @@ import com.anadol.mindpalace.data.group.Word;
 import java.util.Comparator;
 
 public class ComparatorNeverExam implements Comparator<Word> {
-    private static final String TAG = ComparatorNeverExam.class.getName();
 
     @Override
     public int compare(Word o1, Word o2) {
@@ -18,10 +17,10 @@ public class ComparatorNeverExam implements Comparator<Word> {
         if (compare == 0) {
             compare = Boolean.compare(o1.isExam(), o2.isExam());
         }
+
         if (compare == 0) {
             compare = Integer.compare(o2.getCountLearn(), o1.getCountLearn());
         }
-
 
         return compare;
     }

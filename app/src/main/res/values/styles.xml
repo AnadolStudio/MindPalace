@@ -125,12 +125,6 @@
         <item name="android:layout_margin">@dimen/margin_normal</item>
     </style>
 
-    <style name="SettingsItemStyle">
-        <item name="android:background">@drawable/ripple_gray_item</item>
-        <item name="android:padding">@dimen/margin_small</item>
-        <item name="android:layout_margin">@dimen/margin_small</item>
-    </style>
-
     <style name="Information.HeaderText">
         <item name="android:textColor">@color/colorSecondary</item>
         <item name="android:layout_margin">8dp</item>
@@ -216,7 +210,7 @@
     </style>
 
     <style name="SettingsCardView" parent="CardView">
-        <item name="android:layout_margin">@dimen/margin_normal</item>
+        <item name="android:layout_margin">@dimen/margin_large</item>
         <item name="cardCornerRadius">@dimen/radius16</item>
         <item name="cardElevation">@dimen/elevation_normal</item>
     </style>

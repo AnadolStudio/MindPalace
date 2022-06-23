@@ -29,8 +29,7 @@ public class LessonBasicsFragment extends LessonFragment {
     private TextView countRepsText;
 
     public static LessonBasicsFragment newInstance() {
-        LessonBasicsFragment fragment = new LessonBasicsFragment();
-        return fragment;
+        return new LessonBasicsFragment();
     }
 
     @Override
@@ -42,7 +41,7 @@ public class LessonBasicsFragment extends LessonFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_lesson_basics, container, false);
+        View view = inflater.inflate(R.layout.layout_lesson_basics, container, false);
 
         bind(view);
         getData(savedInstanceState);
@@ -57,7 +56,6 @@ public class LessonBasicsFragment extends LessonFragment {
         translateText = view.findViewById(R.id.translate_textView);
         additionalText = view.findViewById(R.id.additional_textView);
         countRepsText = view.findViewById(R.id.count_reps);
-//        mChart = view.findViewById(R.id.chart_forget);
 
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener((v) -> getActivity().onBackPressed());
@@ -91,6 +89,7 @@ public class LessonBasicsFragment extends LessonFragment {
         int indexStatus = s.indexOf(isLearned);
         info.setSpan(new ForegroundColorSpan(colorTimeRepeat), indexDate, indexDate + date.length(), 0);
         info.setSpan(new ForegroundColorSpan(colorStatus), indexStatus, indexStatus + isLearned.length(), 0);
+
         return info;
     }
 
@@ -99,6 +98,7 @@ public class LessonBasicsFragment extends LessonFragment {
         TimeZone timeZone = TimeZone.getDefault();
         SimpleDateFormat format = new SimpleDateFormat("d MMM H:mm");
         format.setTimeZone(timeZone);
+
         return format.format(time);
     }
 

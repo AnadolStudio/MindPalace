@@ -8,13 +8,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.widget.ImageView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.anadol.mindpalace.R;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.UUID;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class Group extends SimpleParent implements Parcelable, Comparable<Group> {
     public static final int TYPE_NUMBERS = R.string.numbers;
@@ -161,9 +161,11 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
 
             String[] strings = colors.split(";");
             int[] ints = new int[strings.length];
+
             for (int i = 0; i < strings.length; i++) {
                 ints[i] = Integer.parseInt(strings[i]);
             }
+
             return ints;
         }
 
@@ -179,7 +181,9 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
             StringBuilder stringBuilder = new StringBuilder();
             for (int i = 0; i < colors.length; i++) {
 
-                if (i != 0) stringBuilder.append(";");
+                if (i != 0) {
+                    stringBuilder.append(";");
+                }
 
                 stringBuilder.append(colors[i]);
             }
@@ -191,11 +195,10 @@ public class Group extends SimpleParent implements Parcelable, Comparable<Group>
             if (isUri(drawable)) {
                 Drawable placeholder = CreatorDrawable.createDrawable(DEFAULT_COLORS);
 
-                Picasso.get()
+                Glide.with(imageView)
                         .load(drawable)
                         .error(placeholder)
                         .placeholder(placeholder)
-                        .fit()
                         .centerCrop()
                         .into(imageView);
             } else {

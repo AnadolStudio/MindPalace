@@ -17,7 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anadol.mindpalace.R;
-import com.anadol.mindpalace.domain.sortusecase.ComparatorMaker;
+import com.anadol.mindpalace.domain.sortusecase.ComparatorFactory;
 import com.anadol.mindpalace.data.group.BackgroundSingleton;
 import com.anadol.mindpalace.data.group.Group;
 import com.anadol.mindpalace.data.group.Word;
@@ -441,7 +441,7 @@ public class GroupDetailFragment extends SimpleFragment implements IOnBackPresse
             case REQUEST_SORT:
                 int type = data.getIntExtra(TYPE_SORT, 0);
                 int order = data.getIntExtra(ORDER_SORT, 0);
-                Collections.sort(mWords, ComparatorMaker.getComparator(type, order));
+                Collections.sort(mWords, ComparatorFactory.getComparator(type, order));
                 updateSearchView();
                 mAdapter.notifyDataSetChanged();
                 break;

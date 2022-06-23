@@ -4,7 +4,7 @@ import com.anadol.mindpalace.data.group.SimpleParent;
 
 import java.util.Comparator;
 
-public class ComparatorMaker {
+public class ComparatorFactory {
     public static final int TYPE_NAME = 101;
     public static final int TYPE_DATE = 102;
     public static final int ORDER_DESC = 201;
@@ -13,6 +13,7 @@ public class ComparatorMaker {
     // TODO Sort для слов в процессе и уже изученых
     public static Comparator<SimpleParent> getComparator(int type, int order) {
         Comparator<SimpleParent> comparator;
+
         switch (type) {
             default:
             case TYPE_NAME:
@@ -22,6 +23,7 @@ public class ComparatorMaker {
                 comparator = new IdComparator(order);
                 break;
         }
+
         return comparator;
     }
 

@@ -84,7 +84,6 @@ public class QuestionMaker {
             route = RandomUtil.nextInt(2);
         }
 
-
         String questionString = buildQuestion(typeGroup, word);
         String answerString = word.getMultiAssociationFormatSpace();
         String[] falseAnswers = buildFalseAnswers(wordsForFalseAnswers, typeGroup, route, word);
@@ -126,6 +125,7 @@ public class QuestionMaker {
                     break;
             }
         }
+
         return falseAnswers;
     }
 

@@ -16,8 +16,8 @@ import com.anadol.mindpalace.R;
 public class ViewHolderGroup extends MySimpleViewHolder implements View.OnClickListener, View.OnLongClickListener {
     private MyListAdapter<? extends SimpleParent> mAdapter;
     private Group mGroup;
-    private TextView mTextView;
-    private ImageView mImageView;
+    private final TextView mTextView;
+    private final ImageView mImageView;
     private boolean isSelected;
 
     public ViewHolderGroup(@NonNull View itemView, MyListAdapter<? extends SimpleParent> mAdapter) {

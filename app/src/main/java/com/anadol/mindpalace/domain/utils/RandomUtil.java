@@ -58,9 +58,11 @@ public class RandomUtil {
         ArrayList<T> randomArrayList = new ArrayList<>();
 
         ArrayList<Integer> integers = getRandomInts(countItems, arrayList.size());
+
         for (int i = 0; i < integers.size(); i++) {
             randomArrayList.add(arrayList.get(integers.get(i)));
         }
+
         return randomArrayList;
     }
 }
