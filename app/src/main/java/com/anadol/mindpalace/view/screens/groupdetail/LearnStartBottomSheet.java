@@ -95,18 +95,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
     }
 
     public static int getRouteTest(ArrayList<Word> words) {
-        /*int count = 0;
-        for (Word w : words) {
-
-//            if (w.getCountLearn() % 2 == 0) {
-            if (w.getCountLearn() > 2) {
-                count++;
-            }
-        }
-
-        return count > words.size() / 2 ? FORWARD : INVERSE;*/
-        boolean b = new Random().nextBoolean();
-        return b ? FORWARD : INVERSE;
+        return new Random().nextBoolean() ? FORWARD : INVERSE;
     }
 
     public static String getTypeTest(ArrayList<Word> words) {
@@ -139,16 +128,15 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
     }
 
     private static ArrayList<Word> getWordsToExam(ArrayList<Word> words) {
-        //Сортирует таким образом что ни разу не проходящие екзамен слова будут в начале списка
+        //Сортирует таким образом что ни разу не проходящие экзамен слова будут в начале списка
         Collections.sort(words, new ComparatorNeverExam());
-        Log.i(TAG, "updateUI: words" + words);
         ArrayList<Word> arrayList = new ArrayList<>();
-        Word w;
+
         for (int i = 0; i < Math.min(words.size(), 20); i++) {
-            w = words.get(i);
+            Word w = words.get(i);
             if (w.readyToExam()) arrayList.add(w);
         }
-        Log.i(TAG, "getWordsToExam: " + arrayList);
+
         return arrayList;
     }
 
@@ -166,9 +154,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         mWords = getArguments().getParcelableArrayList(WORDS);
         setListeners();
         bindDataWithView();
-        /*if (savedInstanceState == null) {
-            mChipGroupObjectTest.check(R.id.auto_chip);
-        }*/
+
         return view;
     }
 
@@ -187,16 +173,19 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
 
     private void routeAndObjectGroupSetEnabled(boolean enable) {
         Chip chip;
+
         for (int i = 0; i < mChipGroupRouteTest.getChildCount(); i++) {
             chip = (Chip) mChipGroupRouteTest.getChildAt(i);
             chip.setEnabled(enable);
             chip.setChecked(false);
         }
+
         for (int i = 0; i < mChipGroupObjectTest.getChildCount(); i++) {
             chip = (Chip) mChipGroupObjectTest.getChildAt(i);
             chip.setEnabled(enable);
             chip.setChecked(false);
         }
+
         mEditText.setEnabled(enable);
         updateUI();
     }
@@ -260,9 +249,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         setStyle(STYLE_NORMAL, R.style.BottomSheetModalTheme);
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
-//        setCancelable(false);
-        return dialog;
+        return super.onCreateDialog(savedInstanceState);
     }
 
     @Override
@@ -279,16 +266,6 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
                 updateWords();
             }
 
-            /*for (int i = lastAction.size() - 1; i >= 0; i--) {
-                // TODO: ?? Перепроверка каждого значения?
-                if (lastAction.keyAt(i).equals(BackgroundSingleton.DatabaseApi.UPDATE_WORD_EXAM.name())) {
-                    updateWords();
-                }
-                if (lastAction.containsKey(BackgroundSingleton.DatabaseApi.UPDATE_WORD_EXAM.name())) {
-                    updateWords();
-                }
-
-            }*/
         }else {
             updateWords();
         }
@@ -299,7 +276,6 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         mDisposable = observable.subscribe(words -> {
             mWords = words;
             updateUI();
-            Log.i(TAG, "UpdateStatusWord is done");
         });
     }
 
@@ -323,11 +299,11 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         }
 
         while (isAllReady) {
-            if (typeTest == EXAM) {
+            if (typeTest.equals(EXAM)) {
                 break;
             }
 
-            if (typeTest == null || routeTest == -1 || objectTest == null) {
+            if (routeTest == -1 || objectTest == null) {
                 isAllReady = false;
                 break;
             }
@@ -428,6 +404,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
                 learnList = RandomUtil.getRandomArrayList(learnList, learnList.size());
                 break;
         }
+
         startLearn(learnList, typeTest, routeTest);
     }
 
@@ -445,15 +422,13 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
     }
 
     private void startLearn(ArrayList<Word> learnList, String type, int route) {
-
-        Intent intent = LearnActivity.newIntent( // Тут предаются выбратнные атрибуты для начала теста
+        startActivity(LearnActivity.newIntent( // Тут предаются выбратнные атрибуты для начала теста
                 getContext(),
                 learnList,
                 typeGroup,
                 type,
-                route);
-
-        startActivity(intent);
+                route)
+        );
     }
 
     private ArrayList<Word> getWordsForPriority(ArrayList<Word> words, int count) {
@@ -472,14 +447,13 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         typeTest = getTypeTest();
         routeTest = getRouteTest();
 
-        Intent intent = LearnActivity.newIntent( // Тут предаются выбратнные атрибуты для начала теста
+        startActivity(LearnActivity.newIntent(
                 getContext(),
                 examList,
                 typeGroup,
                 typeTest,
-                routeTest);
-
-        startActivity(intent);
+                routeTest)
+        );
     }
 
     private boolean findingRandomError(int count) {
@@ -487,10 +461,12 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
             makeToast(getString(R.string.min_word_list_size, LearnStartBottomSheet.MIN_COUNT_WORDS));
             return true;
         }
+
         if (count > mWords.size()) {
             makeToast(getString(R.string.override_number_words));
             return true;
         }
+
         return false;
     }
 
@@ -533,6 +509,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
             default:
                 typeTest = null;
         }
+
         return typeTest;
     }
 
@@ -556,12 +533,6 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
         String objectTest;
 
         switch (mChipGroupObjectTest.getCheckedChipId()) {
-/*
-            case R.id.auto_chip:
-                objectTest = AUTO;
-                mEditText.setVisibility(View.GONE);
-                break;
-*/
             case R.id.diapason_chip:
                 objectTest = DIAPASON;
                 mEditText.setVisibility(View.VISIBLE);
@@ -574,6 +545,7 @@ public class LearnStartBottomSheet extends BottomSheetDialogFragment implements 
                 objectTest = null;
                 break;
         }
+
         return objectTest;
     }
 }

@@ -62,13 +62,6 @@ public class GroupCursorWrapper extends CursorWrapper {
         long time = getLong(getColumnIndex(Words.TIME));
         boolean exam = getInt(getColumnIndex(Words.EXAM)) == 1;
 
-        if (word.getTime() != time || word.getCountLearn() != countLear) {
-            Log.i(TAG, "getWordExam: " + word.getOriginal() +
-                    " oldTime " + word.getTime() + " oldCountLearn " + word.getCountLearn());
-            Log.i(TAG, "getWordExam: " + word.getOriginal() +
-                    " newTime " + time + " newCountLearn " + countLear);
-        }
-
         word.setCountLearn(countLear);
         word.setTime(time);
         word.setExam(exam);

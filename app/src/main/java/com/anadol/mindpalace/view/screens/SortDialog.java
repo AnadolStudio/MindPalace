@@ -16,7 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.anadol.mindpalace.domain.utils.SettingsPreference;
-import com.anadol.mindpalace.domain.sortusecase.ComparatorMaker;
+import com.anadol.mindpalace.domain.sortusecase.ComparatorFactory;
 import com.anadol.mindpalace.R;
 
 import static android.app.Activity.RESULT_OK;
@@ -58,14 +58,15 @@ public class SortDialog extends DialogFragment {
         int order = typeItems.equals(Types.GROUP.name()) ?
                 SettingsPreference.getGroupOrderSort(getContext()) : SettingsPreference.getWordOrderSort(getContext());
 
-        typeGroup.check(type == ComparatorMaker.TYPE_NAME ? R.id.name_radio : R.id.date_radio);
-        orderGroup.check(order == ComparatorMaker.ORDER_ASC ? R.id.asc_radio : R.id.desc_radio);
+        typeGroup.check(type == ComparatorFactory.TYPE_NAME ? R.id.name_radio : R.id.date_radio);
+        orderGroup.check(order == ComparatorFactory.ORDER_ASC ? R.id.asc_radio : R.id.desc_radio);
 
         mButton.setOnClickListener((v) -> apply());
 
         Dialog dialog = new AlertDialog.Builder(getActivity())
                 .setView(view)
                 .create();
+
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         return dialog;
     }
@@ -80,10 +81,10 @@ public class SortDialog extends DialogFragment {
         Intent intent = new Intent();
 
         int idType = typeGroup.getCheckedRadioButtonId();
-        int type = idType == R.id.date_radio ? ComparatorMaker.TYPE_DATE : ComparatorMaker.TYPE_NAME;
+        int type = idType == R.id.date_radio ? ComparatorFactory.TYPE_DATE : ComparatorFactory.TYPE_NAME;
 
         int idOrder = orderGroup.getCheckedRadioButtonId();
-        int order = idOrder == R.id.asc_radio ? ComparatorMaker.ORDER_ASC : ComparatorMaker.ORDER_DESC;
+        int order = idOrder == R.id.asc_radio ? ComparatorFactory.ORDER_ASC : ComparatorFactory.ORDER_DESC;
 
         intent.putExtra(TYPE_SORT, type);
         intent.putExtra(ORDER_SORT, order);

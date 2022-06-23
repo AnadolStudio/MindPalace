@@ -29,8 +29,7 @@ public class LessonBasicsFragment extends LessonFragment {
     private TextView countRepsText;
 
     public static LessonBasicsFragment newInstance() {
-        LessonBasicsFragment fragment = new LessonBasicsFragment();
-        return fragment;
+        return new LessonBasicsFragment();
     }
 
     @Override
@@ -90,6 +89,7 @@ public class LessonBasicsFragment extends LessonFragment {
         int indexStatus = s.indexOf(isLearned);
         info.setSpan(new ForegroundColorSpan(colorTimeRepeat), indexDate, indexDate + date.length(), 0);
         info.setSpan(new ForegroundColorSpan(colorStatus), indexStatus, indexStatus + isLearned.length(), 0);
+
         return info;
     }
 
@@ -98,6 +98,7 @@ public class LessonBasicsFragment extends LessonFragment {
         TimeZone timeZone = TimeZone.getDefault();
         SimpleDateFormat format = new SimpleDateFormat("d MMM H:mm");
         format.setTimeZone(timeZone);
+
         return format.format(time);
     }
 

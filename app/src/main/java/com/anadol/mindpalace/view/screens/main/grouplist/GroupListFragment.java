@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.data.group.BackgroundSingleton;
 import com.anadol.mindpalace.data.group.Group;
-import com.anadol.mindpalace.domain.sortusecase.ComparatorMaker;
+import com.anadol.mindpalace.domain.sortusecase.ComparatorFactory;
 import com.anadol.mindpalace.domain.utils.recyclerview.RecyclerViewAnimation;
 import com.anadol.mindpalace.view.adapters.MyListAdapter;
 import com.anadol.mindpalace.domain.utils.recyclerview.SlowGridLayoutManager;
@@ -330,7 +330,7 @@ public class GroupListFragment extends SimpleFragment implements IOnBackPressed,
             case REQUEST_SORT:
                 int type = data.getIntExtra(TYPE_SORT, 0);
                 int order = data.getIntExtra(ORDER_SORT, 0);
-                Collections.sort(mGroupsList, ComparatorMaker.getComparator(type, order));
+                Collections.sort(mGroupsList, ComparatorFactory.getComparator(type, order));
                 updateSearchView();
                 mAdapter.notifyDataSetChanged();
                 break;

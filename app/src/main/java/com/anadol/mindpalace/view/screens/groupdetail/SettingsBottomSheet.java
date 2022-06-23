@@ -20,18 +20,18 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.NestedScrollView;
-
 import com.anadol.mindpalace.R;
 import com.anadol.mindpalace.data.group.Group;
+import com.anadolstudio.core.util.RealFormatter;
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
-import com.google.android.material.slider.LabelFormatter;
 import com.google.android.material.slider.Slider;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -42,11 +42,8 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
     private static final int REQUEST_STORAGE_PERMISSION = 2;
     private static final String COLORS = "colors";
     private static final String URI = "uri";
-    private static final String[] STORAGE_PERMISSION = new String[]{
-            Manifest.permission.READ_EXTERNAL_STORAGE};
+    private static final String[] STORAGE_PERMISSION = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
 
-
-    private NestedScrollView mScrollView;
     private ImageButton cancelButton;
     private EditText mEditText;
     private ChipGroup typeChipGroup;
@@ -114,7 +111,6 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
         red = view.findViewById(R.id.red_slider);
         green = view.findViewById(R.id.green_slider);
         blue = view.findViewById(R.id.blue_slider);
-        mScrollView = view.findViewById(R.id.scrollView);
     }
 
     private void setListeners() {
@@ -135,10 +131,11 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
                     break;
             }
         });
+
         colorsChipGroup.setOnCheckedChangeListener((chipGroup, i) -> {
             Log.i(TAG, "setListeners: chip id" + i);
 
-            if (colorsGradient == null){
+            if (colorsGradient == null) {
                 Toast.makeText(getContext(), "Error", Toast.LENGTH_SHORT).show();
                 return;// Однажды была ошибка, выявить не смог
             }
@@ -155,6 +152,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
                     break;
             }
         });
+
         gradientButton.setOnClickListener(v -> {
             if (colorsGradient == null) {
                 setVisibleColorPicker();
@@ -169,6 +167,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
                 }
             }
         });
+
         photoButton.setOnClickListener(v -> {
             if (hasStoragePermission()) {
                 llColorPicker.setVisibility(View.GONE);
@@ -179,6 +178,7 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
             }
 
         });
+
         applyButton.setOnClickListener(v -> save());
 
         SeekBarChangeListener mSeekBarChangeListener = new SeekBarChangeListener();
@@ -222,7 +222,9 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
             mGroup = savedInstanceState.getParcelable(GroupDetailFragment.GROUP);
             colorsGradient = savedInstanceState.getIntArray(COLORS);
             String uri = savedInstanceState.getString(URI);
-            if (uri != null) uriPhoto = Uri.parse(uri);
+            if (uri != null) {
+                uriPhoto = Uri.parse(uri);
+            }
         }
     }
 
@@ -299,24 +301,26 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         setStyle(STYLE_NORMAL, R.style.BottomSheetModalTheme);
-//        setCancelable(false);
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
-        return dialog;
+        return super.onCreateDialog(savedInstanceState);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode != RESULT_OK) return;
+        if (resultCode != RESULT_OK) {
+            return;
+        }
 
         switch (requestCode) {
             case REQUEST_GALLERY:
 
                 uriPhoto = data.getData();
-                Log.i(TAG, "onActivityResult: " + uriPhoto.toString());
-                mImageView.setImageURI(null);
-                mImageView.setImageURI(uriPhoto);
+
+                Glide.with(mImageView)
+                        .load(uriPhoto)
+                        .centerCrop()
+                        .into(mImageView);
 
                 break;
         }
@@ -332,15 +336,6 @@ public class SettingsBottomSheet extends BottomSheetDialogFragment {
                 break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
-    private static class RealFormatter implements LabelFormatter {
-        @NonNull
-        @Override
-        public String getFormattedValue(float value) {
-            int i = Math.round(value);
-            return Integer.toString(i);
         }
     }
 

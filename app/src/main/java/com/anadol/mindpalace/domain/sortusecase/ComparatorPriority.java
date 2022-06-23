@@ -6,8 +6,6 @@ import java.util.Comparator;
 
 public class ComparatorPriority implements Comparator<Word> {
 
-    private static final String TAG = ComparatorPriority.class.getName();
-
     @Override
     public int compare(Word o1, Word o2) {
         boolean b1 = o1.isRepeatable();
@@ -15,7 +13,6 @@ public class ComparatorPriority implements Comparator<Word> {
         // Сперва проверяю доступность для повторения
         // Возрастание = false > true, убывание = true > false
         int compare = Boolean.compare(b2, b1);
-//        Log.i(TAG, "compareTime: " + b1 + " " + b2);
 
         if (compare == 0) {
             if (!b1){
@@ -29,8 +26,8 @@ public class ComparatorPriority implements Comparator<Word> {
             if (compare == 0){
                 compare = Long.compare(o1.getTime(), o2.getTime());
             }
-//            Log.i(TAG, "compareCountLearn: " + o1.getCountLearn() + " " + o2.getCountLearn());
         }
+
         return compare;
     }
 }

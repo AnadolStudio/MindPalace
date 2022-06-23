@@ -21,8 +21,7 @@ public class LessonNumbersFragment extends LessonFragment {
     private Button uploadButton;
 
     public static LessonNumbersFragment newInstance() {
-        LessonNumbersFragment fragment = new LessonNumbersFragment();
-        return fragment;
+        return new LessonNumbersFragment();
     }
 
     @Override
