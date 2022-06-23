@@ -4,25 +4,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.anadol.mindpalace.data.group.Group;
+import com.anadol.mindpalace.data.group.Word;
+import com.anadol.mindpalace.data.question.Question;
+import com.anadol.mindpalace.data.question.QuestionMaker;
+import com.anadol.mindpalace.domain.utils.RandomUtil;
+import com.anadol.mindpalace.view.screens.groupdetail.LearnStartBottomSheet;
+import com.anadol.mindpalace.view.screens.main.SimpleFragmentActivity;
+
+import java.util.ArrayList;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import com.anadol.mindpalace.data.group.Group;
-import com.anadol.mindpalace.domain.utils.RandomUtil;
-import com.anadol.mindpalace.data.question.Question;
-import com.anadol.mindpalace.data.question.QuestionMaker;
-import com.anadol.mindpalace.view.screens.main.SimpleFragmentActivity;
-import com.anadol.mindpalace.view.screens.groupdetail.LearnStartBottomSheet;
-import com.anadol.mindpalace.data.group.Word;
-
-import java.util.ArrayList;
 
 public class LearnActivity extends SimpleFragmentActivity {
     public static final int REQUEST_RESULT = 1;
     public static final String PROGRESS = "progress";
     public static final String QUESTIONS = "questions";
-    private ArrayList<Word> mWords;
 
     public static Intent newIntent(Context context, ArrayList<Word> words, int typeGroup, String typeTest, int routeTest) {
 
@@ -33,6 +32,8 @@ public class LearnActivity extends SimpleFragmentActivity {
         intent.putExtra(LearnStartBottomSheet.ROUTE_TEST, routeTest);
         return intent;
     }
+
+    private ArrayList<Word> mWords;
 
     @Override
     protected Fragment createFragment() {
@@ -60,7 +61,9 @@ public class LearnActivity extends SimpleFragmentActivity {
     }
 
     private Fragment buildLearnFragment(Question[] questions, ArrayList<Word> mWords, int progress) {
-        if (mWords == null) mWords = getIntent().getParcelableArrayListExtra(LearnStartBottomSheet.WORDS);
+        if (mWords == null) {
+            mWords = getIntent().getParcelableArrayListExtra(LearnStartBottomSheet.WORDS);
+        }
 
 
         String typeTest = getIntent().getStringExtra(LearnStartBottomSheet.TYPE_TEST);

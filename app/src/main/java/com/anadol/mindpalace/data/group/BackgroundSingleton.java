@@ -499,109 +499,6 @@ public class BackgroundSingleton {
         return deleteWords;
     }
 
-    public Observable<ArrayList<GroupStatisticItem>> getGroupStatistic() {
-
-        Observable<ArrayList<GroupStatisticItem>> getGroupStatistic = (Observable<ArrayList<GroupStatisticItem>>) getStackActions().get(DatabaseApiKeys.GET_GROUP_STATISTIC.name());
-
-        if (getGroupStatistic == null || !stackActions.containsKey(DatabaseApiKeys.GET_GROUP_STATISTIC.name())) {
-
-            Log.i(TAG, "Observable GET_GROUP_STATISTIC: create");
-
-            getGroupStatistic = Observable.create(emitter -> {
-
-                try {
-                    ArrayList<GroupStatisticItem> statisticItems = new ArrayList<>();
-
-                    ContentResolver contentResolver = mContext.getContentResolver();
-
-                    GroupCursorWrapper groupCursor = new GroupCursorWrapper(contentResolver.query(
-                            DataBaseSchema.Groups.CONTENT_URI,
-                            null, null, null, null));
-                    Cursor wordCursor = null;
-
-                    if (groupCursor.getCount() != 0) {
-                        groupCursor.moveToFirst();
-
-                        GroupStatisticItem item;
-                        String name;
-                        String uuidGroup;
-                        int needToLearn = 0;
-                        int learning = 0;
-                        int learned = 0;
-
-
-                        while (!groupCursor.isAfterLast()) {
-                            name = groupCursor.getString(groupCursor.getColumnIndex(DataBaseSchema.Groups.NAME_GROUP));
-                            uuidGroup = groupCursor.getString(groupCursor.getColumnIndex(DataBaseSchema.Groups.UUID));
-                            // Need to learn
-                            wordCursor = contentResolver.query(
-                                    DataBaseSchema.Words.CONTENT_URI,
-                                    new String[]{"COUNT(" + DataBaseSchema.Words._ID + ") AS count"},
-                                    DataBaseSchema.Words.UUID_GROUP + " = ? AND (" + DataBaseSchema.Words.TIME + " = ? OR " + DataBaseSchema.Words.TIME + " IS NULL)",
-                                    new String[]{uuidGroup, "0"}, null);
-
-                            if (wordCursor != null) {
-                                wordCursor.moveToFirst();
-                                needToLearn = wordCursor.getInt(0);
-                            }
-                            // Learning
-                            wordCursor = contentResolver.query(
-                                    DataBaseSchema.Words.CONTENT_URI,
-                                    new String[]{"COUNT(" + DataBaseSchema.Words._ID + ") AS count"},
-                                    DataBaseSchema.Words.UUID_GROUP + " = ? AND " + DataBaseSchema.Words.TIME + " != ? AND " + DataBaseSchema.Words.EXAM + " = ?",
-                                    new String[]{uuidGroup, "0", "0"}, null);
-
-                            if (wordCursor != null) {
-                                wordCursor.moveToFirst();
-                                learning = wordCursor.getInt(0);
-                            }
-                            // Learned
-                            wordCursor = contentResolver.query(
-                                    DataBaseSchema.Words.CONTENT_URI,
-                                    new String[]{"COUNT(" + DataBaseSchema.Words._ID + ") AS count"},
-                                    DataBaseSchema.Words.UUID_GROUP + " = ? AND " + DataBaseSchema.Words.EXAM + " = ?",
-                                    new String[]{uuidGroup, "1"}, null);
-
-                            if (wordCursor != null) {
-                                wordCursor.moveToFirst();
-                                learned = wordCursor.getInt(0);
-                            }
-                            Log.i(TAG, "doInBackground: " + needToLearn + " " + learning + " " + learned);
-                            item = new GroupStatisticItem(name, needToLearn, learning, learned);
-                            statisticItems.add(item);
-
-                            groupCursor.moveToNext();
-                        }
-                    }
-
-                    Log.i(TAG, "doInBackground: " + statisticItems.toString());
-
-                    groupCursor.close();
-                    if (wordCursor != null) {
-                        wordCursor.close();
-                    }
-
-                    emitter.onNext(statisticItems);
-                    emitter.onComplete();
-
-                } catch (Exception e) {
-                    emitter.onError(e);
-                }
-
-            });
-            getGroupStatistic = getGroupStatistic
-                    .doOnComplete(() -> {
-                        removeFromStack(DatabaseApiKeys.GET_GROUP_STATISTIC);
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .cache();
-
-            addToStack(DatabaseApiKeys.GET_GROUP_STATISTIC, getGroupStatistic);
-        }
-
-        return getGroupStatistic;
-    }
 
     public Observable<ArrayList<Word>> updateWordsExam(ArrayList<Word> mWords) {
 
@@ -672,7 +569,6 @@ public class BackgroundSingleton {
         SAVE_GROUP_AND_WORDS,
         DELETE_WORDS,
         INSERT_WORD,
-        GET_GROUP_STATISTIC,
         UPDATE_WORD_EXAM
     }
 

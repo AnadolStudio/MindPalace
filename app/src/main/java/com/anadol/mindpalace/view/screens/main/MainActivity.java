@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 currentId = id;
                 switch (id) {
                     case R.id.navigation_statistic:
-                        return addFragment(StatisticFragment.newInstance());
+                        return addFragment(StatisticFragment.Companion.newInstance());
                     case R.id.navigation_home:
                         return addFragment(GroupListFragment.newInstance());
                     case R.id.navigation_settings:
