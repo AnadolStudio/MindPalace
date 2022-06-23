@@ -16,6 +16,7 @@ public class GroupStatisticItem implements Parcelable {
             return new GroupStatisticItem[size];
         }
     };
+
     String name;
     int needToLearn;
     int learning;

@@ -56,7 +56,6 @@ public class NotificationWorker extends Worker {
     @Override
     public Result doWork() {
         String[] ids = getInputData().getStringArray(WORDS_ID);
-        Log.i(TAG, "doWork: ids " + Arrays.toString(ids));
 
         Context context = getApplicationContext();
         ContentResolver contentResolver = context.getContentResolver();
@@ -64,7 +63,6 @@ public class NotificationWorker extends Worker {
         Group mGroup = getGroup(words, contentResolver);
 
         if (mGroup == null) {
-            Log.i(TAG, "doWork: failure");
             return Result.failure();
         }
 
@@ -115,9 +113,9 @@ public class NotificationWorker extends Worker {
 
     private Group getGroup(ArrayList<Word> words, ContentResolver contentResolver) {
         Group mGroup = null;
-        GroupCursorWrapper cursor;
+
         if (!words.isEmpty()) {
-            cursor = new GroupCursorWrapper(contentResolver.query(
+            GroupCursorWrapper cursor = new GroupCursorWrapper(contentResolver.query(
                     DataBaseSchema.Groups.CONTENT_URI,
                     null,
                     DataBaseSchema.Groups.UUID + " = ?",
@@ -128,13 +126,15 @@ public class NotificationWorker extends Worker {
                 mGroup = cursor.getGroup();
             }
         }
+
         return mGroup;
     }
 
     private ArrayList<Word> getWords(String[] ids, ContentResolver contentResolver) {
         ArrayList<Word> words = new ArrayList<>();
         GroupCursorWrapper cursor;
-        Word word;
+
+
         for (String id : ids) {
             cursor = new GroupCursorWrapper(contentResolver.query(
                     DataBaseSchema.Words.CONTENT_URI,
@@ -144,18 +144,19 @@ public class NotificationWorker extends Worker {
 
             if (cursor.getCount() != 0) {
                 cursor.moveToFirst();
-                word = cursor.getWord();
+
+                Word word = cursor.getWord();
                 if (word.isRepeatable()) readyToRepeat++;
                 words.add(word);
             }
         }
+
         return words;
     }
 
     private void createChanel(NotificationManagerCompat manager) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel =
-                    new NotificationChannel(CHANEL_ID, "Mind Palace Chanel", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel channel = new NotificationChannel(CHANEL_ID, "Mind Palace Chanel", NotificationManager.IMPORTANCE_DEFAULT);
             manager.createNotificationChannel(channel);
         }
     }

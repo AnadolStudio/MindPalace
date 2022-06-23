@@ -4,14 +4,12 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
 import android.util.ArrayMap;
 import android.util.Log;
 
 import com.anadol.mindpalace.R;
-import com.anadol.mindpalace.domain.sortusecase.ComparatorMaker;
-import com.anadol.mindpalace.data.statistic.GroupStatisticItem;
+import com.anadol.mindpalace.domain.sortusecase.ComparatorFactory;
 import com.anadol.mindpalace.domain.utils.SettingsPreference;
 
 import java.util.ArrayList;
@@ -87,7 +85,7 @@ public class BackgroundSingleton {
                         }
 
                         // Делается сортировка, изходя из последних настроек
-                        Collections.sort(mGroupsList, ComparatorMaker.getComparator(
+                        Collections.sort(mGroupsList, ComparatorFactory.getComparator(
                                 SettingsPreference.getGroupTypeSort(mContext),
                                 SettingsPreference.getGroupOrderSort(mContext)));
                     } else {
@@ -259,6 +257,7 @@ public class BackgroundSingleton {
                 }
 
             });
+
             deleteGroups = deleteGroups
                     .doOnComplete(() -> {
                         removeFromStack(DatabaseApiKeys.DELETE_GROUPS);
@@ -303,7 +302,7 @@ public class BackgroundSingleton {
                             cursor.moveToNext();
                         }
                         Collections.sort(words,
-                                ComparatorMaker.getComparator(
+                                ComparatorFactory.getComparator(
                                         SettingsPreference.getWordTypeSort(mContext),
                                         SettingsPreference.getWordOrderSort(mContext)));
                     } else {
