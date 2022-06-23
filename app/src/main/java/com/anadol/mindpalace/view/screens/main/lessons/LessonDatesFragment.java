@@ -20,8 +20,7 @@ public class LessonDatesFragment extends LessonFragment {
     private Button uploadButton;
 
     public static LessonDatesFragment newInstance() {
-        LessonDatesFragment fragment = new LessonDatesFragment();
-        return fragment;
+        return new LessonDatesFragment();
     }
 
     @Override
@@ -33,7 +32,7 @@ public class LessonDatesFragment extends LessonFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_lesson_dates, container, false);
+        View view = inflater.inflate(R.layout.layout_lesson_dates, container, false);
 
         bind(view);
         getData(savedInstanceState);
@@ -56,8 +55,6 @@ public class LessonDatesFragment extends LessonFragment {
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener((v) -> getActivity().onBackPressed());
     }
-
-
 
     private void getData(Bundle savedInstanceState) {
         if (savedInstanceState != null) {

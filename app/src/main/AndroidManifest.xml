@@ -40,9 +40,6 @@
             android:name="com.anadol.mindpalace.view.screens.learn.LearnActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".view.screens.main.lessons.LessonActivity"
-            android:parentActivityName=".view.screens.main.MainActivity" />
     </application>
 
 </manifest>

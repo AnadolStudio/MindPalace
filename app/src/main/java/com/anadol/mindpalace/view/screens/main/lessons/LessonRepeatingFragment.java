@@ -29,8 +29,7 @@ public class LessonRepeatingFragment extends LessonFragment {
     private LineChart mChart;
 
     public static LessonRepeatingFragment newInstance() {
-        LessonRepeatingFragment fragment = new LessonRepeatingFragment();
-        return fragment;
+        return new LessonRepeatingFragment();
     }
 
     @Override
@@ -42,7 +41,7 @@ public class LessonRepeatingFragment extends LessonFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_lesson_repeating, container, false);
+        View view = inflater.inflate(R.layout.layout_lesson_repeating, container, false);
 
         bind(view);
         getData(savedInstanceState);

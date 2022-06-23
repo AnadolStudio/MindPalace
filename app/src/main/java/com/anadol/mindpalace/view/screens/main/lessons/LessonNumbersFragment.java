@@ -34,7 +34,7 @@ public class LessonNumbersFragment extends LessonFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_lesson_numbers, container, false);
+        View view = inflater.inflate(R.layout.layout_lesson_numbers, container, false);
 
         bind(view);
         getData(savedInstanceState);

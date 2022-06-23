@@ -147,9 +147,9 @@
         Then forgetting slows down, after 6 days there is 20%, and the same amount remains in a month.</string>
     <!--    <TODO необходимо проверить на грамматику эти предложений -->
 
-    <string name="exaple_original" translatable="false">43</string>
+    <string name="exaple_original" translatable="false">77</string>
     <string name="exaple_association">fear</string>
-    <string name="exaple_translate" translatable="false">43</string>
+    <string name="exaple_translate" translatable="false">77</string>
 
     <string name="introduction_title">Introduction</string>
     <string name="training">Training</string>

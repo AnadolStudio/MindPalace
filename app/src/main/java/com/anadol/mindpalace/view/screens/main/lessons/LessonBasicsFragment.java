@@ -42,7 +42,7 @@ public class LessonBasicsFragment extends LessonFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_lesson_basics, container, false);
+        View view = inflater.inflate(R.layout.layout_lesson_basics, container, false);
 
         bind(view);
         getData(savedInstanceState);
@@ -57,7 +57,6 @@ public class LessonBasicsFragment extends LessonFragment {
         translateText = view.findViewById(R.id.translate_textView);
         additionalText = view.findViewById(R.id.additional_textView);
         countRepsText = view.findViewById(R.id.count_reps);
-//        mChart = view.findViewById(R.id.chart_forget);
 
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setNavigationOnClickListener((v) -> getActivity().onBackPressed());
