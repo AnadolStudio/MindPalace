@@ -1,4 +1,4 @@
-package com.anadol.mindpalace.view.charts
+package com.anadol.mindpalace.view.screens.main.statistic.charts
 
 import android.content.Context
 import android.content.res.Configuration

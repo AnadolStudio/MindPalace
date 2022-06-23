@@ -1,21 +1,19 @@
 package com.anadol.mindpalace.view.screens.main.statistic
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import com.anadol.mindpalace.R
 import com.anadol.mindpalace.data.statistic.GroupStatisticItem
 import com.anadol.mindpalace.databinding.FragmentStatisticBinding
-import com.anadol.mindpalace.view.charts.StatisticPieChart
-import com.anadol.mindpalace.view.charts.StatisticPieChartData
-import com.anadol.mindpalace.view.screens.SimpleFragment
+import com.anadol.mindpalace.view.screens.BaseFragment
+import com.anadol.mindpalace.view.screens.main.statistic.charts.StatisticPieChart
+import com.anadol.mindpalace.view.screens.main.statistic.charts.StatisticPieChartData
 import com.anadolstudio.core.tasks.Result
 import com.anadolstudio.core.viewbinding.viewBinding
 
-class StatisticFragment : SimpleFragment() {
+class StatisticFragment : BaseFragment(R.layout.fragment_statistic) {
 
     companion object {
         fun newInstance(): StatisticFragment = StatisticFragment()
@@ -23,9 +21,6 @@ class StatisticFragment : SimpleFragment() {
 
     private val viewModel: StatisticViewModel by viewModels()
     private val binding by viewBinding { FragmentStatisticBinding.bind(requireView()) }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
-        inflater.inflate(R.layout.fragment_statistic, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,15 +33,14 @@ class StatisticFragment : SimpleFragment() {
         }
 
         viewModel.groupStatisticItems.observe(viewLifecycleOwner) { result ->
+            showLoading(result is Result.Loading)
 
             when (result) {
                 is Result.Success -> updatePieChart(result.data)
                 is Result.Empty -> updatePieChart()
                 is Result.Error -> result.error.printStackTrace()
-                is Result.Loading -> showLoadingDialog()
+                else -> {}
             }
-
-            if (result !is Result.Loading) hideLoadingDialog()
         }
     }
 

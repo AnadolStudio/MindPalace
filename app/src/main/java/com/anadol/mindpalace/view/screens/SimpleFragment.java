@@ -44,14 +44,6 @@ public abstract class SimpleFragment extends Fragment implements FragmentListAda
         }
     }
 
-    protected void showLoading(boolean isShow) {
-        if (isShow) {
-            showLoadingDialog();
-        } else {
-            hideLoadingDialog();
-        }
-    }
-
     public void showLoadingDialog() {
         mLoadingView = LoadingView.Base.Companion.view(getParentFragmentManager());
         mLoadingView.showLoadingIndicator();

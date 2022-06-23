@@ -20,7 +20,7 @@
             android:exported="false" />
 
         <activity
-            android:name="com.anadol.mindpalace.view.SplashActivity"
+            android:name="com.anadol.mindpalace.view.screens.SplashActivity"
             android:theme="@style/SplashActivity"
             android:exported="true">
             <intent-filter>

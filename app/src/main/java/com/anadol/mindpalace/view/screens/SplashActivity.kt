@@ -1,4 +1,4 @@
-package com.anadol.mindpalace.view
+package com.anadol.mindpalace.view.screens
 
 import android.annotation.SuppressLint
 import android.os.Bundle
