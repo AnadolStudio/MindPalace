@@ -45,8 +45,8 @@
     <string name="write_answer">Напишите ответ:</string>
     <string name="collect_the_answer">Соберите ответ:</string>
     <string name="question_result">Вопрос №%1$d: %2$s</string>
-    <string name="answer_result">Ответ: %1$s</string>
-    <string name="user_answer_result">Ваш ответ: %1$s</string>
+    <string name="answer_result">Правильный ответ:\n %1$s</string>
+    <string name="user_answer_result">Ваш ответ:\n %1$s</string>
     <string name="start">Старт</string>
     <string name="next">Далее</string>
     <string name="quiz">Викторина</string>
