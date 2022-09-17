@@ -1,3 +1,3 @@
 include ':app'
-//include ':androidcorebase'
-include ':core-base'
+include ':core'
+project(':core').projectDir = new File('/AndroidCoreBase/core')
